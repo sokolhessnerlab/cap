@@ -1,0 +1,66 @@
+variable name,definition,value
+inst1.keys,key pressed to move forward from instructions screen,"""return"", NA"
+inst1.rt,reaction time for key pressed to move forward from instructions screen,seconds
+startPracResp.keys,key pressed to start practice,"""v"", ""n"", NA"
+startPracResp.rt,reaction time for key pressed to start practice ,seconds
+extraITI,difference between choice window (2s) and reaction time to be added to ITI at the end of each pratice trial,seconds
+choice1.keys,key pressed for practice trials,"""v"", ""n"", NA"
+choice1.rt,reaction time for choices on practice trials ,seconds
+outcome,outcomes for practice trials,dollars
+pracChoice,coded choices for practice trials ,0=safe; gamble =1
+trials.thisRepN,"all 0s for practice trials, NA for rest of trials","0, NA"
+trials.thisTrialN,"trial count for practice trials, starts at 0",0-4
+trials.thisN,"trial count for practice trials, starts at 0",0-4
+trials.thisIndex,"trial count for practice trials, starts at 0",0-4
+trials.ran,practice vs. other trials,"1, NA"
+riskyGain,"risky gain amount for practice, gain-only, and loss trials",dollars
+riskyLoss,"risky loss amount for practice, gain-only, and loss trials",dollars
+alternative,"guaranteed alternative amount of practice, gain-only, and loss trials",dollars
+isi,inter-stimulus interval for all trials,seconds
+iti,inter-trial interval for all trials,seconds
+loc,location of gamble on the screen,"1 = gamble shown on the left, 2  gamble shown on the right"
+participant,prolific ID,24 digits (characters and numbers)
+date,"year, month, day, time",YYYY-MM-DD_HH.min.seconds
+expName,experiment name as saved on Pavlovia,CAPpsychopy 
+psychopyVersion,psychopy version used during experiment,2020.1.2
+OS,operating system,"Win32, Linux x86_64,  MacIntel,  Linux aarch64, Linux armv7l"
+frameRate,refresh rate,60
+postPractResp.keys,key pressed to complete practice and start real trials (gain-only),"""v"", ""n"", NA"
+postPractResp.rt,reaction time for key pressed to start real trials,seconds
+choiceSet,file name of the choice set for gain-only task,capChoiceSets/##.csv where ## 1-28
+extraITIreal,difference between choice window (2s) and reaction time to be added to ITI at the end of each real trial,seconds
+realChoice.keys,key pressed for gain-only trials,"""v"", ""n"", NA"
+realChoice.rt,reaction time for choices on gain-only trials ,seconds
+realOutcome,outcomes for gain-only and loss trials,dollars
+choice,coded choice for gain-only trials,0=safe; 1= gamble
+realTrials.thisRepN,gain trials vs other trials,"0= gain-only trials, NA for rest"
+realTrials.thisTrialN,"trial count for gain-only trials, starts at 0",0-118
+realTrials.thisN,"trial count for gain-only trials, starts at 0",0-118
+realTrials.thisIndex,"trial count for gain-only trials, starts at 0",0-118
+realTrials.ran,gain trials vs other trials,"1= gain-only trials, NA for rest"
+groundEV,ground expected value for gain-only task ,"dollars {$5, $10, $15, $20, $25}"
+evInd,level of context or level of expected value in gain-only task,"{1,2,3,4,5}"
+runSize,number of trials in a run for gain-only task,"{6,9,12,15}"
+gainSC,scaled gain values for gain-only task(scaled by max(riskyGain)),dollars
+lossSC,scaled loss values for gain-only task(scaled by max(riskyGain)),dollars
+altSC,scaled safe values for gain-only task(scaled by max(riskyGain)),dollars
+EV,expected value on each trial of the gain-only task,dollars
+finiteOutcomes,outcomes from gain-only task that were finite (trials participants successfully entered a decision),dollars
+outcome2payFull,randomly selected outcome (full amount),dollars
+outcome2payScaled,randomly selected outcome (scaled by 1/5) to be paid to participant,dollars
+exitResponse.keys,key pressed to exit decision-making task and move on to AX task,"""space"", NA"
+exitResponse.rt,reaction time for key pressed to exit decision-making task and move on to AX task,seconds
+startLossResp.keys,key pressed to start loss trials,"""v"", ""n"", NA"
+startLossResp.rt,reaction time for key pressed to start loss trials,seconds
+LossChoiceSet,file name of the choice set for loss task,capLossAversion/loss##.csv where ## is 1-28
+realChoice_2.keys,key pressed for loss trials ,"""v"", ""n"", NA"
+realChoice_2.rt,reaction time for key pressed for loss trials,seconds
+outcomeType,type of outcome for each loss trial ,"""safe"", ""loss"", ""win"""
+lossChoice,coded choice for loss trials ,"0=safe, 1=gamble"
+lossTrials.thisRepN,loss vs other trials,0=loss; NA for other trials
+lossTrials.thisTrialN,"trial count for loss trials, starts at 0",0-19
+lossTrials.thisN,"trial count for loss trials, starts at 0",0-19
+lossTrials.thisIndex,"trial count for loss trials, starts at 0",0-19
+lossTrials.ran,loss vs other trials,1=loss; NA for other trials
+day,day of study ,"{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20}"
+phase,phase ,"{1,2}"

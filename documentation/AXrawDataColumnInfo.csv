@@ -1,0 +1,43 @@
+variable name,definition,value
+startKey.keys,key pressed to move forward to instructions screen,"""space"""
+startKey.rt,reaction time for key pressed to move forward to instructions screen,seconds
+startTask.keys,key pressed to move forward from instructions screen,"""space"", ""v"", ""n"""
+startTask.rt,reaction time for key pressed to move forward from instructions screen,seconds
+startPractResp.keys,key pressed to start practice,"""v"", ""n"""
+startPractResp.rt,reaction time for key pressed to start practice ,seconds
+pracResponse.keys,"key pressed for practice trials (""v"" or ""n"")","""v"", ""n"""
+pracResponse.rt,reaction time for choices on practice trials ,seconds
+pracTrials.thisRepN,"all 0s for practice trials, NA for rest of trials","0 for practice trials, NA for rest of trials"
+pracTrials.thisTrialN,"trial count for practice trials, starts at 0",0-4
+pracTrials.thisN,"trial count for practice trials, starts at 0",0-4
+pracTrials.thisIndex,"trial count for practice trials, starts at 0",0-4
+pracTrials.ran,"all 1s for practice trials, NA for rest of trials","1 for practice trials, NA for rest of trials"
+firstLetter,first letter shown in the AX task," ""A"" ""M"" ""E"" ""T"" ""U"" ""B"" ""S"" ""D"" ""Z"" ""P"" ""F"" ""V"" ""G"", ""NA"" for both practice (first 5 trials) and real task"
+secondLetter,second letter shown in the AX task task," ""X"" ""S"" ""P"" ""D"" ""T"" ""E"" ""V"" ""U"" ""Z"" ""F"" ""M"" ""Y"" ""G"" ""NA""  for both practice (first 5 trials) and real task"
+participant,prolific ID ,24 digits (characters and numbers)
+date,"year, month, day, time",YYYY-MM-DD_HH.min.seconds
+expName,experiment name as saved on Pavlovia,capAXCPT 
+psychopyVersion,psychopy version used during experiment,2020.1.2
+OS,operating system,"Win32, Linux x86_64,  MacIntel,  Linux aarch64, Linux armv7l"
+frameRate,refresh rate,60
+startTaskResp.keys,key pressed to complete practice and start real trials,"""v"", ""n"""
+startTaskResp.rt,reaction time for key pressed to start real trials,seconds
+stimSet,file name of the choice set for gain-only task,ax###.csv where ### is between 1- 150
+getResponse.keys,key pressed for real trials," ""v"", ""n"""
+taskTrials.thisRepN,"all 0s for task trials (part 1), NA for rest of trials","0 for real trials (part 1), NA for rest of trials"
+taskTrials.thisTrialN,trial count for real trials ,0-119 (for days 1-6 phase 1); 0-59 for rest of days on phase 1 and phase 2
+taskTrials.thisN,trial count for real trials ,0-119 (for days 1-6 phase 1); 0-59 for rest of days on phase 1 and phase 2
+taskTrials.thisIndex,trial count for real trials ,0-119 (for days 1-6 phase 1); 0-59 for rest of days on phase 1 and phase 2
+taskTrials.ran,"all 1s for real trials, NA for rest of trials","1 for real trials in this part, NA for the rest of trials"
+getResponse.rt,reaction time for choices on all real trials ,seconds
+breakResp.keys,key pressed to start second part of task,"""space"", NA"
+breakResp.rt,raction time for key pressed to start second part of task,seconds
+taskTrialsPt2.thisRepN,"all 0s for real trials (part 2), NA for rest of trials","0 for real trials (part 1), NA for rest of trials"
+taskTrialsPt2.thisTrialN,"trial count for real trials (part 2), starts at 0",0-59
+taskTrialsPt2.thisN,"trial count for real trials (part 2), starts at 0",0-59
+taskTrialsPt2.thisIndex,"trial count for real trials (part 2), starts at 0",0-59
+taskTrialsPt2.ran,"all 1s for real trials (part 2), NA for rest of trials","1 for real trials in this part, NA for the rest of trials"
+exitResp.keys,key pressed to exit pavlovia,"""space"", NA"
+exitResp.rt,reaction time for key pressed to exit pavlovia,seconds
+day,day of study,"{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20}"
+phase ,phase ,"{1,2}"

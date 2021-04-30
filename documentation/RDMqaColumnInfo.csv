@@ -1,0 +1,26 @@
+variable,definition,min,max
+subID,subject ID,1,544
+phase1GainMissed,proportion of missed trials in gain-only task in phase 1,0,0.3
+phase2GainMissed,proportion of missed trials in gain-only task in phase 2,0,0.4
+phase1LossMissed,proportion of  missed trials in loss task in phase 1,0,0.35
+phase2LossMissed,proportion of missed trials in loss task in phase 1,0,0.25
+ShouldSafePhase1tot,total number of trials where safe >= risky gain amount in phase 1,2,14
+ShouldSafePhase1totMiss,total number of missed trials where safe >= risky gain (i.e. sub gambled instead of safe) in phase 1,0,5
+ShouldSafePhase1MissProportion,proportion of missed trials where safe >= risky gain (i.e. sub gambled instead of safe) in phase 1,0,1
+ShouldGamPhase1tot,total number of trials where safe = 0 in phase 1,0,3
+ShouldGamPhase1totMiss,total number of missed trials where safe =0 (i.e.sub chose safe instead of gamble) in phase 1,0,2
+ShouldGamPhase1MissProportion,proportion of missed trials where safe =0 (i.e.sub chose safe instead of gamble) in phase 1,0,1
+ShouldSafePhase2tot,total number of trials where safe >= risky gain amount in phase 2,0,14
+ShouldSafePhase2totMiss,total number of missed trials where safe >= risky gain (i.e. sub gambled instead of safe) in phase 2,0,7
+ShouldSafePhase2MissProportion,proportion of missed trials where safe >= risky gain (i.e. sub gambled instead of safe) in phase 2,0,1
+ShouldGamPhase2tot,total number of trials where safe =0 in phase 2,0,3
+ShouldGamPhase2totMiss,total number of missed trials where safe =0 (i.e.sub chose safe instead of gamble) in phase 2,0,2
+ShouldGamPhase2MissProportion,proportion of missed trials where safe =0 (i.e.sub chose safe instead of gamble) in phase 2,0,1
+pgamblePhase1gain,probability of gambling in gain-only task phase 1,0,0.91
+pgamblePhase2gain,probability of gambling in gain-only task phase 2,0,0.92
+pgamblePhase1loss,probability of gambling in loss task phase 1,0,1
+pgamblePhase2loss,probability of gambling in loss task phase 2,0,1
+glmGainYesPhase1,did gain values influence choice in phase 1? (1=yes;0=no),0,1
+glmSafeYesPhase1,did safe values influence choice in phase 1?  (1=yes;0=no),0,1
+glmGainYesPhase2,did gain values influence choice in phase 2? (1=yes;0=no),0,1
+glmSafeYesPhase2,did safe values influence choice in phase 2? (1=yes;0=no),0,1

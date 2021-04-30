@@ -1,0 +1,9 @@
+variable name,definition,value,type
+axResponse,participant response on each trial ,"1 = ""A"" followed by ""X""; 2 = any other combination of letters",double
+axRT,reaction time,seconds,double
+axFirstLetter,first letter presented in AX task,"""A"" ""M"" ""E"" ""T"" ""U"" ""B"" ""S"" ""D"" ""Z"" ""P"" ""F"" ""V"" ""G"", ""NA""",character
+axSecondLetter,second letter presented in AX task,"""X""  ""S"" ""P"" ""D"" ""T"" ""E"" ""V"" ""U"" ""Z"" ""F"" ""M"" ""Y"" ""G"" NA",character
+subID,CAP sub ID,1 to 544,integer
+day,day of participation,"{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20}",integer
+phase,phase of participation,"{1,2}",integer
+axCorrect,participant response correct?,1= correct; 0 = incorrect,double
