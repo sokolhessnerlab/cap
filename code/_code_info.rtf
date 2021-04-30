@@ -1,0 +1,169 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1561\cocoasubrtf600
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+{\*\listtable{\list\listtemplateid1\listhybrid{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{decimal\})}{\leveltext\leveltemplateid1\'02\'00);}{\levelnumbers\'01;}\fi-360\li720\lin720 }{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{hyphen\}}{\leveltext\leveltemplateid2\'01\uc0\u8259 ;}{\levelnumbers;}\fi-360\li1440\lin1440 }{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{hyphen\}}{\leveltext\leveltemplateid3\'01\uc0\u8259 ;}{\levelnumbers;}\fi-360\li2160\lin2160 }{\listname ;}\listid1}
+{\list\listtemplateid2\listhybrid{\listlevel\levelnfc0\levelnfcn0\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{decimal\})}{\leveltext\leveltemplateid101\'02\'00);}{\levelnumbers\'01;}\fi-360\li720\lin720 }{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{hyphen\}}{\leveltext\leveltemplateid102\'01\uc0\u8259 ;}{\levelnumbers;}\fi-360\li1440\lin1440 }{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{hyphen\}}{\leveltext\leveltemplateid103\'01\uc0\u8259 ;}{\levelnumbers;}\fi-360\li2160\lin2160 }{\listname ;}\listid2}}
+{\*\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}{\listoverride\listid2\listoverridecount0\ls2}}
+\margl1440\margr1440\vieww13400\viewh10380\viewkind0
+\pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl0
+\f0\b\fs24 \cf0 {\listtext	1)	}AXcleanData.R\
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl1\cf0 {\listtext	\uc0\u8259 	}
+\b0 imports the large raw AX .csv file  (combinedRawData/AXall.csv) and removes, renames and reformats columns so that data is basically ready for analysis\
+{\listtext	\uc0\u8259 	}recodes response variables so that 1= \'93left\'94 or \'93v\'94 and 2 = \'93down\'94 or \'93n\'94\
+{\listtext	\uc0\u8259 	}replaces prolific IDs with subIDs\
+\ls1\ilvl1
+\b {\listtext	\uc0\u8259 	}
+\b0 output: "/Volumes/CAP/data/combinedData/AXallClean.csv"\
+\pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl0
+\b \cf0 {\listtext	2)	}AXcombineRaw.R\
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl1\cf0 {\listtext	\uc0\u8259 	}
+\b0 fixes the file format for all participants on phase 1 day 3 and one participant from phase 1 day 11 where there were issues with recording participant ID numbers. \
+\pard\tx1660\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2160\fi-2160\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl2\cf0 {\listtext	\uc0\u8259 	}misformatted raw data files are in rawData/phase1/day#/axcpt/axcptMisformatted/\
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl1\cf0 {\listtext	\uc0\u8259 	}combines raw axcpt data in 3 ways:\
+\pard\tx1660\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2160\fi-2160\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl2\cf0 {\listtext	\uc0\u8259 	}across participants within each day (40 files)\
+{\listtext	\uc0\u8259 	}across days within each phase (2 files)\
+{\listtext	\uc0\u8259 	}across both phases (1 file)\
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl1\cf0 {\listtext	\uc0\u8259 	}output: \
+\pard\tx1660\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2160\fi-2160\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl2\cf0 {\listtext	\uc0\u8259 	}1 .csv file per day per phase stored in the rawData/combinedRawData/combinedRawData/AXday directory (e.g. collateAXphase2day1)\
+{\listtext	\uc0\u8259 	}1 .csv file per phase (each .csv file includes data from all days) stored in combinedRawData/AXphase directory (AXphase1.csv & AXphase2.csv)\
+{\listtext	\uc0\u8259 	}1 .csv file for all the raw AX data (AXall.csv) in the rawData/combinedAXData directory\
+{\listtext	\uc0\u8259 	}Reformatted raw data files for all participants on phase 1 day 3 and one participant from phase 1 day 11 (stored in rawData/phase1/day#/axcpt).
+\b \
+\pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl0\cf0 {\listtext	3)	}generateParticipantList.R\
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl1\cf0 {\listtext	\uc0\u8259 	}
+\b0 creates two participant lists for phase 1 and phase 2 based on the data files we have in rawData (its scrapes the prolific ID name from each file name)\
+{\listtext	\uc0\u8259 	}output includes both prolific ID and CAP sub ID (the latter we will use for analyses moving forward)\
+{\listtext	\uc0\u8259 	}This script also confirms that we have a file of the risky choice and axcpt task for all participants and that the prolific IDs are the same for risky choice and axcpt files.\
+{\listtext	\uc0\u8259 	}output:\
+\pard\tx1660\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2160\fi-2160\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl2\cf0 {\listtext	\uc0\u8259 	}1 .csv file per phase with columns \{prolific ID, subID day, phase\}\
+\pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl0
+\b \cf0 {\listtext	4)	}RDMcombineRaw.R\
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl1\cf0 {\listtext	\uc0\u8259 	}
+\b0 fixes the file format for all participants on phase 1 day 3 and one participant from phase 1 day 11 where there were issues with recording participant ID numbers. \
+\pard\tx1660\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2160\fi-2160\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl2\cf0 {\listtext	\uc0\u8259 	}misformatted raw data files are in rawData/phase1/day#/riskyChoice/riskyChoiceMisformatted/
+\b \
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl1
+\b0 \cf0 {\listtext	\uc0\u8259 	}combines raw risky decision-making data in 3 ways:\
+\pard\tx1660\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2160\fi-2160\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl2\cf0 {\listtext	\uc0\u8259 	}across participants within each day (40 files)\
+{\listtext	\uc0\u8259 	}across days within each phase (2 files)\
+{\listtext	\uc0\u8259 	}across both phases (1 file)\
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl1\cf0 {\listtext	\uc0\u8259 	}output: \
+\pard\tx1660\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2160\fi-2160\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl2\cf0 {\listtext	\uc0\u8259 	}1 .csv file per day per phase stored in the rawData/combinedRawData/combinedRawData/RDMday directory (e.g. collateRDMphase2day1)\
+{\listtext	\uc0\u8259 	}1 .csv file per phase (each .csv file includes data from all days) stored in combinedRawData/RDMphase directory (RDMphase1.csv & RDMphase2.csv)\
+{\listtext	\uc0\u8259 	}1 .csv file for all the raw RDM data (RDMall.csv) in the rawData/combinedRawData directory\
+{\listtext	\uc0\u8259 	}Reformatted raw data files for all participants on phase 1 day 3 and one participant from phase 1 day 11 (stored in rawData/phase1/day#/riskyChoice).\
+\pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl0\cf0 {\listtext	5)	}
+\b RDMcleanData.R\
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl1\cf0 {\listtext	\uc0\u8259 	}
+\b0 imports the large raw RDM .csv file  (combinedRawData/RDMall.csv) and removes, renames and reformats columns so that data is basically ready for analysis\
+{\listtext	\uc0\u8259 	}removes the trials from the loss task in phase 1 that were incorrectly recorded due to a coding error\
+{\listtext	\uc0\u8259 	}replaces prolific IDs with subIDs\
+\ls1\ilvl1
+\b {\listtext	\uc0\u8259 	}
+\b0 output: "/Volumes/CAP/data/combinedData/RDMallClean.csv"\
+\pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl0\cf0 {\listtext	6)	}
+\b QualtricsReplaceProlificID.R\
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl1
+\b0 \cf0 {\listtext	\uc0\u8259 	}imports the raw Qualtrics questionnaire .csv files for phase 1 and phase 2\
+{\listtext	\uc0\u8259 	}cleans up the column names so that the output will only have the new variable names\
+{\listtext	\uc0\u8259 	}pulls out qualtrics responses only from those who we have RDM and AXCPT data\
+{\listtext	\uc0\u8259 	}removes prolific ID numbers and adds subID variable\
+{\listtext	\uc0\u8259 	}saves two .csv files\
+{\listtext	\uc0\u8259 	}output: \'93/Volumes/CAP/data/combinedData/QualtricsPhase#_subID_notScored.csv\'94\
+\pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl0\cf0 {\listtext	7)	}
+\b QualtricsExclusions.R\
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl1
+\b0 \cf0 {\listtext	\uc0\u8259 	}loads the cleaned but not scored qualtrics .csv files: \'93Volumes/CAP/data/combinedData/QualtricsPhase#_subID_notScored.csv\'94\
+{\listtext	\uc0\u8259 	}makes not of participants who should be excluded based on missed attention checks, inappropriate age responses and notes duplicate responses and missed data.\
+{\listtext	\uc0\u8259 	}Only subject IDs are used here, so this script can be shared online.\
+{\listtext	\uc0\u8259 	}There is no output from this file, but there is a text file that documents anomolies with qualtrics responses: \'93/Volumes/CAP/documentation/QualtricsExclusionCodeSummary.txt\'94\
+\pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl0\cf0 {\listtext	8)	}
+\b RDMexclusion.R\
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl1
+\b0 \cf0 {\listtext	\uc0\u8259 	}loads RDM data from phase 1 and phase 2 (data/combinedData/RDMallClean.csv)\
+{\listtext	\uc0\u8259 	}For each participant in each phase, reports on the 4 categories of criteria for potential exclusion\
+\pard\tx1660\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2160\fi-2160\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl2\cf0 {\listtext	\uc0\u8259 	}miss trials, missed attention checks, p(Gamble), and subject-level glm (choice ~gain+safe)\
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl1\cf0 {\listtext	\uc0\u8259 	}output # 1: .csv file with nrow=544 (1 for each participant) with 25 variables/columns\
+\pard\tx1660\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2160\fi-2160\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl2\cf0 {\listtext	\uc0\u8259 	}Volumes/CAP/data/combinedData/RDMqa.csv\
+{\listtext	\uc0\u8259 	}only includes subIDs (not prolific IDs)\
+{\listtext	\uc0\u8259 	}variable information for this file is located in documentation/RDMqaColumnInfo.csv\
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl1\cf0 {\listtext	\uc0\u8259 	}output # 2: .csv file with nrow=544 (1 for each participant) with 3 variables/columns\
+\pard\tx1660\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2160\fi-2160\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl2\cf0 {\listtext	\uc0\u8259 	}Volumes/CAP/data/combinedData/rdmExclusion.csv\
+{\listtext	\uc0\u8259 	}only includes subIDs (not prolific IDs)\
+{\listtext	\uc0\u8259 	}3 columns: subID, phase1exclude (1=yes; 0=no; NA= no data), phase2exclude (1=yes; 0=no; NA=no data)\
+\pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl0
+\b \cf0 {\listtext	9)	}AXexclusion.R\
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl1
+\b0 \cf0 {\listtext	\uc0\u8259 	}loads AX data from phase 1 and phase 2 (data/combinedData/AXallClean.csv)\
+{\listtext	\uc0\u8259 	}For each participants in each phase, reports whether their global performance was greater than or equal to 60%\
+{\listtext	\uc0\u8259 	}output #1: AXqa.csv\
+\pard\tx1660\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2160\fi-2160\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl2\cf0 {\listtext	\uc0\u8259 	}544 rows with 5 variables/columns\
+{\listtext	\uc0\u8259 	}only includes subIDs \
+{\listtext	\uc0\u8259 	}5 columns: subIDs, PcntCorPhs1, MeetCritPhs1, PcntCorPhs2, MeetCritPhs2\
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl1\cf0 {\listtext	\uc0\u8259 	}output #2: axExclusion.csv\
+\pard\tx1660\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2160\fi-2160\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl2\cf0 {\listtext	\uc0\u8259 	}544 rows with 3 variables\
+{\listtext	\uc0\u8259 	}only includes subIDs\
+{\listtext	\uc0\u8259 	}3 columns: subID, phase1exclude (1=yes; 0=no; NA= no data), phase2exclude (1=yes; 0=no; NA=no data)\
+\pard\tx220\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li720\fi-720\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl0
+\b \cf0 {\listtext	10)	}QualtricsCombineRecode.R\
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl1
+\b0 \cf0 {\listtext	\uc0\u8259 	}Loads phase 1 and 2 qualtrics data\
+{\listtext	\uc0\u8259 	}Removes open response columns\
+{\listtext	\uc0\u8259 	}Creates attentionCheck_passed columns for if a participant passed the attention check or not\
+{\listtext	\uc0\u8259 	}Translates state/county responses into FIPS codes\
+{\listtext	\uc0\u8259 	}Scores STAI-S, STAI-T, PSS, UCLA-L\
+{\listtext	\uc0\u8259 	}Recodes non-open response covid, demographic, and ses questions to numerics\
+\pard\tx1660\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2160\fi-2160\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl2\cf0 {\listtext	\uc0\u8259 	}Maintains the original string responses for clarity\
+\pard\tx940\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li1440\fi-1440\sl288\slmult1\pardirnatural\partightenfactor0
+\ls1\ilvl1\cf0 {\listtext	\uc0\u8259 	}Outputs QualtricsCombined_subID_scored.csv\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\sl288\slmult1\pardirnatural\partightenfactor0
+\cf0 \
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\sl288\slmult1\pardirnatural\partightenfactor0
+
+\b \cf0 \
+\pard\tx1660\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\li2160\fi-2160\sl288\slmult1\pardirnatural\partightenfactor0
+\ls2\ilvl2
+\b0 \cf0 \
+}
