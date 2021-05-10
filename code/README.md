@@ -65,7 +65,7 @@
 -   saves two .csv files
 -   output: "/Volumes/CAP/data/combinedData/QualtricsPhase#_subID_notScored.csv"
 
-## 7. [QualtricsExclusions.R](./QualtricsExclusions.R)
+## 7. [QualtricsExclusion.R](./QualtricsExclusion.R)
 
 -   loads the cleaned but not scored qualtrics .csv files: "Volumes/CAP/data/combinedData/QualtricsPhase#_subID_notScored.csv"
 -   makes not of participants who should be excluded based on missed attention checks, inappropriate age responses and notes duplicate responses and missed data.
