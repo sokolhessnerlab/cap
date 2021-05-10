@@ -19,10 +19,10 @@
 
 -   output: 
 
--   1 .csv file per day per phase stored in the rawData/combinedRawData/combinedRawData/AXday directory (e.g. collateAXphase2day1)
--   1 .csv file per phase (each .csv file includes data from all days) stored in combinedRawData/AXphase directory (AXphase1.csv & AXphase2.csv)
--   1 .csv file for all the raw AX data (AXall.csv) in the rawData/combinedAXData directory
--   Reformatted raw data files for all participants on phase 1 day 3 and one participant from phase 1 day 11 (stored in rawData/phase1/day#/axcpt).
+    -   1 .csv file per day per phase stored in the rawData/combinedRawData/combinedRawData/AXday directory (e.g. collateAXphase2day1)
+    -   1 .csv file per phase (each .csv file includes data from all days) stored in combinedRawData/AXphase directory (AXphase1.csv & AXphase2.csv)
+    -   1 .csv file for all the raw AX data (AXall.csv) in the rawData/combinedAXData directory
+    -   Reformatted raw data files for all participants on phase 1 day 3 and one participant from phase 1 day 11 (stored in rawData/phase1/day#/axcpt).
 
 5.  **generateParticipantList.R**
 
