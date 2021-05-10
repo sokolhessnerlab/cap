@@ -1,4 +1,6 @@
-1.  AXrawDataColumnInfo.csv
+# Description of files in the "documentation" directory 
+
+## 1.  AXrawDataColumnInfo.csv
 
 	-   describes the column names from output in the AX raw data files from Pavlovia
 	-   Three columns: {variable name, definition, value}
