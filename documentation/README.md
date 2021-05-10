@@ -1,11 +1,11 @@
 # Description of files in the "documentation" directory 
 
-## 1.  [AXrawDataColumnInfo.csv](https://github.com/sokolhessnerlab/cap/blob/341145a5323ff47668be8da07c90e7240e36c0ab/documentation/AXrawDataColumnInfo.csv)
+## 1.  [AXrawDataColumnInfo.csv](https://github.com/sokolhessnerlab/cap/blob/cae01029b9e029768281dfe335ccd1bceda38658/documentation/AXrawDataColumnInfo.csv)
 
 	-   describes the column names from output in the AX raw data files from Pavlovia
 	-   Three columns: {variable name, definition, value}
 
-## 2.  [AXcleanDataColumnInfo.csv](https://github.com/sokolhessnerlab/cap/blob/660b22d0d9f9685dfd52fc428bab9d7fb614dbff/documentation/AXcleanDataColumnInfo.csv)
+## 2.  [AXcleanDataColumnInfo.csv]
 
 	-   describes the column names from cleaned AX dataset {AXallClean.csv}
 	-   Four columns: {variable name, definition, value, type}
