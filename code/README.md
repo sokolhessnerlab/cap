@@ -1,4 +1,4 @@
-## 1.  AXcleanData.R
+## 1.  [AXcleanData.R](./AXcleanData.R)
 
 -   imports the large raw AX .csv file (combinedRawData/AXall.csv) and removes, renames and reformats columns so that data is basically ready for analysis
 -   recodes response variables so that 1= "left" or "v" and 2 = "down" or "n"
