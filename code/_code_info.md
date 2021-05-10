@@ -8,17 +8,14 @@
 3.  **AXcombineRaw.R**
 
 -   fixes the file format for all participants on phase 1 day 3 and one participant from phase 1 day 11 where there were issues with recording participant ID numbers. 
-
--   misformatted raw data files are in rawData/phase1/day#/axcpt/axcptMisformatted/
+    -   misformatted raw data files are in rawData/phase1/day#/axcpt/axcptMisformatted/
 
 -   combines raw axcpt data in 3 ways:
-
--   across participants within each day (40 files)
--   across days within each phase (2 files)
--   across both phases (1 file)
+    -   across participants within each day (40 files)  
+    -   across days within each phase (2 files)
+    -   across both phases (1 file)
 
 -   output: 
-
     -   1 .csv file per day per phase stored in the rawData/combinedRawData/combinedRawData/AXday directory (e.g. collateAXphase2day1)
     -   1 .csv file per phase (each .csv file includes data from all days) stored in combinedRawData/AXphase directory (AXphase1.csv & AXphase2.csv)
     -   1 .csv file for all the raw AX data (AXall.csv) in the rawData/combinedAXData directory
@@ -31,26 +28,26 @@
 -   This script also confirms that we have a file of the risky choice and axcpt task for all participants and that the prolific IDs are the same for risky choice and axcpt files.
 -   output:
 
--   1 .csv file per phase with columns {prolific ID, subID day, phase}
+    -   1 .csv file per phase with columns {prolific ID, subID day, phase}
 
 7.  **RDMcombineRaw.R**
 
 -   fixes the file format for all participants on phase 1 day 3 and one participant from phase 1 day 11 where there were issues with recording participant ID numbers. 
 
--   misformatted raw data files are in rawData/phase1/day#/riskyChoice/riskyChoiceMisformatted/
+    -   misformatted raw data files are in rawData/phase1/day#/riskyChoice/riskyChoiceMisformatted/
 
 -   combines raw risky decision-making data in 3 ways:
 
--   across participants within each day (40 files)
--   across days within each phase (2 files)
--   across both phases (1 file)
+    -   across participants within each day (40 files)
+    -   across days within each phase (2 files)
+    -   across both phases (1 file)
 
 -   output: 
 
--   1 .csv file per day per phase stored in the rawData/combinedRawData/combinedRawData/RDMday directory (e.g. collateRDMphase2day1)
--   1 .csv file per phase (each .csv file includes data from all days) stored in combinedRawData/RDMphase directory (RDMphase1.csv & RDMphase2.csv)
--   1 .csv file for all the raw RDM data (RDMall.csv) in the rawData/combinedRawData directory
--   Reformatted raw data files for all participants on phase 1 day 3 and one participant from phase 1 day 11 (stored in rawData/phase1/day#/riskyChoice).
+    -   1 .csv file per day per phase stored in the rawData/combinedRawData/combinedRawData/RDMday directory (e.g. collateRDMphase2day1)
+    -   1 .csv file per phase (each .csv file includes data from all days) stored in combinedRawData/RDMphase directory (RDMphase1.csv & RDMphase2.csv)
+    -   1 .csv file for all the raw RDM data (RDMall.csv) in the rawData/combinedRawData directory
+    -   Reformatted raw data files for all participants on phase 1 day 3 and one participant from phase 1 day 11 (stored in rawData/phase1/day#/riskyChoice).
 
 9.  **RDMcleanData.R**
 
@@ -80,19 +77,19 @@
 -   loads RDM data from phase 1 and phase 2 (data/combinedData/RDMallClean.csv)
 -   For each participant in each phase, reports on the 4 categories of criteria for potential exclusion
 
--   miss trials, missed attention checks, p(Gamble), and subject-level glm (choice ~gain+safe)
+    -   miss trials, missed attention checks, p(Gamble), and subject-level glm (choice ~gain+safe)
 
 -   output # 1: .csv file with nrow=544 (1 for each participant) with 25 variables/columns
 
--   Volumes/CAP/data/combinedData/RDMqa.csv
--   only includes subIDs (not prolific IDs)
--   variable information for this file is located in documentation/RDMqaColumnInfo.csv
+    -   Volumes/CAP/data/combinedData/RDMqa.csv
+    -   only includes subIDs (not prolific IDs)
+    -   variable information for this file is located in documentation/RDMqaColumnInfo.csv
 
 -   output # 2: .csv file with nrow=544 (1 for each participant) with 3 variables/columns
 
--   Volumes/CAP/data/combinedData/rdmExclusion.csv
--   only includes subIDs (not prolific IDs)
--   3 columns: subID, phase1exclude (1=yes; 0=no; NA= no data), phase2exclude (1=yes; 0=no; NA=no data)
+    -   Volumes/CAP/data/combinedData/rdmExclusion.csv
+    -   only includes subIDs (not prolific IDs)
+    -   3 columns: subID, phase1exclude (1=yes; 0=no; NA= no data), phase2exclude (1=yes; 0=no; NA=no data)
 
 17. **AXexclusion.R**
 
@@ -100,15 +97,15 @@
 -   For each participants in each phase, reports whether their global performance was greater than or equal to 60%
 -   output #1: AXqa.csv
 
--   544 rows with 5 variables/columns
--   only includes subIDs 
--   5 columns: subIDs, PcntCorPhs1, MeetCritPhs1, PcntCorPhs2, MeetCritPhs2
+    -   544 rows with 5 variables/columns
+    -   only includes subIDs 
+    -   5 columns: subIDs, PcntCorPhs1, MeetCritPhs1, PcntCorPhs2, MeetCritPhs2
 
 -   output #2: axExclusion.csv
 
--   544 rows with 3 variables
--   only includes subIDs
--   3 columns: subID, phase1exclude (1=yes; 0=no; NA= no data), phase2exclude (1=yes; 0=no; NA=no data)
+    -   544 rows with 3 variables
+    -   only includes subIDs
+    -   3 columns: subID, phase1exclude (1=yes; 0=no; NA= no data), phase2exclude (1=yes; 0=no; NA=no data)
 
 19. **QualtricsCombineRecode.R**
 
@@ -119,8 +116,7 @@
 -   Scores STAI-S, STAI-T, PSS, UCLA-L
 -   Recodes non-open response covid, demographic, and ses questions to numerics
 
--   Maintains the original string responses for clarity
+    -   Maintains the original string responses for clarity
 
 -   Outputs QualtricsCombined_subID_scored.csv
 
--
