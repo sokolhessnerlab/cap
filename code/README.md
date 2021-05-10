@@ -1,11 +1,11 @@
-1.  **AXcleanData.R**
+## 1.  AXcleanData.R
 
 -   imports the large raw AX .csv file (combinedRawData/AXall.csv) and removes, renames and reformats columns so that data is basically ready for analysis
 -   recodes response variables so that 1= "left" or "v" and 2 = "down" or "n"
 -   replaces prolific IDs with subIDs
 -   output: "/Volumes/CAP/data/combinedData/AXallClean.csv"
 
-3.  **AXcombineRaw.R**
+## 2.  AXcombineRaw.R
 
 -   fixes the file format for all participants on phase 1 day 3 and one participant from phase 1 day 11 where there were issues with recording participant ID numbers. 
     -   misformatted raw data files are in rawData/phase1/day#/axcpt/axcptMisformatted/
