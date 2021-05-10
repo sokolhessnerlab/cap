@@ -5,26 +5,26 @@
 	-   describes the column names from output in the AX raw data files from Pavlovia
 	-   Three columns: {variable name, definition, value}
 
-3.  AXcleanDataColumnInfo.csv
+## 2.  AXcleanDataColumnInfo.csv
 
 	-   describes the column names from cleaned AX dataset {AXallClean.csv}
 	-   Four columns: {variable name, definition, value, type}
 
-5.  RDMrawDataColumnInfo.csv
+## 3.  RDMrawDataColumnInfo.csv
 
 	-   describes the column names from output in the risky choice raw data files from Pavlovia
 	-   Three columns: {variable name, definition, value}
 
-7.  RDMcleanDataColumnInfo.csv
+## 4.  RDMcleanDataColumnInfo.csv
 
 	-   describes the column names from cleaned RDM dataset (RDMallClean.csv)
 	-   Four columns: {variable name, definition, value, type}
 
-9.  storageStructure
+## 5.  storageStructure
 
 	-   Microsoft word document listing the structure of the entire CAP drive
 
-11. collectionSummary
+## 6. collectionSummary
 
 	-   Microsoft word document outlining data collection during the CAP study
 
