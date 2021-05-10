@@ -21,7 +21,7 @@
     -   1 .csv file for all the raw AX data (AXall.csv) in the rawData/combinedAXData directory
     -   Reformatted raw data files for all participants on phase 1 day 3 and one participant from phase 1 day 11 (stored in rawData/phase1/day#/axcpt).
 
-5.  **generateParticipantList.R**
+## 3. generateParticipantList.R
 
 -   creates two participant lists for phase 1 and phase 2 based on the data files we have in rawData (its scrapes the prolific ID name from each file name)
 -   output includes both prolific ID and CAP sub ID (the latter we will use for analyses moving forward)
@@ -30,7 +30,7 @@
 
     -   1 .csv file per phase with columns {prolific ID, subID day, phase}
 
-7.  **RDMcombineRaw.R**
+## 4. RDMcombineRaw.R
 
 -   fixes the file format for all participants on phase 1 day 3 and one participant from phase 1 day 11 where there were issues with recording participant ID numbers. 
 
@@ -49,14 +49,14 @@
     -   1 .csv file for all the raw RDM data (RDMall.csv) in the rawData/combinedRawData directory
     -   Reformatted raw data files for all participants on phase 1 day 3 and one participant from phase 1 day 11 (stored in rawData/phase1/day#/riskyChoice).
 
-9.  **RDMcleanData.R**
+## 5. RDMcleanData.R
 
 -   imports the large raw RDM .csv file (combinedRawData/RDMall.csv) and removes, renames and reformats columns so that data is basically ready for analysis
 -   removes the trials from the loss task in phase 1 that were incorrectly recorded due to a coding error
 -   replaces prolific IDs with subIDs
 -   output: "/Volumes/CAP/data/combinedData/RDMallClean.csv"
 
-11. **QualtricsReplaceProlificID.R**
+## 6. QualtricsReplaceProlificID.R
 
 -   imports the raw Qualtrics questionnaire .csv files for phase 1 and phase 2
 -   cleans up the column names so that the output will only have the new variable names
@@ -65,14 +65,14 @@
 -   saves two .csv files
 -   output: "/Volumes/CAP/data/combinedData/QualtricsPhase#_subID_notScored.csv"
 
-13. **QualtricsExclusions.R**
+## 7. QualtricsExclusions.R
 
 -   loads the cleaned but not scored qualtrics .csv files: "Volumes/CAP/data/combinedData/QualtricsPhase#_subID_notScored.csv"
 -   makes not of participants who should be excluded based on missed attention checks, inappropriate age responses and notes duplicate responses and missed data.
 -   Only subject IDs are used here, so this script can be shared online.
 -   There is no output from this file, but there is a text file that documents anomolies with qualtrics responses: "/Volumes/CAP/documentation/QualtricsExclusionCodeSummary.txt"
 
-15. **RDMexclusion.R**
+## 8. RDMexclusion.R
 
 -   loads RDM data from phase 1 and phase 2 (data/combinedData/RDMallClean.csv)
 -   For each participant in each phase, reports on the 4 categories of criteria for potential exclusion
@@ -91,7 +91,7 @@
     -   only includes subIDs (not prolific IDs)
     -   3 columns: subID, phase1exclude (1=yes; 0=no; NA= no data), phase2exclude (1=yes; 0=no; NA=no data)
 
-17. **AXexclusion.R**
+## 9. AXexclusion.R
 
 -   loads AX data from phase 1 and phase 2 (data/combinedData/AXallClean.csv)
 -   For each participants in each phase, reports whether their global performance was greater than or equal to 60%
@@ -107,7 +107,7 @@
     -   only includes subIDs
     -   3 columns: subID, phase1exclude (1=yes; 0=no; NA= no data), phase2exclude (1=yes; 0=no; NA=no data)
 
-19. **QualtricsCombineRecode.R**
+## 10. QualtricsCombineRecode.R
 
 -   Loads phase 1 and 2 qualtrics data
 -   Removes open response columns
