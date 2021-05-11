@@ -70,7 +70,16 @@
 -   loads the cleaned but not scored qualtrics .csv files: "Volumes/CAP/data/combinedData/QualtricsPhase#_subID_notScored.csv"
 -   makes not of participants who should be excluded based on missed attention checks, inappropriate age responses and notes duplicate responses and missed data.
 -   Only subject IDs are used here, so this script can be shared online.
--   There is no output from this file, but there is a text file that documents anomolies with qualtrics responses: "/Volumes/CAP/documentation/QualtricsExclusionCodeSummary.txt"
+
+-   output #1: qualtricsExclusion.csv (3 columns)
+    -   Volumes/CAP/data/combinedData/rdmExclusion.csv
+    -   only includes subIDs (not prolific IDs)
+    -   3 columns: subID, phase1exclude (1=yes; 0=no; NA= no data), phase2exclude (1=yes; 0=no; NA=no data)
+    
+    - output #2: QualtricsCombined_subID_scored_noDuplicates.csv
+        - identical to QualtricsCombined_subID_scored.csv just with a duplicate response removed 
+        
+    There is also a text file that documents anomolies with qualtrics responses: "/Volumes/CAP/documentation/QualtricsExclusionCodeSummary.txt"
 
 ## 8. [RDMexclusion.R](./RDMexclusion.R)
 
