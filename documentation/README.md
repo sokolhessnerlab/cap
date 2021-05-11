@@ -78,3 +78,6 @@
 
 -   variable information for "QualtricsCombined_subID_scored.csv"
 -   7 columns {variable, definition, values, type, min, max, additional information}
+-   this column information is identical to that in QualtricsCombined_subID_scored_noDuplicates.csv
+
+
