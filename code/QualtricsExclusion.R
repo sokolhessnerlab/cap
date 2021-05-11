@@ -1,7 +1,16 @@
 # Exclusion for CAP study 
 # identifying those who may need to be excluded based on responses/performance on Qualtrics post-task questionnaires
-# created 11/18/20 Hayley Brooks
+# created 11/18/20 
+# Hayley Brooks
+# Sokol-Hessner Lab
+# University of Denver
 
+# output: 
+# 1) qualtricsExclusion.csv 
+# 2) QualtricsCombined_subID_scored_noDuplicates.csv
+
+
+# clear environment
 rm(list=ls());
 
 nSub = 544; # we know there are 544 participants (in phase 1)
@@ -13,11 +22,13 @@ nSub = 544; # we know there are 544 participants (in phase 1)
 # these qualtrics files have been cleaned up just a bit (include new variable names and do not include test responses or responses from people who didn't complete RDM and AXCPT task)
 qPhase1 = read.csv("/Volumes/CAP/data/combinedData/QualtricsPhase1_subID_notScored.csv");
 # nrow = 544, ncol = 132
-# 543 unique prolific IDs which means we have a duplicate response + are missing qualtrics from someone who completed the risky decision-making and AX cpt tasks
+# length(unique(qPhase1$subID)) = 543 unique prolific IDs
+# This means we have a duplicate response + missing qualtrics from someone who completed risky decision-making and AX cpt tasks
 
 qPhase2 = read.csv("/Volumes/CAP/data/combinedData/QualtricsPhase2_subID_notScored.csv");
 # nrow = 357, ncol = 126
-# 357 unique prolific IDs (implying that we have qualtrics data from each participant in phase 2 and no duplicates)
+# length(unique(qPhase2$subID)) = 357 unique prolific IDs 
+# We have qualtrics data from each participant in phase 2 and no duplicates)
 
 
 # PHASE 1 QUALTRICS
@@ -72,6 +83,7 @@ ACmissedPhase2 = qPhase2$subID[qPhase2$stai_attentionCheck_select_3 !=3 | qPhase
 
 
 # SUMMARY FOR EXCLUDING QUALTRICS DATA (PHASE 1 AND 2) **have not actually removed these people from any datasets yet**
+
 # PHASE 1:
 # sub 461 - missing qualtrics responses
 # sub 353 - duplicate responses, will remove the second one
@@ -80,6 +92,34 @@ ACmissedPhase2 = qPhase2$subID[qPhase2$stai_attentionCheck_select_3 !=3 | qPhase
 # sub 030 - age response = .32 (drop from all data - participated in phase2)
 # sub 373 - age response = 14 (drop from all data - only participated in phase 1)
 
-# PHASE 2:
+# PHASE 2: no one will be excluded from phase 2
 # sub 543 - missed an attention check (keep)
+
+# remove the duplicate reponse from the scored qualtrics data in phase 1 (sub 353) and save a new .csv file
+qualtricsData = read.csv("/Volumes/CAP/data/combinedData/QualtricsCombined_subID_scored.csv"); # load scored qualtrics data
+duplicate353 = which(qualtricsData$subID==353); # find duplicate responses
+qualtricsData = qualtricsData[-duplicate353[2],]; # remove the second row of data for this participant
+nrow(qualtricsData[qualtricsData$phase==1,]); # check that there are now 543 rows for phase 1
+write.csv(file="/Volumes/CAP/data/combinedData/QualtricsCombined_subID_scored_noDuplicates.csv", qualtricsData);
+
+
+
+# Create an exclusion matrix with 3 columns: subID, phase1exclude, phase2exclude
+qualtricsExclusion = data.frame(matrix(data=NA, nrow = nSub, ncol =3, dimnames=list(c(NULL), c("subID", "phase1Exclude", "phase2Exclude"))));
+
+phase2excludeSubID = c(30,373,461);
+
+qualtricsExclusion$subID=1:nSub; # add subject ID numbers
+qualtricsExclusion$phase1Exclude[phase2excludeSubID] = 1; # exclude
+qualtricsExclusion$phase1Exclude[-phase2excludeSubID] = 0; # keep
+
+
+phase2subIDs = qualtricsData$subID[qualtricsData$phase==2]; # subIDs for the qualtrics responses that we have for phase 2
+qualtricsExclusion$phase2Exclude[phase2subIDs]=0; # for those we have data for in phase 2, keep (others will have NA)
+
+# check it:
+sum(qualtricsExclusion$phase1Exclude, na.rm = T); #should be 3
+sum(qualtricsExclusion$phase2Exclude, na.rm = T); # should be 0
+
+write.csv(qualtricsExclusion, "/Volumes/CAP/data/combinedData/qualtricsExclusion.csv");
 
