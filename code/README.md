@@ -76,8 +76,8 @@
     -   only includes subIDs (not prolific IDs)
     -   3 columns: subID, phase1exclude (1=yes; 0=no; NA= no data), phase2exclude (1=yes; 0=no; NA=no data)
     
-    - output #2: QualtricsCombined_subID_scored_noDuplicates.csv
-        - identical to QualtricsCombined_subID_scored.csv just with a duplicate response removed 
+-   output #2: QualtricsCombined_subID_scored_noDuplicates.csv
+    -   identical to QualtricsCombined_subID_scored.csv just with a duplicate response removed 
         
     There is also a text file that documents anomolies with qualtrics responses: "/Volumes/CAP/documentation/QualtricsExclusionCodeSummary.txt"
 
