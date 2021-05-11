@@ -10,3 +10,8 @@
 
 ## PHASE 2:
 	-  sub 543 - missed an attention check (keep)
+
+
+### This script:
+1) removes the duplicate response from QualtricsCombined_subID_scored.csv and saves a new .csv file: QualtricsCombined_subID_scored_noDuplicates.csv
+2) creates an exclusion matrix: qualtricsExclusion.csv (sub ID, phase1exclude, phase2exclude)
