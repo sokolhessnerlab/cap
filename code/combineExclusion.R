@@ -15,20 +15,23 @@ rm(list = ls());
 rdmexclusion = read.csv("/Volumes/CAP/data/combinedData/rdmExclusion.csv");          # rdm exclusion
 axexclusion = read.csv("/Volumes/CAP/data/combinedData/axExclusion.csv");            # ax exclusion
 qualexclusion = read.csv("/Volumes/CAP/data/combinedData/qualtricsExclusion.csv");   # qualtrics exclusion
+dayInfo = read.csv("/Volumes/CAP/data/combinedData/phase1_participant.csv");         # participant info to get day (days are identical across phases so we just need phase 1)
 
 nSub = nrow(rdmexclusion); # number of participants
 
 # combine 
-allExclusionPhase1 = cbind(1:nSub,rdmexclusion[3], axexclusion[3], qualexclusion[3]); # phase 1
-allExclusionPhase2 = cbind(1:nSub,rdmexclusion[4], axexclusion[4], qualexclusion[4]); # phase 2
+allExclusionPhase1 = cbind(1:nSub,dayInfo[,2], rdmexclusion[3], axexclusion[3], qualexclusion[3]); # phase 1
+allExclusionPhase2 = cbind(1:nSub,dayInfo[,2], rdmexclusion[4], axexclusion[4], qualexclusion[4]); # phase 2
 
 # set the column names
-ColNamesPhase1 = c("subID", "rdmPhs1exclude", "axPhs1exclude", "qualPhs1exclude"); 
-ColNamesPhase2 = c("subID", "rdmPhs2exclude", "axPhs2exclude", "qualPhs2exclude"); 
+ColNamesPhase1 = c("subID", "day", "rdmPhs1exclude", "axPhs1exclude", "qualPhs1exclude"); 
+ColNamesPhase2 = c("subID", "day", "rdmPhs2exclude", "axPhs2exclude", "qualPhs2exclude"); 
 
 # rename columns
 colnames(allExclusionPhase1) = ColNamesPhase1; 
 colnames(allExclusionPhase2) = ColNamesPhase2; 
+
+
 
 # save as .csv files
 write.csv(file = "/Volumes/CAP/data/combinedData/allExclusionPhase1.csv", allExclusionPhase1);
