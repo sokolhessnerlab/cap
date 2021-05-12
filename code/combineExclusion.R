@@ -31,5 +31,5 @@ colnames(allExclusionPhase1) = ColNamesPhase1;
 colnames(allExclusionPhase2) = ColNamesPhase2; 
 
 # save as .csv files
-write.csv(file = "/Volumes/CAP/data/combinedData/allExclusionPhase1", allExclusionPhase1);
-write.csv(file = "/Volumes/CAP/data/combinedData/allExclusionPhase2", allExclusionPhase2);
+write.csv(file = "/Volumes/CAP/data/combinedData/allExclusionPhase1.csv", allExclusionPhase1);
+write.csv(file = "/Volumes/CAP/data/combinedData/allExclusionPhase2.csv", allExclusionPhase2);
