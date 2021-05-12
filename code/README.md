@@ -134,10 +134,12 @@
 -   Loads exclusion .csv files for RDM, AX, and Qualtrics
 -   Combines the above and creates two new csv files for each phase that contains exclusion (1/0) for RDM, AX, and Qualtrics
 
--    output #1: allExclusionPhase1.csv
-    -    544 rows with 4 variables {subID, rdmPhs1exclude, axPhs1exclude, qualPhs1exclude}
-    - 1= exclude, 0 = keep, NA = no data
+-   output #1: allExclusionPhase1.csv
+   
+    -   544 rows with 4 variables {subID, rdmPhs1exclude, axPhs1exclude, qualPhs1exclude}
+    -   1= exclude, 0 = keep, NA = no data
 
--    output #2: allExclusionPhase2.csv
+-   output #2: allExclusionPhase2.csv
+
     -    544 rows with 4 variables {subID, rdmPhs2exclude, axPhs2exclude, qualPhs2exclude}
-    - 1= exclude, 0 = keep, NA = no data
+    -    1= exclude, 0 = keep, NA = no data
