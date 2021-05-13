@@ -31,23 +31,13 @@ nSub = length(unique(rdmDF$subID)); #544
 
 qualtricsDF = scoredQualtrics[,c(33,56,67,70,91:140)]; # keep only the columns we listed above
 
-AXallClean_Qualtrics = as.data.frame(matrix(data=NA))# , ncol = (ncol(axDF) + ncol(qualtricsDF)))
-RDMallClean_Qualtrics = as.data.frame(matrix(data=NA))
+# merge the data frames by sub ID and phase 
+# this will also get rid of the redundant columns (subID and phase)
+AXallClean_Qualtrics = merge(axDF,qualtricsDF,by=c("subID","phase"), all.x = T); # AX
+RDMallClean_Qualtrics = merge(rdmDF,qualtricsDF,by=c("subID","phase"), all.x = T);  # RDM
 
-for (s in 1:nSub) {
-  
-  # get a single subject
-#  singleSubRDM = rdmDF[rdmDF$subID==subNum[s],]
-  singleSubAX = axDF[axDF$subID==subNum[s],]
-  singleSubQual = qualtricsDF[qualtricsDF$subID==subNum[s],]
-  
-  #rdmQualtricsSingleSub = cbind(singleSubRDM,singleSubQual)
-  axQualtricsSingleSub = cbind(singleSubAX,singleSubQual)
-  
-  AXallClean_Qualtrics = cbind(AXallClean_Qualtrics,axQualtricsSingleSub)
-  #RDMallClean_Qualtrics = cbind(RDMallClean_Qualtrics,rdmQualtricsSingleSub)
-  
-  
-}
 
+# save the output
+write.csv(file = "/Volumes/CAP/data/combinedData/AXallClean_Qualtrics.csv", AXallClean_Qualtrics);
+write.csv(file = "/Volumes/CAP/data/combinedData/RDMallClean_Qualtrics.csv", RDMallClean_Qualtrics);
 
