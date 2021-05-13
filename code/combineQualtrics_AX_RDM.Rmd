@@ -3,9 +3,9 @@ title: "CAP study: Add scored qualtrics data to AX and RDM clean datasets"
 author: "Hayley Brooks"
 ---
 
-# output:
-# 1) AXallClean_Qualtrics.csv
-# 2) RDMallClean_Qualtrics.csv
+Output:
+1) AXallClean_Qualtrics.csv
+2) RDMallClean_Qualtrics.csv
 
 
 ```{r}
@@ -23,25 +23,25 @@ nSub = length(unique(rdmDF$subID)); #544
 ```
 
 
-# we can pair down scoredQualtrics to make it easier to work with, lets keep the columns we want
-# column names we want to add here
-# stai_s_score (column 33)
-# stai_t_score (column 56)
-# pss_score (column 67)
-# pss_stressedToday (column 70)
-# uclal_score (column 91)
-# columns 92:140
+We can pair down scoredQualtrics to make it easier to work with, lets keep the columns we want
+
+1) stai_s_score (column 33)
+2) stai_t_score (column 56)
+3) pss_score (column 67)
+4) pss_stressedToday (column 70)
+5) uclal_score (column 91)
+6) columns 92:140 (e.g. covid qs, location, etc)
 ```{r}
 qualtricsDF = scoredQualtrics[,c(33,56,67,70,91:140)]; # keep only the columns we listed above
+```
 
-# merge the data frames by sub ID and phase 
-# this will also get rid of the redundant columns (subID and phase)
+Merge the data frames by sub ID and phase (this will also get rid of the redundant columns subID and phase):
+```{r}
 AXallClean_Qualtrics = merge(axDF,qualtricsDF,by=c("subID","phase"), all.x = T); # AX
 RDMallClean_Qualtrics = merge(rdmDF,qualtricsDF,by=c("subID","phase"), all.x = T, all.y = T);  # RDM
 ```
 
-
-# save the output
+Save the output:
 ```{r}
 write.csv(file = "/Volumes/CAP/data/combinedData/AXallClean_Qualtrics.csv", AXallClean_Qualtrics);
 write.csv(file = "/Volumes/CAP/data/combinedData/RDMallClean_Qualtrics.csv", RDMallClean_Qualtrics);
