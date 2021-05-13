@@ -22,7 +22,7 @@
 
 ## 5.  [storageStructure](./storageStructure.docx)
 
--   Microsoft word document listing the structure of the entire CAP drive
+-   Microsoft word document listing the structure of the entire CAP drive (S drive)
 
 ## 6. [collectionSummary](./collectionSummary.docx)
 
@@ -80,4 +80,10 @@
 -   7 columns {variable, definition, values, type, min, max, additional information}
 -   this column information is identical to that in QualtricsCombined_subID_scored_noDuplicates.csv
 
+## 18. [RDMallClean_Qualtrics_ColumnInfo.csv](./RDMallClean_Qualtrics_ColumnInfo.csv)
+-   variable information for RDMallClean_Qualtrics.csv
+-   7 columns {variable, definition, values, type, min, max, additional information}
 
+## 19. [AXallClean_Qualtrics_ColumnInfo.csv](./AXallClean_Qualtrics_ColumnInfo.csv)
+-   variable information for AXallClean_Qualtrics.csv
+-   7 columns {variable, definition, values, type, min, max, additional information}
