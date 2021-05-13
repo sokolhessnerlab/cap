@@ -157,7 +157,9 @@
 -   output #1: AXallClean_Qualtrics.csv
     
     -   108091 rows with 61 variables
+    -   all of AX data with qualtrics responses (544 participants, 2 phases)
     
 -   output #2: RDMallClean_Qualtrics.csv
 
     -   124572 rows with 70 variables
+    -   all of RDM data with qualtrics responses (544 participants, 2 phases)
