@@ -1,4 +1,7 @@
-# Description of files in the "documentation" directory 
+# Summary of files in the "documentation" directory 
+
+Any files added to the "documentation" folder should be included in this list along with the relative link (./) of that file
+
 
 ## 1.  [AXrawDataColumnInfo.csv](./AXrawDataColumnInfo.csv)
 
