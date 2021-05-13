@@ -143,3 +143,21 @@
 
     -    544 rows with 5 variables {subID, day, rdmPhs2exclude, axPhs2exclude, qualPhs2exclude}
     -    1= exclude, 0 = keep, NA = no data
+
+## 12. [combineQualtrics_AX_RDM.Rmd](./combineQualtrics_AX_RDM.Rmd)
+
+-   Loads 3 datasets:
+    1) QualtricsCombined_subID_scored_noDuplicates.csv
+    2) RDMallClean.csv
+    3) AXallClean.csv
+
+-   Adds some of the Qualtrics data to the RDM and AX datasets 
+-   Scored qualtrics responses, covid questions, location (fips), SES are added to RDM and AX but responses to each STAIS, STAIT, UCLA-L, PSS are not included.
+
+-   output #1: AXallClean_Qualtrics.csv
+    
+    -   108091 rows with 61 variables
+    
+-   output #2: RDMallClean_Qualtrics.csv
+
+    -   124572 rows with 70 variables
