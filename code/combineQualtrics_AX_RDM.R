@@ -34,7 +34,7 @@ qualtricsDF = scoredQualtrics[,c(33,56,67,70,91:140)]; # keep only the columns w
 # merge the data frames by sub ID and phase 
 # this will also get rid of the redundant columns (subID and phase)
 AXallClean_Qualtrics = merge(axDF,qualtricsDF,by=c("subID","phase"), all.x = T); # AX
-RDMallClean_Qualtrics = merge(rdmDF,qualtricsDF,by=c("subID","phase"), all.x = T);  # RDM
+RDMallClean_Qualtrics = merge(rdmDF,qualtricsDF,by=c("subID","phase"), all.x = T, all.y = T);  # RDM
 
 
 # save the output
