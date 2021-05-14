@@ -86,7 +86,9 @@ Any files added to the "documentation" folder should be included in this list al
 ## 18. [RDMallClean_Qualtrics_ColumnInfo.csv](./RDMallClean_Qualtrics_ColumnInfo.csv)
 -   variable information for RDMallClean_Qualtrics.csv
 -   7 columns {variable, definition, values, type, min, max, additional information}
+-   inclusion/exclusion has not been applied
 
 ## 19. [AXallClean_Qualtrics_ColumnInfo.csv](./AXallClean_Qualtrics_ColumnInfo.csv)
 -   variable information for AXallClean_Qualtrics.csv
 -   7 columns {variable, definition, values, type, min, max, additional information}
+-   inclusion/exclusion has not been applied
