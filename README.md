@@ -12,4 +12,7 @@ Code for cleaning, combining, and exclusion
 4) Storage structure of data on R drive
 
 ## [Analysis](./analysis)
-Analysis scripts
+Analysis scripts for RDM, AX, and Qualtrics data
+1) [RDM](./RDM)
+2) [AX](./AX)
+3) [Qualtrics](./Qualtrics)
