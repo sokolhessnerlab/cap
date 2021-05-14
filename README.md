@@ -13,6 +13,6 @@ Code for cleaning, combining, and exclusion
 
 ## [Analysis](./analysis)
 Analysis scripts for RDM, AX, and Qualtrics data
-1) [RDM](././RDM)
-2) [AX](././AX)
-3) [Qualtrics](./Qualtrics)
+1) [RDM](./analysis/RDM)
+2) [AX](./analysis/AX)
+3) [Qualtrics](./analysis/Qualtrics)
