@@ -6,7 +6,7 @@ Resources for analyzing data for CAP (cognition and affect during the COVID-19 p
 
 ### Prerequisites
 
-Please make sure that you have recent versiosn of R and RStudio installed. If you plan to use GitHub Desktop, please follow [these installation instructions] if you have no already done so.
+Please make sure that you have recent versiosn of R and RStudio installed. If you plan to use GitHub Desktop, please follow [these installation instructions](https://www.startyourlab.com/docs/github-desktop) if you have no already done so.
 
 ### Clone to your local machine
 
@@ -38,7 +38,7 @@ Sys.info()["user"]
 
 The string value returned will be your system's name, which is what the configuration file will use to determine your paths to data and the like. You should then replace the `user` tag in `config.yml` for your system user, and remove the `#` comment strings. You can see Ari's system user `metis` as an example.
 
-To use the configured information, you must install the [`config` package]() using `install.packages('config')` in the R console. Then, when needed, load the package in your scripts or RMarkdown files:
+To use the configured information, you must install the [`config` package](https://cran.r-project.org/web/packages/config/vignettes/introduction.html) using `install.packages('config')` in the R console. Then, when needed, load the package in your scripts or RMarkdown files:
 
 ```r
 library(config)
