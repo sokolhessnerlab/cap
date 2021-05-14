@@ -10,6 +10,8 @@
 #
 # You can learn more at:
 #   https://cran.r-project.org/web/packages/config/vignettes/introduction.html.
+
+# TODO: Hayley you may need to update this default pattern if people plan to inherit it below as their system's pattern
 default:
   path:
     data: "/Volumes/CAP/data"
