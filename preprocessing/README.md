@@ -1,7 +1,7 @@
-# CAP code files
+# CAP preprocessing files
 Brief description of each file in this directory listed below
 
-Any files added to the "code" folder should be included in this list along with the relative link (./) of that file
+Any files added to the "preprocessing" folder should be included in this list along with the relative link (./) of that file
 
 ## 1.  [AXcleanData.R](./AXcleanData.R)
 -   imports the large raw AX .csv file (combinedRawData/AXall.csv) and removes, renames and reformats columns so that data is basically ready for analysis
