@@ -1,6 +1,8 @@
 # CAP documentation files
 Brief description of each file in this directory listed below
 
+**NOTE:** See #18 and #19 in this list (`RDMallClean_Qualtrics_ColumnInfo.csv`; and `AXallClean_Qualtrics_ColumnInfo.csv`) for columns of the final output data (including information about which files that data lives in).
+
 Any files added to the "documentation" folder should be included in this list along with the relative link (./) of that file
 
 ## 1.  [AXrawDataColumnInfo.csv](./AXrawDataColumnInfo.csv)
