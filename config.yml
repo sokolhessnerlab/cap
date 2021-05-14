@@ -15,4 +15,20 @@ default:
     data: "/Volumes/CAP/data"
     raw: "rawData"
     combined: "combinedData"
-  
+
+# Ari's System User
+metis:
+  path:
+    data: "/Volumes/shlab/Projects/CAP/data"
+
+# Hayley's System User
+# user:
+  # inherits: default
+
+# Peter's System User
+# user:
+  # inherits: default
+
+  # Kim's System User
+# user:
+  # inherits: default
