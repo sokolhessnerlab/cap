@@ -10,9 +10,27 @@
 #
 # You can learn more at:
 #   https://cran.r-project.org/web/packages/config/vignettes/introduction.html.
+
+# TODO: Hayley you may need to update this default pattern if people plan to inherit it below as their system's pattern
 default:
   path:
     data: "/Volumes/CAP/data"
     raw: "rawData"
     combined: "combinedData"
-  
+
+# Ari's System User
+metis:
+  path:
+    data: "/Volumes/shlab/Projects/CAP/data"
+
+# Hayley's System User
+# user:
+  # inherits: default
+
+# Peter's System User
+# user:
+  # inherits: default
+
+  # Kim's System User
+# user:
+  # inherits: default
