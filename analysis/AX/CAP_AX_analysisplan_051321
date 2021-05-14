@@ -1,0 +1,74 @@
+#-------------------------------------------------------------------------------------------------#
+
+CAP (Cognition & Affect during the COVID-19 Pandemic)
+AX-CPT Analysis Plan 
+Kimberly S. Chiew 
+Last updated May 13, 2020
+
+#-------------------------------------------------------------------------------------------------#
+
+AX MEASURES: to be characterized relative to COVID-19 stress 
+
+1) A-cue bias
+	- signal detection bias measure calculated for AX and AY trials
+	- assesses general tendency to make target responses following A-cue regardless of probe
+	- 0.5 [Z(H) + Z(F)] (Gonthier et al., 2016)
+		H: hit proportions on AX trials 
+		F: False alarm proportions on AY trials
+		Z: Z-transformation 
+	- to correct for hits = 1 or FA = 0, loglinear correction applied to all AX hit and AY false alarm data prior to analysis
+
+2) proactive behavioral index (PBI)
+	- normalized performance difference score for AY and BX trials 
+	- (AY - BX)/(AY + BX) 
+	- calculated for mean proportions of errors and correct mean RTs
+	- higher values indicate more frequent use of a proactive strategy
+	- to correct for error = 0, loglinear correction applied to all AY and BX error values prior to analysis
+
+3) BX probe interference
+	- performance difference score for BX - BY 
+	- worse performance on BX vs. BY trials indicates more frequent use of reactive control strategy 
+	- (BX - BY) for both mean proportions of errors and correct mean RTs
+	- Higher value indicates more frequent use of a reactive control strategy 
+
+
+** note: Otto preprint used only PBI, but something interesting they did was demonstrate that their COVID sample demonstrated reduced PBI relative to a pre-COVID sample. If this seems like something that would be worthwhile, I can ask the Braver lab about pre-COVID AX-CPT data collected online for comparison purposes.
+
+#-------------------------------------------------------------------------------------------------#
+
+COVARIATES 
+- first examine by correlating between these and AX performance variables 
+- if correlated, use as covariate
+- likely consider using demographic measures as covariates -- especially age
+
+#-------------------------------------------------------------------------------------------------#
+
+RM-ANOVA ANALYSES
+- Examine trial differences (AX, AY, BX, BY)
+- Examine Trial x Phase for returning subjects 
+
+
+REGRESSION ANALYSES 
+
+- Outcome measures: A-cue bias, proactive index, BX probe interference 
+- Predictors: Pandemic progression, state anxiety, trait anxiety, perceived stress, loneliness 
+	* STAI-state, STAI-trait, PSS, UCLA-loneliness all examined as predictors of PBI but A-cue bias and BX probe interference yet to be examined
+- Also examine by phase: PBI did not show significant difference
+- Need to examine as a function of COVID-19 specific measures 
+
+** Otto specifically found a significant negative relationship between PBI and Fear of Coronavirus Questionnaire (FCQ)
+	Also significant negative relationship between PBI and reported chronic stress (PSS)
+	No differences between waves of data collection (note all unique subjects in each wave)
+
+#-------------------------------------------------------------------------------------------------#
+
+
+FROM OSF PREREGISTRATION: EXPLORATORY ANALYSES
+
+Social contact questions: We will examine how individual differences in social contact (and differences between January and current social contact) are related to measures of pandemic progression, anxiety, perceived stress, and loneliness. We will also examine whether individual differences in social contact predict experimental task performance above and beyond the measures used in confirmatory analyses using hierarchical regression. 
+
+Perception of and behaviors toward the ongoing COVID-19 pandemic: We will examine how individual differences in COVID-19 perceptions and behaviors are related to measures of pandemic progression, anxiety, perceived stress, and loneliness. We will also examine whether individual differences in these perceptions and behaviors predict experimental task performance above and beyond the measures used in confirmatory analyses using hierarchical regression. 
+
+Demographic and socioeconomic status questions: We will examine how demographic factors and socioeconomic status are related to measures of experimental task performance, stress, anxiety and loneliness. We will also examine whether demographic factors and socioeconomic status moderate the influence of pandemic progression, stress, anxiety, and loneliness on task performance. 
+
+Affective state as a mediator of pandemic progression’s effect on choice and cognitive performance: We will conduct mediation analyses to examine whether the relationship between pandemic progression and task performance outcomes is mediated by measures of stress, anxiety, depression, social contact, and perceptions/behaviors towards the COVID-19 pandemic. 
