@@ -12,11 +12,11 @@ Please make sure that you have recent versiosn of R and RStudio installed. If yo
 
 To contribute to this project, please clone the repository to your local machine. You can do this using the green **Code** button with a dropdown menu. There are two preferred methods, and we recommend using whichever you prefer:
 
-#### Open with GitHub Desktop
+#### 1. Open with GitHub Desktop
 
 Click **Open with GitHub Desktop**, and pick a location in your personal file system to store it using the GitHub Desktop cloning interface. If using Linux, please see option 2.
 
-#### Command line using HTTPS method
+#### 2. Command line using HTTPS method
 
 If using Linux or prefer the command line, run the following line within your projects directory:
 
