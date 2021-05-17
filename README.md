@@ -6,7 +6,7 @@ Resources for analyzing data for CAP (cognition and affect during the COVID-19 p
 
 ### Prerequisites
 
-Please make sure that you have recent versiosn of R and RStudio installed. If you plan to use GitHub Desktop, please follow [these installation instructions](https://www.startyourlab.com/docs/github-desktop) if you have no already done so.
+Please make sure that you have recent versions of R and RStudio installed. If you plan to use GitHub Desktop, please follow [these installation instructions](https://www.startyourlab.com/docs/github-desktop) if you have not already done so.
 
 ### Clone to your local machine
 
