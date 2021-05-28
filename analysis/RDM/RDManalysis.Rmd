@@ -6,15 +6,27 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
 
 library('config')
-config::get()
+config = config::get()
+
+rdm_csv = file.path(config$path$combined, config$RDMcsvs$RDM_qualtrics);
+exclsnPhs1_csv = file.path(config$path$combined, config$EXCLUSIONcsvs$RDM_AX_Qual_Phs1exclusion);
+exclsnPhs2_csv = file.path(config$path$combined, config$EXCLUSIONcsvs$RDM_AX_Qual_Phs2exclusion);
+
+rdmQualtrics = read.csv(rdm_csv);
+excludePhs1 = read.csv(exclsnPhs1_csv);
+excludePhs2 = read.csv(exclsnPhs2_csv);
+
+# Remove the extra "X" column present as the first column in datasets
+rdmQualtrics = rdmQualtrics[,(2:ncol(rdmQualtrics))]
+excludePhs1 = excludePhs1[,(2:ncol(excludePhs1))]
+excludePhs2 = excludePhs2[,(2:ncol(excludePhs2))]
+
 ```
 
 
 ```{r cars}
-summary(cars)
 ```
 
 ## Including Plots
