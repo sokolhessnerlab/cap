@@ -15,8 +15,8 @@
 default:
   path:
     data: "/Volumes/CAP/data"
-    raw: "rawData"
-    combined: "combinedData"
+    raw: "/Volumes/CAP/data/rawData"
+    combined: "/Volumes/CAP/data/combinedData"
   RDMcsvs: 
     RDM_qualtrics: "RDMallClean_Qualtrics.csv"    
   AXcsvs:
