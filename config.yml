@@ -22,8 +22,8 @@ default:
   AXcsvs:
     AX_qualtrics: "AXallClean_Qualtrics.csv"
   EXCLUSIONcsvs:
-    RDM_AX_Qual_Phs1exclusion: "allExclusionsPhase1.csv"
-    RDM_AX_Qual_Phs2exclusion: "allExclusionsPhase2.csv"
+    RDM_AX_Qual_Phs1exclusion: "allExclusionPhase1.csv"
+    RDM_AX_Qual_Phs2exclusion: "allExclusionPhase2.csv"
     
 
 # Ari's System User
