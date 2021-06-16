@@ -12,10 +12,21 @@ Output:
 # clean environment
 rm(list=ls());
 
+# configuration
+config = config::get()
+
 # load data
-scoredQualtrics = read.csv("/Volumes/CAP/data/combinedData/QualtricsCombined_subID_scored_noDuplicates.csv"); # scored qualtrics
-rdmDF = read.csv("/Volumes/CAP/data/combinedData/RDMallClean.csv"); # RDM data
-axDF = read.csv("/Volumes/CAP/data/combinedData/AXallClean.csv"); # AX data   
+scoredQualtricsPath = file.path(config$path$combined, config$QUALTRICScsvs$Combined_subID_scored_noDuplicates)
+scoredQualtrics = read.csv(scoredQualtricsPath)
+#scoredQualtrics = read.csv("/Volumes/CAP/data/combinedData/QualtricsCombined_subID_scored_noDuplicates.csv"); # scored qualtrics
+
+rdmDFpath = file.path(config$path$combined, config$RDMcsvs$RDM_allClean);
+rdmDF = read.csv(rdmDFpath);
+#rdmDF = read.csv("/Volumes/CAP/data/combinedData/RDMallClean.csv"); # RDM data
+
+axDFpath = file.path(config$path$combined, config$AXcsvs$AX_allClean);
+axDF = read.csv(axDFpath);
+#axDF = read.csv("/Volumes/CAP/data/combinedData/AXallClean.csv"); # AX data   
 
 subNum = unique(rdmDF$subID);
 nSub = length(unique(rdmDF$subID)); #544
@@ -43,8 +54,14 @@ RDMallClean_Qualtrics = merge(rdmDF,qualtricsDF,by=c("subID","phase"), all.x = T
 
 Save the output:
 ```{r}
-write.csv(file = "/Volumes/CAP/data/combinedData/AXallClean_Qualtrics.csv", AXallClean_Qualtrics);
-write.csv(file = "/Volumes/CAP/data/combinedData/RDMallClean_Qualtrics.csv", RDMallClean_Qualtrics);
+
+AXoutputpath = file.path(config$path$combined, config$AXcsvs$AX_qualtrics);
+RDMoutputpath = file.path(config$path$combined, config$RDMcsvs$RDM_qualtrics);
+
+write.csv(file=AXoutputpath, AXallClean_Qualtrics);
+write.csv(file=RDMoutputpath, RDMallClean_Qualtrics);
+#write.csv(file = "/Volumes/CAP/data/combinedData/AXallClean_Qualtrics.csv", AXallClean_Qualtrics);
+#write.csv(file = "/Volumes/CAP/data/combinedData/RDMallClean_Qualtrics.csv", RDMallClean_Qualtrics);
 
 ```
 
