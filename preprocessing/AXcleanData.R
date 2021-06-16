@@ -10,7 +10,10 @@ rm(list=ls());
 
 
 # STEP 1: Load raw AX data file (all participants across both phases) and participant ID files and define some variables
-rawAX = read.csv("/Volumes/CAP/data/rawData/combinedRawData/AXall.csv");
+config=config::get()
+rawAXcsv = file.path(config$path$combined_raw,config$AXcsvs$AX_rawCombined)
+rawAX = read.csv(rawAXcsv)
+#rawAX = read.csv("/Volumes/CAP/data/rawData/combinedRawData/AXall.csv");
 
 subNums = unique(rawAX$participant);
 nSub = length(subNums); 
@@ -120,7 +123,9 @@ cleanAX$axCorrect[cleanAX$axFirstLetter %in% letter1noA & cleanAX$axSecondLetter
 
 
 # STEP 4: SAVE THE CLEAN DATA
-write.csv(cleanAX, "/Volumes/CAP/data/combinedData/AXallClean.csv", row.names = F); # save as .csv file
+outputfilepath= file.path(config$path$combined, config$AXcsvs$AX_allClean)
+write.csv(cleanAX,outputfilepath, row.names=F);
+#write.csv(cleanAX, "/Volumes/CAP/data/combinedData/AXallClean.csv", row.names = F); # save as .csv file
 # cleanAX has 108,091 rows and 8 columnes (each participant has either ~120 trials (if completed phase 1 only) or ~240 trials (if completed both phases))
 
 
