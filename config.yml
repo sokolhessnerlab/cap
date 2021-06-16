@@ -19,15 +19,31 @@ default:
     combined: "/Volumes/CAP/data/combinedData"
     combined_raw: "/Volumes/CAP/data/rawData/combinedRawData"
   RDMcsvs: 
-    RDM_qualtrics: "RDMallClean_Qualtrics.csv"    
+    RDM_qualtrics: "RDMallClean_Qualtrics.csv"
+    RDM_rawCombined: "RDMall.csv"
+    RDM_allClean: "RDMallClean.csv"
   AXcsvs:
     AX_qualtrics: "AXallClean_Qualtrics.csv"
     AX_allClean: "AXallClean.csv"
     AX_rawCombined: "AXall.csv"
+    AX_qa: "AXqa.csv"
   EXCLUSIONcsvs:
     RDM_AX_Qual_Phs1exclusion: "allExclusionPhase1.csv"
     RDM_AX_Qual_Phs2exclusion: "allExclusionPhase2.csv"
-    
+    AX_exclusion: "axExclusion.csv"
+    QUALTRICS_exclusion: "qualtricsExclusion.csv"
+    RDM_exclusion: "rdmExclusion.csv"
+  QUALTRICScsvs:
+    Phs1_notScored_subID: "QualtricsPhase1_subID_notScored.csv"
+    Phs2_notScored_subID: "QualtricsPhase2_subID_notScored.csv"
+    Combined_subID_scored: "QualtricsCombined_subID_scored.csv"
+    Combined_subID_scored_noDuplicates: "QualtricsCombined_subID_scored_noDuplicates.csv"
+    Phs1_raw: "phase1/qualtricsResponses/qualtrics2phase1.csv"
+    Phs2_raw: "phase2/qualtricsResponses/qualtrics2phase2.csv"
+  SUBcsvs:
+    phase1_participant: "phase1_participant.csv"
+    phase2_participant: "phase2_participant.csv"
+
 
 # Ari's System User
 metis:
