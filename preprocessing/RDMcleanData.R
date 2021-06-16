@@ -9,9 +9,14 @@
 # reset global environment
 rm(list=ls());
 
+# configuration
+config= config::get();
 
 # STEP 1: Load raw RDM data file (all participants across both phases) and define some variables
-rawRDM = read.csv("/Volumes/CAP/data/rawData/combinedRawData/RDMall.csv");
+rawRDMpath = file.path(config$path$combined_raw, config$RDMcsvs$RDM_rawCombined);
+rawRDM = read.csv(rawRDMpath);
+
+#rawRDM = read.csv("/Volumes/CAP/data/rawData/combinedRawData/RDMall.csv");
 
 subNums = unique(rawRDM$participant);
 nSub = length(subNums); 
@@ -140,7 +145,9 @@ for (s in 1:nSub) {
 cleanRDM = cleanRDM[2:nrow(cleanRDM),];
 
 
-write.csv(cleanRDM, "/Volumes/CAP/data/combinedData/RDMallClean.csv", row.names = F); # save as .csv file
+cleanRDMpath = file.path(config$path$combined, config$RDMcsvs$RDM_allClean, row.names=F);
+
+#write.csv(cleanRDM, "/Volumes/CAP/data/combinedData/RDMallClean.csv", row.names = F); # save as .csv file
 # cleanRDM has 124,572 rows and 18 columns (each participant has either ~139 trials (completed phase 1 only) or ~278 trials (completed both phases))
 
 
