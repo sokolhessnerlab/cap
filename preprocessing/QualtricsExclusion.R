@@ -15,17 +15,25 @@ rm(list=ls());
 
 nSub = 544; # we know there are 544 participants (in phase 1)
 
+# configuration
+config = config::get()
+
 # QUALTRICS QUESTIONNAIRES
   # things to note: missed attention checks, reported age < 18 years, duplicate responses
 
 # load qualtrics data that has subject IDs (and not prolific IDs)
 # these qualtrics files have been cleaned up just a bit (include new variable names and do not include test responses or responses from people who didn't complete RDM and AXCPT task)
-qPhase1 = read.csv("/Volumes/CAP/data/combinedData/QualtricsPhase1_subID_notScored.csv");
+
+qPhase1csv = file.path(config$path$combined, config$QUALTRICScsvs$Phs1_notScored_subID)
+qPhase1 = read.csv(qPhase1csv);
+#qPhase1 = read.csv("/Volumes/CAP/data/combinedData/QualtricsPhase1_subID_notScored.csv");
 # nrow = 544, ncol = 132
 # length(unique(qPhase1$subID)) = 543 unique prolific IDs
 # This means we have a duplicate response + missing qualtrics from someone who completed risky decision-making and AX cpt tasks
 
-qPhase2 = read.csv("/Volumes/CAP/data/combinedData/QualtricsPhase2_subID_notScored.csv");
+qPhase2csv = file.path(config$path$combined, config$QUALTRICScsvs$Phs2_notScored_subID);
+qPhase2 = read.csv(qPhase2csv);
+#qPhase2 = read.csv("/Volumes/CAP/data/combinedData/QualtricsPhase2_subID_notScored.csv");
 # nrow = 357, ncol = 126
 # length(unique(qPhase2$subID)) = 357 unique prolific IDs 
 # We have qualtrics data from each participant in phase 2 and no duplicates)
@@ -96,11 +104,16 @@ ACmissedPhase2 = qPhase2$subID[qPhase2$stai_attentionCheck_select_3 !=3 | qPhase
 # sub 543 - missed an attention check (keep)
 
 # remove the duplicate reponse from the scored qualtrics data in phase 1 (sub 353) and save a new .csv file
-qualtricsData = read.csv("/Volumes/CAP/data/combinedData/QualtricsCombined_subID_scored.csv"); # load scored qualtrics data
+qualtricsDatacsv = file.path(config$path$combined, config$QUALTRICScsvs$Combined_subID_scored)
+qualtricsData = read.csv(qualtricsDatacsv);
+#qualtricsData = read.csv("/Volumes/CAP/data/combinedData/QualtricsCombined_subID_scored.csv"); # load scored qualtrics data
 duplicate353 = which(qualtricsData$subID==353); # find duplicate responses
 qualtricsData = qualtricsData[-duplicate353[2],]; # remove the second row of data for this participant
 nrow(qualtricsData[qualtricsData$phase==1,]); # check that there are now 543 rows for phase 1
-write.csv(file="/Volumes/CAP/data/combinedData/QualtricsCombined_subID_scored_noDuplicates.csv", qualtricsData);
+
+qualtricsNoDuplicatesPath=file.path(config$path$combined, config$QUALTRICScsvs$Combined_subID_scored_noDuplicates)
+write.csv(file=qualtricsNoDuplicatesPath,qualtricsData);
+#write.csv(file="/Volumes/CAP/data/combinedData/QualtricsCombined_subID_scored_noDuplicates.csv", qualtricsData);
 
 
 
@@ -121,5 +134,7 @@ qualtricsExclusion$phase2Exclude[phase2subIDs]=0; # for those we have data for i
 sum(qualtricsExclusion$phase1Exclude, na.rm = T); #should be 3
 sum(qualtricsExclusion$phase2Exclude, na.rm = T); # should be 0
 
-write.csv(qualtricsExclusion, "/Volumes/CAP/data/combinedData/qualtricsExclusion.csv");
+qualExclusionPath = file.path(config$path$combined, config$EXCLUSIONcsvs$QUALTRICS_exclusion)
+write.csv(qualtricsExclusion, qualExclusionPath);
+#write.csv(qualtricsExclusion, "/Volumes/CAP/data/combinedData/qualtricsExclusion.csv");
 
