@@ -12,8 +12,13 @@
 # reset environment
 rm(list=ls()); 
 
+# configuration
+config = config::get()
+
 # load ax data (clean, combined data across phases with sub IDs)
-ax = read.csv("/Volumes/CAP/data/combinedData/AXallClean.csv"); # takes ~5 seconds to load
+axcsv = file.path(config$path$combined,config$AXcsvs$AX_allClean);
+ax = read.csv(axcsv);# takes ~5 seconds to load
+#ax = read.csv("/Volumes/CAP/data/combinedData/AXallClean.csv"); 
 
 subNums = unique(ax$subID); # unique sub ID numbers
 nSub = length(subNums); # number of participants
@@ -45,7 +50,9 @@ AXqa$MeetCritPhs2[AXqa$PcntCorPhs2>=.6] = 1;
 AXqa$MeetCritPhs2[AXqa$PcntCorPhs2<.6] = 0;
 
 # save AXqa dataframe
-write.csv(AXqa, "/Volumes/CAP/data/combinedData/AXqa.csv");
+AXqaPath = file.path(config$path$combined,config$AXcsvs$AX_qa);
+write.csv(AXqa,AXqaPath);
+#write.csv(AXqa, "/Volumes/CAP/data/combinedData/AXqa.csv");
 
 
 # Make the exclusion .csv file (subID, phase1Exclude, phase2Exclude)
@@ -68,4 +75,6 @@ sum(axExclusion$phase1Exclude, na.rm = T); #should be 22
 sum(axExclusion$phase2Exclude, na.rm = T); # should be 6
 
 # save axExclusion dataframe as csv file
-write.csv(axExclusion, "/Volumes/CAP/data/combinedData/axExclusion.csv");
+axExclusionPath = file.path(config$path$combined, config$AXcsvs$AX_exclusion);
+write.csv(axExclusion, axExclusionPath);
+#write.csv(axExclusion, "/Volumes/CAP/data/combinedData/axExclusion.csv");
