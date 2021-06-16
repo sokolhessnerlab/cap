@@ -15,11 +15,16 @@
 # reset environment
 rm(list=ls()); 
 
+# configuration
+config=config::get();
+
 # load packagest
 library("lme4"); 
 
 # load rdm data (clean, combined data across phases with sub IDs)
-rdm = read.csv("/Volumes/CAP/data/combinedData/RDMallClean.csv"); # takes ~5 seconds to load
+rdmPath =file.path(config$path$combined, config$RDMcsvs$RDM_allClean);
+rdm = read.csv(rdmPath); # takes ~5 seconds to load
+#rdm = read.csv("/Volumes/CAP/data/combinedData/RDMallClean.csv");
 
 subNums = unique(rdm$subID); # unique sub ID numbers
 nSub = length(subNums); # number of participants
@@ -361,7 +366,9 @@ rdmExclude$phase2Exclude[phase2passfail$total>=excludeCutOff] = 0; # otherwise, 
 
 
 # save rdmExclude as .csv file!
-write.csv(rdmExclude, "/Volumes/CAP/data/combinedData/rdmExclusion.csv");
+rdmExcludePath=file.path(config$path$combined, config$EXCLUSIONcsvs$RDM_exclusion);
+write.csv(rdmExclude, rdmExcludePath);
+#write.csv(rdmExclude, "/Volumes/CAP/data/combinedData/rdmExclusion.csv");
 
 
 
