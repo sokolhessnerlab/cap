@@ -12,12 +12,26 @@
 # clean environment
 rm(list=ls());
 
+# configuration
+config = config::get();
 
 # load files
-qPhase1 = read.csv('/Volumes/CAP/data/rawData/phase1/qualtricsResponses/qualtrics2phase1.csv');
-qPhase2 = read.csv('/Volumes/CAP/data/rawData/phase2/qualtricsResponses/qualtrics2phase2.csv');
-phase1subs = read.csv('/Volumes/CAP/data/combinedData/phase1_participant.csv');
-phase2subs = read.csv('/Volumes/CAP/data/combinedData/phase2_participant.csv');
+qPhase1path = file.path(config$path$raw, config$QUALTRICScsvs$Phs1_raw);
+qPhase1 =read.csv(qPhase1path);
+
+qPhase2path = file.path(config$path$raw, config$QUALTRICScsvs$Phs2_raw);
+qPhase2 = read.csv(qPhase2path);
+
+phase1subspath = file.path(config$path$combined, config$SUBcsvs$phase1_participant);
+phase1subs = read.csv(phase1subspath);
+
+phase2subspath = file.path(config$path$combined, config$SUBcsvs$phase2_participant);
+phase2subs = read.csv(phase2subspath);
+
+#qPhase1 = read.csv('/Volumes/CAP/data/rawData/phase1/qualtricsResponses/qualtrics2phase1.csv');
+#qPhase2 = read.csv('/Volumes/CAP/data/rawData/phase2/qualtricsResponses/qualtrics2phase2.csv');
+#phase1subs = read.csv('/Volumes/CAP/data/combinedData/phase1_participant.csv');
+#phase2subs = read.csv('/Volumes/CAP/data/combinedData/phase2_participant.csv');
 
 
 # STEP 1: NEW COLUMN NAMES 
@@ -56,6 +70,10 @@ qPhase2keep = qPhase2keep[,-which(names(qPhase2keep) %in% c("prolificID"))];
 
 
 # STEP 4: SAVE NEW QUALTRICS FILES IN COMBINED DATA
+qPhase1keepPath = file.path(config$path$combined, config$QUALTRICScsvs$Phs1_notScored_subID);
+write.csv(qPhase1keep, qPhase1keepPath);
+qPhase2keepPath = file.path(config$path$combined, config$QUALTRICScsvs$Phs2_notScored_subID);
+write.csv(qPhase2keep, qPhase2keepPath);
 
-write.csv(qPhase1keep, "/Volumes/CAP/data/combinedData/QualtricsPhase1_subID_notScored.csv");
-write.csv(qPhase2keep, "/Volumes/CAP/data/combinedData/QualtricsPhase2_subID_notScored.csv")
+#write.csv(qPhase1keep, "/Volumes/CAP/data/combinedData/QualtricsPhase1_subID_notScored.csv");
+#write.csv(qPhase2keep, "/Volumes/CAP/data/combinedData/QualtricsPhase2_subID_notScored.csv")
