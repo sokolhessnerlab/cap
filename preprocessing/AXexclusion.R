@@ -75,6 +75,6 @@ sum(axExclusion$phase1Exclude, na.rm = T); #should be 22
 sum(axExclusion$phase2Exclude, na.rm = T); # should be 6
 
 # save axExclusion dataframe as csv file
-axExclusionPath = file.path(config$path$combined, config$AXcsvs$AX_exclusion);
+axExclusionPath = file.path(config$path$combined, config$EXCLUSIONcsvs$AX_exclusion);
 write.csv(axExclusion, axExclusionPath);
 #write.csv(axExclusion, "/Volumes/CAP/data/combinedData/axExclusion.csv");
