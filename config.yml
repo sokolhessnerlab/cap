@@ -17,10 +17,13 @@ default:
     data: "/Volumes/CAP/data"
     raw: "/Volumes/CAP/data/rawData"
     combined: "/Volumes/CAP/data/combinedData"
+    combined_raw: "/Volumes/CAP/data/rawData/combinedRawData"
   RDMcsvs: 
     RDM_qualtrics: "RDMallClean_Qualtrics.csv"    
   AXcsvs:
     AX_qualtrics: "AXallClean_Qualtrics.csv"
+    AX_allClean: "AXallClean.csv"
+    AX_rawCombined: "AXall.csv"
   EXCLUSIONcsvs:
     RDM_AX_Qual_Phs1exclusion: "allExclusionPhase1.csv"
     RDM_AX_Qual_Phs2exclusion: "allExclusionPhase2.csv"
