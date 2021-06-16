@@ -1,9 +1,19 @@
 library(plyr)
 library(usmap)
 
+
+# configuration
+config= config::get()
+
 #load up not scored questionaires
-cap_qualtrics_not_scored_1 <- read.csv("~/Documents/SHLab/CAP/data/QualtricsPhase1_subID_notScored.csv", stringsAsFactors = FALSE)
-cap_qualtrics_not_scored_2 <- read.csv("~/Documents/SHLab/CAP/data/QualtricsPhase2_subID_notScored.csv", stringsAsFactors = FALSE)
+cap_qualtrics_not_scored_1path = file.path(config$path$combined,config$QUALTRICScsvs$Phs1_notScored_subID);
+cap_qualtrics_not_scored_1 = read.csv(cap_qualtrics_not_scored_1path, stringsAsFactors = F);
+#cap_qualtrics_not_scored_1 <- read.csv("~/Documents/SHLab/CAP/data/QualtricsPhase1_subID_notScored.csv", stringsAsFactors = FALSE)
+
+cap_qualtrics_not_scored_2path = file.path(config$path$combined,config$QUALTRICScsvs$Phs2_notScored_subID);
+cap_qualtrics_not_scored_2 = read.csv(cap_qualtrics_not_scored_2path, stringsAsFactors = F);
+
+#cap_qualtrics_not_scored_2 <- read.csv("~/Documents/SHLab/CAP/data/QualtricsPhase2_subID_notScored.csv", stringsAsFactors = FALSE)
 
 #add a phase column
 cap_qualtrics_not_scored_1$phase <- 1
@@ -399,8 +409,10 @@ cap_qualtrics_combined$ses_needbasedCollegeAid_recode <- with(cap_qualtrics_comb
 count(cap_qualtrics_combined$ses_needbasedCollegeAid)
 count(cap_qualtrics_combined$ses_needbasedCollegeAid_recode)
 
-#final step: write to the .csv                                                                                                
-write.csv(cap_qualtrics_combined, "~/Documents/SHLab/CAP/data/QualtricsCombined_subID_scored.csv")
+#final step: write to the .csv                                                                          
+outputfilepath = file.path(config$path$combined, config$QUALTRICScsvs$Combined_subID_scored)
+write.csv(cap_qualtrics_combined, outputfilepath);
+#write.csv(cap_qualtrics_combined, "~/Documents/SHLab/CAP/data/QualtricsCombined_subID_scored.csv")
 
 #note: this code outputs with all the new columns tagged on the end, for clarity, I did some post-reordering
       
