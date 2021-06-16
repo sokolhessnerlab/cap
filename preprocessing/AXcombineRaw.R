@@ -9,6 +9,11 @@
 # reset global environment
 rm(list=ls());
 
+# configuration
+config = config::get()
+
+
+
 # load packages
 library("dplyr");                                                  
 library("plyr");                                                 
