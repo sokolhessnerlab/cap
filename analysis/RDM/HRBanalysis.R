@@ -265,42 +265,42 @@ plot(onesub$alternative, col=onesub$groundEV,xlab="Trial", ylab = "$", main="Cre
 dev.off();
 
 # Look at some basics decision-making stuff for all participants who completed phase 1 (n=540) and all participants who completed phase 2 (n=355)
-subNumsPhs1 = unique(phs1RDMqualtrics$subID);
-pIDphs1 = unique(phs1RDMqualtrics$participant);
-nSubPhs1 = length(subNumsPhs1); #540
-subNumsPhs2 = unique(phs2RDMqualtrics$subID);
-pIDphs2 = unique(phs2RDMqualtrics$participant);
-nSubPhs2 = length(subNumsPhs2); #355
+# subNumsPhs1 = unique(phs1RDMqualtrics$subID);
+# pIDphs1 = unique(phs1RDMqualtrics$participant);
+# nSubPhs1 = length(subNumsPhs1); #540
+# subNumsPhs2 = unique(phs2RDMqualtrics$subID);
+# pIDphs2 = unique(phs2RDMqualtrics$participant);
+# nSubPhs2 = length(subNumsPhs2); #355
+# 
+# mean(phs1RDMqualtrics$choice); #0.3757795
+# mean(phs2RDMqualtrics$choice); #0.3507808
+# mean(bothPhasesRDMqualtrics$choice[bothPhasesRDMqualtrics$phase==1]); # 0.3725118 p(gamble) for phase 1 for those who completed phase 2
+# 
+# # 95% CI
+# # 540 participants pgamble in phase 1
+# me1 = qnorm(.975)*(mean(phs1RDMqualtrics$choice)/sqrt(nSubPhs1)); #0.03169453
+# mean(phs1RDMqualtrics$choice) + me1; #0.407474
+# mean(phs1RDMqualtrics$choice) - me1; #0.344085
+# 
+# # 355 participants pgamble in phase 2
+# me2 = qnorm(.975)*(mean(phs2RDMqualtrics$choice)/sqrt(nSubPhs2)); #0.03648965
+# mean(phs2RDMqualtrics$choice) + me2; #0.3872705
+# mean(phs2RDMqualtrics$choice) - me2; #0.3142912
+# 
+# # 355 participants pgamble from phase 1 who also completed phase 2
+# me3 = qnorm(.975)*(mean(bothPhasesRDMqualtrics$choice[bothPhasesRDMqualtrics$phase==1])/sqrt(nSubPhs2)); #0.0387502
+# mean(bothPhasesRDMqualtrics$choice[bothPhasesRDMqualtrics$phase==1]) + me3; #0.411262
+# mean(bothPhasesRDMqualtrics$choice[bothPhasesRDMqualtrics$phase==1]) - me3; #0.3337616
 
-mean(phs1RDMqualtrics$choice); #0.3757795
-mean(phs2RDMqualtrics$choice); #0.3507808
-mean(bothPhasesRDMqualtrics$choice[bothPhasesRDMqualtrics$phase==1]); # 0.3725118 p(gamble) for phase 1 for those who completed phase 2
 
-# 95% CI
-# 540 participants pgamble in phase 1
-me1 = qnorm(.975)*(mean(phs1RDMqualtrics$choice)/sqrt(nSubPhs1)); #0.03169453
-mean(phs1RDMqualtrics$choice) + me1; #0.407474
-mean(phs1RDMqualtrics$choice) - me1; #0.344085
-
-# 355 participants pgamble in phase 2
-me2 = qnorm(.975)*(mean(phs2RDMqualtrics$choice)/sqrt(nSubPhs2)); #0.03648965
-mean(phs2RDMqualtrics$choice) + me2; #0.3872705
-mean(phs2RDMqualtrics$choice) - me2; #0.3142912
-
-# 355 participants pgamble from phase 1 who also completed phase 2
-me3 = qnorm(.975)*(mean(bothPhasesRDMqualtrics$choice[bothPhasesRDMqualtrics$phase==1])/sqrt(nSubPhs2)); #0.0387502
-mean(bothPhasesRDMqualtrics$choice[bothPhasesRDMqualtrics$phase==1]) + me3; #0.411262
-mean(bothPhasesRDMqualtrics$choice[bothPhasesRDMqualtrics$phase==1]) - me3; #0.3337616
-
-
-# calculate the probability of gambling for each participant (n=355) for phase 1 and phase 2
-pgamBothPhs = matrix(data=NA, nrow = nSubPhs2, ncol=4);
-for (s in 1:nSubPhs2) {
-  pgamBothPhs[s,1] = mean(bothPhasesRDMqualtrics$choice[bothPhasesRDMqualtrics$prolificID == pIDphs2[s] & bothPhasesRDMqualtrics$phase==1])
-  pgamBothPhs[s,2] = mean(bothPhasesRDMqualtrics$choice[bothPhasesRDMqualtrics$prolificID == pIDphs2[s] & bothPhasesRDMqualtrics$phase==2])
-  pgamBothPhs[s,3] = pIDphs2[s];
-  pgamBothPhs[s,4] = pgamBothPhs[s,1]-pgamBothPhs[s,2]
-};
+# # calculate the probability of gambling for each participant (n=355) for phase 1 and phase 2
+# pgamBothPhs = matrix(data=NA, nrow = nSubPhs2, ncol=4);
+# for (s in 1:nSubPhs2) {
+#   pgamBothPhs[s,1] = mean(bothPhasesRDMqualtrics$choice[bothPhasesRDMqualtrics$prolificID == pIDphs2[s] & bothPhasesRDMqualtrics$phase==1])
+#   pgamBothPhs[s,2] = mean(bothPhasesRDMqualtrics$choice[bothPhasesRDMqualtrics$prolificID == pIDphs2[s] & bothPhasesRDMqualtrics$phase==2])
+#   pgamBothPhs[s,3] = pIDphs2[s];
+#   pgamBothPhs[s,4] = pgamBothPhs[s,1]-pgamBothPhs[s,2]
+# };
 
 # Correlations btwn change in p(gamble) & changes in STAIS/STAIT/UCLAL/PSS/COVIDRisk
 cor.test(pgamBothPhs[,4],subInfoScoreQualBothPhases$staisDiff,method = 'spearman')
@@ -310,10 +310,10 @@ cor.test(pgamBothPhs[,4],subInfoScoreQualBothPhases$pssDiff,method = 'spearman')
 cor.test(pgamBothPhs[,4],subInfoScoreQualBothPhases$CovidRiskDiff,method = 'spearman')
 
 
-x = as.data.frame(matrix(data=NA, nrow = nSubPhs2*2, ncol=3, dimnames=list(c(NULL), c("pgam", "subID", "phase"))));
-x$pgam = c(pgamBothPhs[,1], pgamBothPhs[,2]); # combine into one vector
-x$subID = c(pgamBothPhs[,3],pgamBothPhs[,3]);
-x$phase = rep(1:2,each=355);
+# x = as.data.frame(matrix(data=NA, nrow = nSubPhs2*2, ncol=3, dimnames=list(c(NULL), c("pgam", "subID", "phase"))));
+# x$pgam = c(pgamBothPhs[,1], pgamBothPhs[,2]); # combine into one vector
+# x$subID = c(pgamBothPhs[,3],pgamBothPhs[,3]);
+# x$phase = rep(1:2,each=355);
 
 pdf("/Volumes/shlab/Projects/CAP/figures/ViolinPGAMn355_HRB.pdf")
 g = ggplot(x, aes(x=as.character(phase), y=pgam));
@@ -361,10 +361,10 @@ dev.off();
 
 
 
-# add a new variable for phase to be coded 0 and 1 in the dataset that combines phase 1 and phase 2
-bothPhasesRDMqualtrics$phaseRecode = bothPhasesRDMqualtrics$phase;
-bothPhasesRDMqualtrics$phaseRecode[bothPhasesRDMqualtrics$phaseRecode==1] =0;
-bothPhasesRDMqualtrics$phaseRecode[bothPhasesRDMqualtrics$phaseRecode==2] =1;
+# # add a new variable for phase to be coded 0 and 1 in the dataset that combines phase 1 and phase 2
+# bothPhasesRDMqualtrics$phaseRecode = bothPhasesRDMqualtrics$phase;
+# bothPhasesRDMqualtrics$phaseRecode[bothPhasesRDMqualtrics$phaseRecode==1] =0;
+# bothPhasesRDMqualtrics$phaseRecode[bothPhasesRDMqualtrics$phaseRecode==2] =1;
 
 # scale affective measures
 bothPhasesRDMqualtrics$stais_score01 = bothPhasesRDMqualtrics$stais_score/max(bothPhasesRDMqualtrics$stais_score);

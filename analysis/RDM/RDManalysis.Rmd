@@ -23,6 +23,10 @@ rdmQualtrics = rdmQualtrics[,(2:ncol(rdmQualtrics))];
 excludePhs1 = excludePhs1[,(2:ncol(excludePhs1))];
 excludePhs2 = excludePhs2[,(2:ncol(excludePhs2))];
 
+# we are going to exclude some people so lets save the original number of subjects
+subNumB4exclusion = unique(rdmQualtrics$subID);
+nSubB4exclusion = length(subNumB4exclusion);
+
 ```
 
 
@@ -81,24 +85,91 @@ rdmQualtrics[rdmQualtrics$subID %in% subIDqualPhs2Exclude & rdmQualtrics$phase==
   
 ```
 
+#### Remove missed trials - LEFT OFF HERE
+```{r}
+
+```
+
 
 
 #### Creating variables for analysis - if this gets really large, consider making separate script
 ```{r}
+# add a new variable for phase where phase 1 is now 0 and phase 2 is now 1
+rdmQualtrics$phaseRecode = rdmQualtrics$phase;
+rdmQualtrics$phaseRecode[rdmQualtrics$phaseRecode==1] = 0;
+rdmQualtrics$phaseRecode[rdmQualtrics$phaseRecode==2] = 1;
 
 ```
 
+CONSIDER MAKING EVERYTHING ABOVE A SEPARATE "PREPARATION" SCRIPT THAT JUST NEEDS TO BE RUN BEFORE THE ANALYSIS.
+
 #### Participant stuff
 ```{r}
-nSubPhs1 = 
+# Participant IDs included in phase 1 RDM
+Phs1subIDs = excludePhs1$subID[excludePhs1$rdmPhs1exclud==0];
+Phs1nSub = length(Phs1subIDs); 
+
+# Participant IDs included in phase 2 RDM
+Phs2subIDs = excludePhs2$subID[!is.na(excludePhs2$rdmPhs2exclude) & excludePhs2$rdmPhs2exclude==0];
+Phs2nSub = length(Phs2subIDs);
+
+# Participant IDs included in both phases 
+BothPhsSubIDs = Phs2subIDs[Phs2subIDs %in% Phs1subIDs];
+BothPhsnSub = length(BothPhsSubIDs)
+
+sprintf("Prior to exclusion, there were %d participants", nSubB4exclusion)
+sprintf("Accounting for exclusion: Phase 1 N = %d and Phase 2 RDM N = %d", Phs1nSub, Phs2nSub);
+sprintf("Phase 1 and phase 2 N = %d", BothPhsnSub)
 ```
 
 
 ### Risky decision-making analysis
-#### Basics, e.g. p(gamble)
+#### Probability of gambling
 ```{r}
-# All participants who completed phase 1 (n=540) and all participants who completed phase 2 (n=355)
+# GROUP LEVEL
+Phs1Pgam = mean(rdmQualtrics$rdmChoice[rdmQualtrics$phase==1], na.rm=T); # phase 1 pgamble = 0.3901198
+Phse2Pgam = mean(rdmQualtrics$rdmChoice[rdmQualtrics$phase==2], na.rm=T); # phase 2 pgamble = 0.3783025
+bothPhsPgam = mean(rdmQualtrics$rdmChoice[rdmQualtrics$subID %in% BothPhsSubIDs], na.rm=T); # pgamble across participants who completed both phase 1 and phase (n=313) = 0.3867135
 
+# 95% CI
+# phase 1 (n=518)
+me1 = qnorm(.975)*(Phs1Pgam/sqrt(Phs1nSub)); #0.03359551
+Phs1Pgam + me1; #0.4237153
+Phs1Pgam - me1; #0.3565243
+
+# phase 2 (n=326)
+me2 = qnorm(.975)*(Phse2Pgam/sqrt(Phs2nSub)); #0.04106563
+Phse2Pgam + me2; #0.4193681
+Phse2Pgam - me2; #0.3372368
+
+# phase 1 and phase 2 (n = 313)
+me3 = qnorm(.975)*(bothPhsPgam/sqrt(BothPhsnSub)); #0.04284156
+bothPhsPgam + me3; #0.4295551
+bothPhsPgam - me3; #0.343872
+
+
+
+# INDIVIDUAL LEVEL
+
+# data frame where each row is a participant and there are 6 columns: {subID, day, phase 1, phase 2, both  phases, diffPgam}. If a participant is not included because they did not complete phase 2 or they were excluded, there will be an NaN in the corresponding  column. "diffPgam" is the difference in probability of gambling between two phases if we have that information for a given participant
+
+pGambleSubID = as.data.frame(matrix(data=NA, nrow =nSubB4exclusion, ncol=6, dimnames=list(c(NULL), c("subID", "day", "phs1pgam","phs2pgam","bothPhspgam", "diffPgam"))))
+
+for (s in 1:nSubB4exclusion) {
+  
+  
+  subPhs1 = rdmQualtrics[rdmQualtrics$subID==subNumB4exclusion[s] & rdmQualtrics$phase==1,rdmColumns];
+  subPhs2 = rdmQualtrics[rdmQualtrics$subID==subNumB4exclusion[s] & rdmQualtrics$phase==2,rdmColumns];
+  subDay = rdmQualtrics$day[rdmQualtrics$subID==subNumB4exclusion[s]]
+  
+  pGambleSubID$subID[s] = subNumB4exclusion[s]
+  pGambleSubID$day[s] = subDay[1]
+  pGambleSubID$phs1pgam[s] = mean(subPhs1$rdmChoice, na.rm=T)
+  pGambleSubID$phs2pgam[s] = mean(subPhs2$rdmChoice, na.rm=T)
+  pGambleSubID$bothPhspgam[s] = mean(c(subPhs1$rdmChoice, subPhs2$rdmChoice), na.rm=T)
+  pGambleSubID$diffPgam[s] = pGambleSubID$phs2pgam[s] - pGambleSubID$phs1pgam[s]
+ 
+};
 
 ```
 
