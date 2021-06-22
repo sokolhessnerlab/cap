@@ -88,3 +88,17 @@ rdmQualtrics[rdmQualtrics$subID %in% subIDqualPhs2Exclude & rdmQualtrics$phase==
 
 ```
 
+#### Participant stuff
+```{r}
+nSubPhs1 = 
+```
+
+
+### Risky decision-making analysis
+#### Basics, e.g. p(gamble)
+```{r}
+# All participants who completed phase 1 (n=540) and all participants who completed phase 2 (n=355)
+
+
+```
+
