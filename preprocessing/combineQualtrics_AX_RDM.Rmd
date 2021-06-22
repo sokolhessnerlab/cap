@@ -33,6 +33,10 @@ nSub = length(unique(rdmDF$subID)); #544
 
 ```
 
+```{r}
+library(plyr) # need this for 'join' function
+```
+
 
 We can pair down scoredQualtrics to make it easier to work with, lets keep the columns we want
 
@@ -48,8 +52,13 @@ qualtricsDF = scoredQualtrics[,c(33,56,67,70,91:140)]; # keep only the columns w
 
 Merge the data frames by sub ID and phase (this will also get rid of the redundant columns subID and phase):
 ```{r}
-AXallClean_Qualtrics = merge(axDF,qualtricsDF,by=c("subID","phase"), all.x = T); # AX
-RDMallClean_Qualtrics = merge(rdmDF,qualtricsDF,by=c("subID","phase"), all.x = T, all.y = T);  # RDM
+#AXallClean_Qualtrics = base::merge(axDF,qualtricsDF, by=c("subID","phase"), all.x = T); # AX
+#RDMallClean_Qualtrics = base::merge(rdmDF,qualtricsDF, by=c("subID","phase"), all.x = T, all.y = T);  # RDM
+AXallClean_Qualtrics = join(axDF, qualtricsDF, by=c("subID", "phase"))
+RDMallClean_Qualtrics = join(rdmDF,qualtricsDF, by=c("subID","phase"));  # RDM
+
+# using the 'merge' function merges the datasets but rearranges the rows within each participant which is not great if we want to do to temporal stuff. using the join function allows us to merge the datasets and preserve row order.
+
 ```
 
 Save the output:
@@ -66,7 +75,4 @@ write.csv(file=RDMoutputpath, RDMallClean_Qualtrics);
 ```
 
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
-
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
 
