@@ -18,6 +18,10 @@ default:
     raw: "/Volumes/CAP/data/rawData"
     combined: "/Volumes/CAP/data/combinedData"
     combined_raw: "/Volumes/CAP/data/rawData/combinedRawData"
+    code:
+      r_scripts: "./analysis/RDM"
+  code_files:
+    setup_data: "RDMsetup.Rmd"
   RDMcsvs: 
     RDM_qualtrics: "RDMallClean_Qualtrics.csv"
     RDM_rawCombined: "RDMall.csv"
