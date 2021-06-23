@@ -10,6 +10,10 @@ output: html_document
 library('config')
 config = config::get()
 
+setup_source = file.path(config$path$code$r_scripts, config$code_files$setup_data) 
+source(setup_source) #, local = knitr::knit_global())
+
+
 rdm_csv = file.path(config$path$combined, config$RDMcsvs$RDM_qualtrics);
 exclsnPhs1_csv = file.path(config$path$combined, config$EXCLUSIONcsvs$RDM_AX_Qual_Phs1exclusion);
 exclsnPhs2_csv = file.path(config$path$combined, config$EXCLUSIONcsvs$RDM_AX_Qual_Phs2exclusion);
