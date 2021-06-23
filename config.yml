@@ -21,7 +21,7 @@ default:
     code:
       r_scripts: "./analysis/RDM"
   code_files:
-    setup_data: "RDMsetup.Rmd"
+    setup_data: "RDMsetup.R"
   RDMcsvs: 
     RDM_qualtrics: "RDMallClean_Qualtrics.csv"
     RDM_rawCombined: "RDMall.csv"
