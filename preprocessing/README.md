@@ -153,7 +153,7 @@ Any files added to the "preprocessing" folder should be included in this list al
     -    544 rows with 5 variables {subID, day, rdmPhs2exclude, axPhs2exclude, qualPhs2exclude}
     -    1= exclude, 0 = keep, NA = no data
 
-## 12. [combineQualtrics_AX_RDM.Rmd](./combineQualtrics_AX_RDM.Rmd) *UPDATE THIS WHEN GAIN/LOSS DATASETS ARE SEPARATED*
+## 12. [combineQualtrics_AX_RDM.Rmd](./combineQualtrics_AX_RDM.Rmd)
 
 -   Loads 3 datasets:
     1) QualtricsCombined_subID_scored_noDuplicates.csv
@@ -167,9 +167,17 @@ Any files added to the "preprocessing" folder should be included in this list al
 -   output #1: AXallClean_Qualtrics.csv
     
     -   108091 rows with 61 variables
-    -   all of AX data with qualtrics responses (544 participants, 2 phases)
+    -   all of AX data with scored qualtrics responses (544 participants, 2 phases)
     
 -   output #2: RDMallClean_Qualtrics.csv
 
     -   124572 rows with 70 variables
-    -   all of RDM data with qualtrics responses (544 participants, 2 phases)
+    -   all of RDM data (both gain and loss tasks) with scored qualtrics responses (544 participants, 2 phases)
+
+-   output #3: RDMallCleanGain_Qualtrics.csv
+    -   107219 rows with 70 variables
+    -   RDM GAIN-ONLY data with scored qualtrics responses (544 participants, 2 phases)
+
+-   output #4: RDMallCleanLoss_Qualtrics.csv  
+    -   17353 rows with 70 variables
+    -   RDM LOSS-ONLY data with scored qualtrics responses (544 participants, 2 phases)
