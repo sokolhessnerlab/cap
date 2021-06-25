@@ -23,7 +23,9 @@ default:
   code_files:
     setup_data: "RDMsetup.R"
   RDMcsvs: 
-    RDM_qualtrics: "RDMallClean_Qualtrics.csv"
+    RDMbothTasks_qualtrics: "RDMallClean_Qualtrics.csv"
+    RDMgain_qualtrics: "RDMallCleanGain_Qualtrics.csv"
+    RDMloss_qualtrics: "RDMallCleanLoss_Qualtrics.csv"
     RDM_rawCombined: "RDMall.csv"
     RDM_allClean: "RDMallClean.csv"
   AXcsvs:
