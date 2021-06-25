@@ -19,7 +19,7 @@ Any files added to this folder should be included in this list along with the re
      - missed loss trials phase 2
      - total loss trials phase 1
      - total loss trials phase 2  
-## 2) [exclusionTrialInfo.md](./exclusionTrialInfo.md)
+## 2) [exclusionTrialInfo.md](./exclusionMissTrialInfo.md)
  - Summary of who we excluded, missed trials and remaining trials across both RDM tasks, Qualtrics for both phases.
 ## 3) [RDManalysis.Rmd](./RDManalysis.Rmd)
 -   Sources RDMsetup.R script first
