@@ -28,6 +28,7 @@ default:
     RDMloss_qualtrics: "RDMallCleanLoss_Qualtrics.csv"
     RDM_rawCombined: "RDMall.csv"
     RDM_allClean: "RDMallClean.csv"
+    RDM_missed_total_trials: "RDM_subID_missTri_totTri.csv"
   AXcsvs:
     AX_qualtrics: "AXallClean_Qualtrics.csv"
     AX_allClean: "AXallClean.csv"
