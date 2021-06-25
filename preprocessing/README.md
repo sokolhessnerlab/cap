@@ -45,6 +45,7 @@ Any files added to the "preprocessing" folder should be included in this list al
     -   across participants within each day (40 files)
     -   across days within each phase (2 files)
     -   across both phases (1 file)
+    
 
 -   output: 
 
@@ -52,12 +53,14 @@ Any files added to the "preprocessing" folder should be included in this list al
     -   1 .csv file per phase (each .csv file includes data from all days) stored in combinedRawData/RDMphase directory (RDMphase1.csv & RDMphase2.csv)
     -   1 .csv file for all the raw RDM data (RDMall.csv) in the rawData/combinedRawData directory
     -   Reformatted raw data files for all participants on phase 1 day 3 and one participant from phase 1 day 11 (stored in rawData/phase1/day#/riskyChoice).
+    -   RDM dataset includes both gain-only and loss-only tasks
 
 ## 5. [RDMcleanData.R](./RDMcleanData.R)
 
 -   imports the large raw RDM .csv file (combinedRawData/RDMall.csv) and removes, renames and reformats columns so that data is basically ready for analysis
 -   removes the trials from the loss task in phase 1 that were incorrectly recorded due to a coding error
 -   replaces prolific IDs with subIDs
+-   RDM dataset includes both gain-only and loss-only tasks
 -   output: "/Volumes/CAP/data/combinedData/RDMallClean.csv"
 
 ## 6. [QualtricsReplaceProlificID.R](./QualtricsReplaceProlificID.R)
@@ -87,7 +90,7 @@ Any files added to the "preprocessing" folder should be included in this list al
 
 ## 8. [RDMexclusion.R](./RDMexclusion.R)
 
--   loads RDM data from phase 1 and phase 2 (data/combinedData/RDMallClean.csv)
+-   loads RDM data (gain-only and loss-only) from phase 1 and phase 2 (data/combinedData/RDMallClean.csv)
 -   For each participant in each phase, reports on the 4 categories of criteria for potential exclusion
 
     -   miss trials, missed attention checks, p(Gamble), and subject-level glm (choice ~gain+safe)
@@ -103,6 +106,8 @@ Any files added to the "preprocessing" folder should be included in this list al
     -   Volumes/CAP/data/combinedData/rdmExclusion.csv
     -   only includes subIDs (not prolific IDs)
     -   3 columns: subID, phase1exclude (1=yes; 0=no; NA= no data), phase2exclude (1=yes; 0=no; NA=no data)
+
+-    Note that exclusion is based on both gain and loss tasks. 
 
 ## 9. [AXexclusion.R](./AXexclusion.R)
 
@@ -148,7 +153,7 @@ Any files added to the "preprocessing" folder should be included in this list al
     -    544 rows with 5 variables {subID, day, rdmPhs2exclude, axPhs2exclude, qualPhs2exclude}
     -    1= exclude, 0 = keep, NA = no data
 
-## 12. [combineQualtrics_AX_RDM.Rmd](./combineQualtrics_AX_RDM.Rmd)
+## 12. [combineQualtrics_AX_RDM.Rmd](./combineQualtrics_AX_RDM.Rmd) *UPDATE THIS WHEN GAIN/LOSS DATASETS ARE SEPARATED*
 
 -   Loads 3 datasets:
     1) QualtricsCombined_subID_scored_noDuplicates.csv
@@ -157,6 +162,7 @@ Any files added to the "preprocessing" folder should be included in this list al
 
 -   Adds some of the Qualtrics data to the RDM and AX datasets 
 -   Scored qualtrics responses, covid questions, location (fips), SES are added to RDM and AX but responses to each STAIS, STAIT, UCLA-L, PSS are not included.
+-   Creates separate datasets for gain-only and loss-ony RDM tasks, both of which will have qualtrics information.
 
 -   output #1: AXallClean_Qualtrics.csv
     
