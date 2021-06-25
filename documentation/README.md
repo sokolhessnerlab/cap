@@ -86,7 +86,7 @@ Any files added to the "documentation" folder should be included in this list al
 -   this column information is identical to that in QualtricsCombined_subID_scored_noDuplicates.csv
 
 ## 18. [RDMallClean_Qualtrics_ColumnInfo.csv](./RDMallClean_Qualtrics_ColumnInfo.csv)
--   variable information for RDMallClean_Qualtrics.csv
+-   variable information for RDMallClean_Qualtrics.csv, RDMallCleanLoss_Qualtrics.csv and RDMallCleanGain_Qualtrics.csv
 -   7 columns {variable, definition, values, type, min, max, additional information}
 -   inclusion/exclusion has not been applied
 
