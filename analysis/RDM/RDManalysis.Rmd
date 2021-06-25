@@ -11,32 +11,10 @@ Data set up is taken care of by RDMsteup.Rmd script. HRB working on the configur
 library('config')
 config = config::get()
 
-#setup_source = file.path(config$path$code$r_scripts, config$code_files$setup_data)
+
 setup_source = file.path(config$code_files$setup_data)
 source(setup_source) #, local = knitr::knit_global())
 
-```
-
-
-
-
-#### Participant stuff
-```{r}
-# Participant IDs included in phase 1 RDM
-Phs1subIDs = excludePhs1$subID[excludePhs1$rdmPhs1exclud==0];
-Phs1nSub = length(Phs1subIDs); 
-
-# Participant IDs included in phase 2 RDM
-Phs2subIDs = excludePhs2$subID[!is.na(excludePhs2$rdmPhs2exclude) & excludePhs2$rdmPhs2exclude==0];
-Phs2nSub = length(Phs2subIDs);
-
-# Participant IDs included in both phases 
-BothPhsSubIDs = Phs2subIDs[Phs2subIDs %in% Phs1subIDs];
-BothPhsnSub = length(BothPhsSubIDs)
-
-sprintf("Prior to exclusion, there were %d participants", nSubB4exclusion)
-sprintf("Accounting for exclusion: Phase 1 N = %d and Phase 2 RDM N = %d", Phs1nSub, Phs2nSub);
-sprintf("Phase 1 and phase 2 N = %d", BothPhsnSub)
 ```
 
 
