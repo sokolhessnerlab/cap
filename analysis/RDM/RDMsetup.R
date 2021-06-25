@@ -1,6 +1,11 @@
 # Setting up data for RDManalysis.Rmd which uses 'source' to call this script
 # This script has to be an .R not .Rmd to run
 # This script loads the risky decision making data and the exclusion data, applies the exclusion, deals with missed trials, and creates any variables we need for the analysis (e.g. past outcome)
+
+
+# output:
+# 1) RDM_subID_missTri_totTri.csv (total and missed trials for each participant in phase for gain and loss datasets)
+
 # Hayley Brooks, University of Denver
 
 # load packages
@@ -86,46 +91,106 @@ rdmLossQualtrics[rdmLossQualtrics$subID %in% subIDqualPhs2Exclude & rdmLossQualt
 
 # Note: if participants were excluded in phase 1, they are not automatically excluded in phase 2!
 
+# Store sub IDs of those who are in phase 1 and phase 2 (post-exclusion)
+# Note: the sub IDs in phase 1 and phase 2 is identical across gain and loss tasks because the same participants were excluded across both tasks.
 
-#   THIS PART IS NOT COMPLETE - CONTINUE ONCE WE HAVE SPEARATED LOSS DATASET
-# When participants do not respond, an NA is place for choice and outcome. We are not removing these trials but will make a note of the number of trials per phase were missed by which participants.
-# 
-# nanInd = which(is.na(rdmQualtrics$rdmChoice)); 
-# nanIndPhs1 = which(is.na(rdmQualtrics$rdmChoice) & rdmQualtrics$phase==1);
-# nanIndPhs2 = which(is.na(rdmQualtrics$rdmChoice) & rdmQualtrics$phase==2);
-# totNan = length(nanInd); # 9356 missed trials across all participants and phases
-# totNanPhs1 = length(nanIndPhs1); # 4586 missed trials phase 1
-# totNanPhs2 = length(nanIndPhs2); # 4770 missed trials phase 2
-# 
-# subNanPhs1 = unique(rdmQualtrics$subID[nanIndPhs1]); # sub IDs of those who missed trials in phase 1
-# subNanPhs2 = unique(rdmQualtrics$subID[nanIndPhs2]); # sub IDs of those who missed trials in phase 2
-#   
-# subID_missTri_totTri = as.data.frame(matrix(data=NA, nrow = nSubB4exclusion, ncol=5, dimnames = list(c(NULL), c("subID", "missTriPhs1", "missTriPhs2","totalTriPhs1", "totalTriPhs2"))));
-# 
-# for (s in 1:nSubB4exclusion){
-#   subID_missTri_totTri$subID[s] = subNumB4exclusion[s]
-#   subID_missTri_totTri$missTriPhs1[s] = sum(rdmQualtrics$subID[nanIndPhs1] == subNumB4exclusion[s]);
-#   subID_missTri_totTri$missTriPhs2[s] = sum(rdmQualtrics$subID[nanIndPhs2] == subNumB4exclusion[s]);
-#   
-#   
-# };
-# 
-# # Remove missed trials
-# #rdmQualtrics = rdmQualtrics[which(!is.nan(mriBehClean$choice)),]; #remove missed trials
-# 
-# #how many trials does each person have now that we have cleaned the data?
-# for (s in 1:nSubB4exclusion){
-#   
-#   subID_missTri_totTri$totalTriPhs1[s] = sum(rdmQualtrics$subID %in% subNumB4exclusion[s] & rdmQualtrics$phase==1);
-#   subID_missTri_totTri$totalTriPhs2[s] = sum(rdmQualtrics$subID %in% subNumB4exclusion[s] & rdmQualtrics$phase==2);
-# };
-# 
-# 
-# # save this matrix
-# save(file="/Volumes/shlab/Projects/VNI/data/mriBehaviorQAoutput/subID_missedT_totalT_pGam_N48.Rdata", subID_missTri_totTri_pGam);
+# Participant IDs included in phase 1 RDM
+Phs1subIDs = excludePhs1$subID[excludePhs1$rdmPhs1exclud==0];
+Phs1nSub = length(Phs1subIDs); 
+
+# Participant IDs included in phase 2 RDM
+Phs2subIDs = excludePhs2$subID[!is.na(excludePhs2$rdmPhs2exclude) & excludePhs2$rdmPhs2exclude==0];
+Phs2nSub = length(Phs2subIDs);
+
+# Participant IDs included in both phases 
+BothPhsSubIDs = Phs2subIDs[Phs2subIDs %in% Phs1subIDs];
+BothPhsnSub = length(BothPhsSubIDs)
+
+# Prior to exclusion, there were 544 participants. After exclusion, we have risky decision-making data for 518 participants in phase 1 and 326 participants in phase 2, and 313 participants that are included in both phases.
 
 
 
+# Missed trials:
+# Where participants did not respond, an NA is in place for choice and outcome. We are not removing these trials but will make a note of the number of trials per phase that were missed by each participants.
+
+### Which trials were missed?
+# GAIN TASK
+nanIndGain = which(is.na(rdmGainQualtrics$rdmChoice)); # both phases
+nanIndGainPhs1 = which(is.na(rdmGainQualtrics$rdmChoice) & rdmGainQualtrics$phase==1); # phase 1 missed trial
+nanIndGainPhs2 = which(is.na(rdmGainQualtrics$rdmChoice) & rdmGainQualtrics$phase==2); # phase 2 missed trials
+nanIndGainPhs1tot = length(nanIndGainPhs1); # 3850 missed trials in phase 1
+nanIndGainPhs2tot = length(nanIndGainPhs2); # 4062 missed trials in phase 2
+
+# LOSS TASK
+nanIndLoss = which(is.na(rdmLossQualtrics$rdmChoice)); # both phases
+nanIndLossPhs1 = which(is.na(rdmLossQualtrics$rdmChoice) & rdmLossQualtrics$phase==1); # phase 1 missed trial
+nanIndLossPhs2 = which(is.na(rdmLossQualtrics$rdmChoice) & rdmLossQualtrics$phase==2); # phase 2 missed trials
+nanIndLossPhs1tot = length(nanIndLossPhs1); # 736 missed trials in phase 1
+nanIndLossPhs2tot = length(nanIndLossPhs2); # 708 missed trials in phase 2
+
+# Summary:
+# There are a total of 7912 missed trials in the gain-only task across all participants and phases (3850 missed trials phase 1 and 4062 missed trials phase 2). There are a total of 1444 missed trials in the loss-only task across all participants and phases (736 missed trials in phase 1 and 708 missed trials in phase 2). Across both tasks and phases, there is a total of 9356 miss trials.
+
+### Which participants missed trials and how many did each participant miss?
+# GAIN TASK
+subNanGainPhs1 = unique(rdmGainQualtrics$subID[nanIndGainPhs1]); # 320 participants missed at least one trial
+subNanGainPhs2 = unique(rdmGainQualtrics$subID[nanIndGainPhs2]); # 193 participants missed at least one trial
+
+# LOSS TASK
+subNanLossPhs1 = unique(rdmLossQualtrics$subID[nanIndLossPhs1]); # 192 participants missed at least one trial
+subNanLossPhs2 = unique(rdmLossQualtrics$subID[nanIndLossPhs2]); # 103 participants missed at least one trial
+
+
+# Create a dataframe that stores subject IDs, missed gain trials phase 1, missed gain trials phase 2, total gain trials phase 1, total gain trials phase 2, missed loss trials phase 1, missed loss trials phase 2, total loss trials phase 1 and total loss trials phase 2.
+subID_missTri_totTri = as.data.frame(matrix(data=NA, nrow = nSubB4exclusion, ncol=9, dimnames = list(c(NULL), c("subID", "missGainTriPhs1", "missGainTriPhs2","totalGainTriPhs1", "totalGainTriPhs2", "missLossTriPhs1", "missLossTriPhs2","totalLossTriPhs1", "totalLossTriPhs2"))));
+
+for (s in 1:nSubB4exclusion){
+  
+  subID_missTri_totTri$subID[s] = subNumB4exclusion[s]; # store sub IDs
+  
+  
+  # Phase 1:
+  if(subID_missTri_totTri$subID[s] %in% subIDrdmPhs1Exclude){ # if participant s was excluded, then put NaN for their rows in phase 1
+    
+    subID_missTri_totTri$missGainTriPhs1[s] = NaN; # missed gain trials
+    subID_missTri_totTri$totalGainTriPhs1[s] = NaN; # total gain trials
+    subID_missTri_totTri$missLossTriPhs1[s] = NaN; # miss loss trials
+    subID_missTri_totTri$totalLossTriPhs1[s] = NaN; # total loss trials
+  
+    }else{ # otherwise, do the following:
+    
+    subID_missTri_totTri$missGainTriPhs1[s] = sum(rdmGainQualtrics$subID[nanIndGainPhs1] == subNumB4exclusion[s]); # missed gain trials
+    subID_missTri_totTri$totalGainTriPhs1[s] = sum(!is.na(rdmGainQualtrics$rdmChoice) & rdmGainQualtrics$phase==1 & rdmGainQualtrics$subID==subNumB4exclusion[s]); # total gain trials
+    subID_missTri_totTri$missLossTriPhs1[s] = sum(rdmLossQualtrics$subID[nanIndLossPhs1] == subNumB4exclusion[s]); # missed loss trials
+    subID_missTri_totTri$totalLossTriPhs1[s] = sum(!is.na(rdmLossQualtrics$rdmChoice) & rdmLossQualtrics$phase==1 & rdmLossQualtrics$subID==subNumB4exclusion[s]); # total loss trials
+  }
+  
+  
+  # Phase 2:
+ if(subID_missTri_totTri$subID[s] %in%  subIDrdmPhs2Exclude | !subID_missTri_totTri$subID[s] %in% Phs2subIDs){ # if participant s was excluded or they didn't participate in phase 2, then put NaN for their rows in phase 2
+   subID_missTri_totTri$missGainTriPhs2[s] = NaN; # missed gain trials
+   subID_missTri_totTri$totalGainTriPhs2[s] = NaN; # total gain trials
+   subID_missTri_totTri$missLossTriPhs2[s] = NaN; # miss loss trials
+   subID_missTri_totTri$totalLossTriPhs2[s] = NaN; # total loss trials
+   
+ }else {
+   subID_missTri_totTri$missGainTriPhs2[s] = sum(rdmGainQualtrics$subID[nanIndGainPhs2] == subNumB4exclusion[s]);
+   subID_missTri_totTri$totalGainTriPhs2[s] = sum(!is.na(rdmGainQualtrics$rdmChoice) & rdmGainQualtrics$phase==2 & rdmGainQualtrics$subID==subNumB4exclusion[s])
+   subID_missTri_totTri$missLossTriPhs2[s] = sum(rdmLossQualtrics$subID[nanIndLossPhs2] == subNumB4exclusion[s]);
+   subID_missTri_totTri$totalLossTriPhs2[s] = sum(!is.na(rdmLossQualtrics$rdmChoice) & rdmLossQualtrics$phase==2 & rdmLossQualtrics$subID==subNumB4exclusion[s])
+ }
+  
+};
+
+
+# save this dataframe
+subID_missTri_totTri_OutputPath = file.path(config$path$combined, config$RDMcsvs$RDM_missed_total_trials)
+write.csv(file=subID_missTri_totTri_OutputPath, subID_missTri_totTri, row.names = F);
+
+
+
+# Summary:
+# After excluding 
 
 
 
