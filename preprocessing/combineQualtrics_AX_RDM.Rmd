@@ -5,8 +5,8 @@ author: "Hayley Brooks"
 
 Output:
 1) AXallClean_Qualtrics.csv
-2) RDMallClean_Qualtrics.csv
-
+2) RDMallCleanGain_Qualtrics.csv
+3) RDMallCleanLoss_Qualtrics.csv
 
 ```{r}
 # clean environment
@@ -16,17 +16,17 @@ rm(list=ls());
 config = config::get()
 
 # load data
-scoredQualtricsPath = file.path(config$path$combined, config$QUALTRICScsvs$Combined_subID_scored_noDuplicates)
+scoredQualtricsPath = file.path(config$path$combined, config$QUALTRICScsvs$Combined_subID_scored_noDuplicates); # scored qualtrics
 scoredQualtrics = read.csv(scoredQualtricsPath)
-#scoredQualtrics = read.csv("/Volumes/CAP/data/combinedData/QualtricsCombined_subID_scored_noDuplicates.csv"); # scored qualtrics
 
-rdmDFpath = file.path(config$path$combined, config$RDMcsvs$RDM_allClean);
+
+rdmDFpath = file.path(config$path$combined, config$RDMcsvs$RDM_allClean); # RDM dataset (both gain and loss tasks)
 rdmDF = read.csv(rdmDFpath);
-#rdmDF = read.csv("/Volumes/CAP/data/combinedData/RDMallClean.csv"); # RDM data
 
-axDFpath = file.path(config$path$combined, config$AXcsvs$AX_allClean);
+
+axDFpath = file.path(config$path$combined, config$AXcsvs$AX_allClean); # AX dataset
 axDF = read.csv(axDFpath);
-#axDF = read.csv("/Volumes/CAP/data/combinedData/AXallClean.csv"); # AX data   
+ 
 
 subNum = unique(rdmDF$subID);
 nSub = length(unique(rdmDF$subID)); #544
@@ -54,6 +54,7 @@ Merge the data frames by sub ID and phase (this will also get rid of the redunda
 ```{r}
 #AXallClean_Qualtrics = base::merge(axDF,qualtricsDF, by=c("subID","phase"), all.x = T); # AX
 #RDMallClean_Qualtrics = base::merge(rdmDF,qualtricsDF, by=c("subID","phase"), all.x = T, all.y = T);  # RDM
+
 AXallClean_Qualtrics = join(axDF, qualtricsDF, by=c("subID", "phase"))
 RDMallClean_Qualtrics = join(rdmDF,qualtricsDF, by=c("subID","phase"));  # RDM
 
@@ -61,16 +62,29 @@ RDMallClean_Qualtrics = join(rdmDF,qualtricsDF, by=c("subID","phase"));  # RDM
 
 ```
 
+Create separate datasets for the gain only and loss only tasks (but keep the original one as is: "RDMallClean_Qualtrics")
+```{r}
+
+RDMallCleanGain_Qualtrics = RDMallClean_Qualtrics[RDMallClean_Qualtrics$rdmTask==1,]; #107219 rows in gain dataset
+RDMallCleanLoss_Qualtrics = RDMallClean_Qualtrics[RDMallClean_Qualtrics$rdmTask==2,]; #17353 rows in loss dataset
+
+```
+
+
+
 Save the output:
 ```{r}
 
 AXoutputpath = file.path(config$path$combined, config$AXcsvs$AX_qualtrics);
-RDMoutputpath = file.path(config$path$combined, config$RDMcsvs$RDM_qualtrics);
+RDMbothOutputpath = file.path(config$path$combined, config$RDMcsvs$RDMbothTasks_qualtrics);
+RDMlossOutputpath = file.path(config$path$combined, config$RDMcsvs$RDMloss_qualtrics);
+RDMgainOutputpath = file.path(config$path$combined, config$RDMcsvs$RDMgain_qualtrics);
 
 write.csv(file=AXoutputpath, AXallClean_Qualtrics);
-write.csv(file=RDMoutputpath, RDMallClean_Qualtrics);
-#write.csv(file = "/Volumes/CAP/data/combinedData/AXallClean_Qualtrics.csv", AXallClean_Qualtrics);
-#write.csv(file = "/Volumes/CAP/data/combinedData/RDMallClean_Qualtrics.csv", RDMallClean_Qualtrics);
+write.csv(file=RDMbothOutputpath, RDMallClean_Qualtrics);
+write.csv(file=RDMlossOutputpath, RDMallCleanLoss_Qualtrics);
+write.csv(file=RDMgainOutputpath, RDMallCleanGain_Qualtrics);
+
 
 ```
 
