@@ -1,6 +1,7 @@
 # Setting up data for RDManalysis.Rmd which uses 'source' to call this script
 # This script has to be an .R not .Rmd to run
 # This script loads the risky decision making data and the exclusion data, applies the exclusion, deals with missed trials, and creates any variables we need for the analysis (e.g. past outcome)
+# Hayley Brooks, University of Denver
 
 # load packages
 library('config')
@@ -12,25 +13,29 @@ library("ggExtra");
 config = config::get()
 
 # load data 
-rdm_csv = file.path(config$path$combined, config$RDMcsvs$RDM_qualtrics);
-exclsnPhs1_csv = file.path(config$path$combined, config$EXCLUSIONcsvs$RDM_AX_Qual_Phs1exclusion);
-exclsnPhs2_csv = file.path(config$path$combined, config$EXCLUSIONcsvs$RDM_AX_Qual_Phs2exclusion);
+rdmGain_csv = file.path(config$path$combined, config$RDMcsvs$RDMgain_qualtrics); # gain only task path
+rdmLoss_csv = file.path(config$path$combined, config$RDMcsvs$RDMloss_qualtrics); # loss only task path
+exclsnPhs1_csv = file.path(config$path$combined, config$EXCLUSIONcsvs$RDM_AX_Qual_Phs1exclusion); # phase 1 exclusion path
+exclsnPhs2_csv = file.path(config$path$combined, config$EXCLUSIONcsvs$RDM_AX_Qual_Phs2exclusion); # phase 2 exclusion path
 
-rdmQualtrics = read.csv(rdm_csv); # loads RDM + Qualtrics data both phases (takes several seconds)
+rdmGainQualtrics = read.csv(rdmGain_csv); # loads gain only RDM + Qualtrics data both phases (takes several seconds)
+rdmLossQualtrics = read.csv(rdmLoss_csv); # loads loss only RDM + Qualtrics data both phases (takes several seconds)
 excludePhs1 = read.csv(exclsnPhs1_csv); # loads exclusion for phase 1
 excludePhs2 = read.csv(exclsnPhs2_csv); # loads exclusion for phase 2
 
 # Remove the extra "X" column present as the first column in datasets
-rdmQualtrics = rdmQualtrics[,(2:ncol(rdmQualtrics))];
+rdmGainQualtrics = rdmGainQualtrics[,(2:ncol(rdmGainQualtrics))];
+rdmLossQualtrics = rdmLossQualtrics[,(2:ncol(rdmLossQualtrics))];
 excludePhs1 = excludePhs1[,(2:ncol(excludePhs1))];
 excludePhs2 = excludePhs2[,(2:ncol(excludePhs2))];
 
 # we are going to exclude some people so lets save the original number of subjects
-subNumB4exclusion = unique(rdmQualtrics$subID);
-nSubB4exclusion = length(subNumB4exclusion);
+subNumB4exclusion = unique(rdmGainQualtrics$subID);  # there are the same number of participants in gain and loss datasets
+nSubB4exclusion = length(subNumB4exclusion); 
 
 
 ## Apply the exclusions to the data set by place NAs in trials for excluded participants
+  # RDM exclusion applies to both gain and loss datasets
 
 # Phase 1: 
 # RDM: 26 participants excluded
@@ -54,23 +59,30 @@ subIDqualPhs2Exclude = excludePhs2$subID[!is.na(excludePhs2$qualPhs2exclude) & e
 # 
 # column order is funky. RDM stuff is in columns 1-5, 7-14, 17-18, and day, phase, and subID are dispersed throughout.
 rdmColumns = c(1:5,7:14,17:18);
-#rdmColNames = c("rdmRiskyGain", "rdmRiskyLoss","rdmAlternative", "rdmIsi", "rdmIti","rdmItiExtra","rdmRT" ,"rdmOutcome","rdmChoice","rdmGroundEV","rdmEvInd","rdmRunSize" ,"rdmOutcomeType", "rdmTask","rdmTrial");
 
 
 # Qualtrics stuff starts at column 19, or "stai_s_score" until column 70 or "ses_needbasedCollegeAid_recode"
 qualColumns = c(19:70);
 
-#qualColNames = c("stai_s_score", "stai_t_score","pss_score", "pss_stressedToday","uclal_score", "covq_PAB_q1_personalRisk", "covq_PAB_q2_threat", "covq_PAB_q3_personallyDie","covq_PAB_q4_otherPersonDie", "covq_attentionCheck_select_6","covq_attentionCheck_passed", "covq_PAB_q5_currentCases", "covq_PAB_q5_currentCases_recode", "covq_PAB_q6_tested","covq_PAB_q6_tested_recode", "covq_PAB_q7_personalCovidSuspect", "covq_PAB_q7_personalCovidSuspect_recode", "covq_PAB_q8_knowPositivePerson","covq_PAB_q8_knowPositivePerson_recode", "covq_PAB_q9_socialDistanceLevel", "covq_PAB_q9_socialDistanceLevel_recode", "demo_gender","demo_gender_recode", "demo_race","demo_race_recode", "demo_ethnicity","demo_ethnicity_recode", "loc_state","loc_county", "loc_fips", "ses_childhood_freeReducedLunch", "ses_childhood_freeReducedLunch_recode","ses_childhood_communityComp", "ses_childhood_communityComp_recode","ses_childhood_nationalComp", "ses_childhood_nationalComp_recode", "ses_motherEdLevel", "ses_motherEdLevel_recode","ses_fatherEdLevel" , "ses_fatherEdLevel_recode", "ses_childhoood_homeOwnership", "ses_childhoood_homeOwnership_recode","ses_current_billHelp", "ses_current_billHelp_recode","ses_current_mainResponsibilities", "ses_current_mainResponsibilities_recode", "ses_personalEdLevel", "ses_personalEdLevel_recode" ,"ses_financialWorryFreq","ses_financialWorryFreq_recode", "ses_needbasedCollegeAid", "ses_needbasedCollegeAid_recode")
 
+# Put NAs in RDM columns for excluded phase 1 and phase 2 participants in both gain and loss datasets
+# gain task
+rdmGainQualtrics[rdmGainQualtrics$subID %in% subIDrdmPhs1Exclude & rdmGainQualtrics$phase==1,rdmColumns] = NA; # phase 1
+rdmGainQualtrics[rdmGainQualtrics$subID %in% subIDrdmPhs2Exclude & rdmGainQualtrics$phase==2,rdmColumns] = NA; # phase 2
 
-# Put NAs in RDM columns for excluded phase 1 and phase 2 participants
-rdmQualtrics[rdmQualtrics$subID %in% subIDrdmPhs1Exclude & rdmQualtrics$phase==1,rdmColumns] = NA; # phase 1
-rdmQualtrics[rdmQualtrics$subID %in% subIDrdmPhs2Exclude & rdmQualtrics$phase==2,rdmColumns] = NA; # phase 2
+# loss task
+rdmLossQualtrics[rdmLossQualtrics$subID %in% subIDrdmPhs1Exclude & rdmLossQualtrics$phase==1,rdmColumns] = NA; # phase 1
+rdmLossQualtrics[rdmLossQualtrics$subID %in% subIDrdmPhs2Exclude & rdmLossQualtrics$phase==2,rdmColumns] = NA; # phase 2
 
+# Put NAs in Qualtrics columns for excluded phase 1 and phase 2 participants in both gain and loss datasets
+# gain task
+rdmGainQualtrics[rdmGainQualtrics$subID %in% subIDqualPhs1Exclude & rdmGainQualtrics$phase==1,qualColumns] = NA; # phase 1
+rdmGainQualtrics[rdmGainQualtrics$subID %in% subIDqualPhs2Exclude & rdmGainQualtrics$phase==2,qualColumns] = NA; # phase 2
 
-# Put NAs in Qualtrics columns for excluded phase 1 and phase 2 participants
-rdmQualtrics[rdmQualtrics$subID %in% subIDqualPhs1Exclude & rdmQualtrics$phase==1,qualColumns] = NA; # phase 1
-rdmQualtrics[rdmQualtrics$subID %in% subIDqualPhs2Exclude & rdmQualtrics$phase==2,qualColumns] = NA; # phase 2
+# loss task
+rdmLossQualtrics[rdmLossQualtrics$subID %in% subIDqualPhs1Exclude & rdmLossQualtrics$phase==1,qualColumns] = NA; # phase 1
+rdmLossQualtrics[rdmLossQualtrics$subID %in% subIDqualPhs2Exclude & rdmLossQualtrics$phase==2,qualColumns] = NA; # phase 2
+
 
 # Note: if participants were excluded in phase 1, they are not automatically excluded in phase 2!
 
