@@ -191,70 +191,62 @@ write.csv(file=subID_missTri_totTri_OutputPath, subID_missTri_totTri, row.names 
 
 
 
-## Creating variables for analysis 
+## Creating variables for analysis - for much of this, we will want to do the same thing for both gain-only and loss-only datasets.
+
 # add a new variable for phase where phase 1 is now 0 and phase 2 is now 1
-rdmQualtrics$phaseRecode = rdmQualtrics$phase;
-rdmQualtrics$phaseRecode[rdmQualtrics$phaseRecode==1] = 0;
-rdmQualtrics$phaseRecode[rdmQualtrics$phaseRecode==2] = 1;
+# gain task
+rdmGainQualtrics$phaseRecode = rdmGainQualtrics$phase;
+rdmGainQualtrics$phaseRecode[rdmGainQualtrics$phaseRecode==1] = 0;
+rdmGainQualtrics$phaseRecode[rdmGainQualtrics$phaseRecode==2] = 1;
 
-#   still working on - dealing with NAN when trials back is more than 2
-# putting in a nan for the loss trials
+# loss task
+rdmLossQualtrics$phaseRecode = rdmLossQualtrics$phase;
+rdmLossQualtrics$phaseRecode[rdmLossQualtrics$phaseRecode==1] = 0;
+rdmLossQualtrics$phaseRecode[rdmLossQualtrics$phaseRecode==2] = 1;
 
-# Function for create recent event variables for CAP dataset
-cap_past_event_variable <- function(DFname, DFwithVariable, trialsBack, DFwithSubID, DFwithPhase, DFwithTask, newVariable){
+
+
+## Create a function that creates recent event variables for CAP dataset:
+
+cap_past_event_variable <- function(DFname, DFwithVariable, trialsBack, DFwithSubID, DFwithPhase){
   
   newMat = as.data.frame(matrix(data=NA,nrow=nrow(DFname), ncol=3), dimnames=list(c(NULL), c("newVar", "subDiff", "phaseDiff", "taskDiff")));
   
-  newMat[,1] <- DFwithVariable; #take data from columns
-  newMat[(trialsBack + 1):nrow(newMat),1] <- newMat[1:(nrow(newMat)-trialsBack),1]; # removes first row, shifts everything up
-  newMat[1:trialsBack,1] <- NaN #put Nan in for rows that we shifted everything back by
+  newMat$newVar <- DFwithVariable; #take data from columns
+  newMat$newVar[(trialsBack + 1):nrow(newMat)] <- newMat$newVar[1:(nrow(newMat)-trialsBack)]; # removes first row, shifts everything up
+  newMat$newVar[1:trialsBack] <- NaN #put Nan in for rows that we shifted everything back by
   
-  newMat[,2]<-c(0,diff(DFwithSubID)); #put differences between NewSubjectIndex into newvector, 1s show up when subject changes
-  newMat[,3]<-c(0,diff(DFwithPhase));
+  newMat$subDiff<-c(0,diff(DFwithSubID)); #note when sub ID changes
+  newMat$phaseDiff<-c(0,diff(DFwithPhase)); # note when phase changes
   
   
-  subIDchange = which(newMat[,2]!=0,1); # where there is a subject id change
-  phasechange = which(newMat[,3]!=0,1); # where there is a phase change
+  subIDchange = which(newMat$subDiff!=0); # where there is a subject id change
+  phasechange = which(newMat$phaseDiff!=0); # where there is a phase change
   
-  newMat[subIDchange,1] = NaN
-  newMat[phasechange,1] = NaN
+  newMat$newVar[subIDchange] = NaN
+  newMat$newVar[phasechange] = NaN
   
+  if(trialsBack>1){ # if we want to go back more than one trial
+    for (t in 1:(trialsBack-1)) {
+      newMat$newVar[subIDchange+t] = NaN
+      newMat$newVar[phasechange+t] = NaN
+    }
+  }
+  
+  
+  return(newMat$newVar)
 }
 
-DFname = rdmQualtrics
-DFwithVariable = rdmQualtrics$rdmOutcome 
-trialsBack = 1
-DFwithSubID = rdmQualtrics$subID
-DFwithPhase = rdmQualtrics$phase
-DFwithTask = rdmQualtrics$rdmTask
-newVariable = rdmQualtrics$rdmPOC
+
+# Create past outcome variables:
+# gain task:
+rdmGainQualtrics$rdmPOC1 = cap_past_event_variable(rdmGainQualtrics,rdmGainQualtrics$rdmOutcome, 1, rdmGainQualtrics$subID,rdmGainQualtrics$phase); # outcome t-1
+rdmGainQualtrics$rdmPOC2 = cap_past_event_variable(rdmGainQualtrics,rdmGainQualtrics$rdmOutcome, 2, rdmGainQualtrics$subID,rdmGainQualtrics$phase); # outcome t-2
 
 
-# non function version:
-newMat = as.data.frame(matrix(data=NA,nrow=nrow(rdmQualtrics), ncol=4, dimnames=list(c(NULL), c("newVar", "subDiff", "phaseDiff", "taskDiff"))));
-newMat$newVar <- rdmQualtrics$rdmOutcome; #take data from columns
-newMat$newVar[2:nrow(newMat)] <- newMat$newVar[1:(nrow(newMat)-1)]; # removes first row, shifts everything up
-newMat$newVar[1] <- NaN #put Nan in for first row (first trial for subject 1, bc there is no past trial)
+# loss task:
+rdmLossQualtrics$rdmPOC1 = cap_past_event_variable(rdmLossQualtrics,rdmLossQualtrics$rdmOutcome, 1, rdmLossQualtrics$subID,rdmLossQualtrics$phase); # outcome t-1
 
-newMat$subDiff<-c(0,diff(rdmQualtrics$subID)); #put differences between NewSubjectIndex into newvector, 1s show up when subject changes
-newMat$phaseDiff<-c(0,diff(rdmQualtrics$phase));
-newMat$taskDiff<-c(0,diff(rdmQualtrics$rdmTask));
-
-subIDchange = which(newMat$subDiff!=0); # where there is a subject id change
-phasechange = which(newMat$phaseDiff!=0); # where there is a phase change
-taskchange = which(newMat$taskDiff!=0); # where the task changed (gain only to loss only)
+rdmLossQualtrics$rdmPOC2 = cap_past_event_variable(rdmLossQualtrics,rdmLossQualtrics$rdmOutcome, 2, rdmLossQualtrics$subID,rdmLossQualtrics$phase); # outcome t-2
 
 
-newMat$newVar[subIDchange] = NaN;
-newMat$newVar[phasechange] = NaN;
-newMat$newVar[taskchange] = NaN;
-
-
-# how to fill in NaN when trials back is more than 1 trial:
-#if(trialsBack >1){
-
-#}
-
-
-
-rdmQualtrics$rdmPOC = newMat$newVar;# add new vector to
