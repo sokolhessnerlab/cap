@@ -189,14 +189,9 @@ write.csv(file=subID_missTri_totTri_OutputPath, subID_missTri_totTri, row.names 
 
 
 
-# Summary:
-# After excluding 
 
 
-
-
-
-## Creating variables for analysis - was in the process of making a function to do the recent event variables and then we decided to separate loss task from RDM gain only - come back to this once that separation is taken care of.
+## Creating variables for analysis 
 # add a new variable for phase where phase 1 is now 0 and phase 2 is now 1
 rdmQualtrics$phaseRecode = rdmQualtrics$phase;
 rdmQualtrics$phaseRecode[rdmQualtrics$phaseRecode==1] = 0;
