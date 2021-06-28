@@ -8,6 +8,7 @@
 
 # Hayley Brooks, University of Denver
 
+
 # load packages
 library('config')
 library("lme4");
@@ -22,6 +23,8 @@ rdmGain_csv = file.path(config$path$combined, config$RDMcsvs$RDMgain_qualtrics);
 rdmLoss_csv = file.path(config$path$combined, config$RDMcsvs$RDMloss_qualtrics); # loss only task path
 exclsnPhs1_csv = file.path(config$path$combined, config$EXCLUSIONcsvs$RDM_AX_Qual_Phs1exclusion); # phase 1 exclusion path
 exclsnPhs2_csv = file.path(config$path$combined, config$EXCLUSIONcsvs$RDM_AX_Qual_Phs2exclusion); # phase 2 exclusion path
+
+
 
 rdmGainQualtrics = read.csv(rdmGain_csv); # loads gain only RDM + Qualtrics data both phases (takes several seconds)
 rdmLossQualtrics = read.csv(rdmLoss_csv); # loads loss only RDM + Qualtrics data both phases (takes several seconds)
@@ -191,7 +194,7 @@ write.csv(file=subID_missTri_totTri_OutputPath, subID_missTri_totTri, row.names 
 
 
 
-## Creating variables for analysis - for much of this, we will want to do the same thing for both gain-only and loss-only datasets.
+## CREATING NEW VARIABLES FOR ANALYSES! 
 
 # add a new variable for phase where phase 1 is now 0 and phase 2 is now 1
 # gain task
@@ -208,7 +211,13 @@ rdmLossQualtrics$phaseRecode[rdmLossQualtrics$phaseRecode==2] = 1;
 
 ## Create a function that creates recent event variables for CAP dataset:
 
-cap_past_event_variable <- function(DFname, DFwithVariable, trialsBack, DFwithSubID, DFwithPhase){
+cap_past_event_variable <- function(DFname, DFwithVariable, trialsBack, DFwithSubID, DFwithPhase, scaled){
+  # DFname = name of the dataframe
+  # DFwithVariable = full name of dataframe + variable name (e.g. rdmGainQualtrics$outcome)
+  # trialsBack = numeric; how many trials are we look back?
+  # DFwithSubID = full name of dataframe + sub id variable (e.g. rdmGainQualtrics$subID)
+  # DFwithPhase = full name of dataframe + phase variable (e.g. rdmGainQualtrics$phase)
+  # scaled = 1 = yes, 0 = no (scaled by max risky gain amount)
   
   newMat = as.data.frame(matrix(data=NA,nrow=nrow(DFname), ncol=3), dimnames=list(c(NULL), c("newVar", "subDiff", "phaseDiff", "taskDiff")));
   
@@ -233,7 +242,6 @@ cap_past_event_variable <- function(DFname, DFwithVariable, trialsBack, DFwithSu
     }
   }
   
-  
   return(newMat$newVar)
 }
 
@@ -243,10 +251,117 @@ cap_past_event_variable <- function(DFname, DFwithVariable, trialsBack, DFwithSu
 rdmGainQualtrics$rdmPOC1 = cap_past_event_variable(rdmGainQualtrics,rdmGainQualtrics$rdmOutcome, 1, rdmGainQualtrics$subID,rdmGainQualtrics$phase); # outcome t-1
 rdmGainQualtrics$rdmPOC2 = cap_past_event_variable(rdmGainQualtrics,rdmGainQualtrics$rdmOutcome, 2, rdmGainQualtrics$subID,rdmGainQualtrics$phase); # outcome t-2
 
-
 # loss task:
 rdmLossQualtrics$rdmPOC1 = cap_past_event_variable(rdmLossQualtrics,rdmLossQualtrics$rdmOutcome, 1, rdmLossQualtrics$subID,rdmLossQualtrics$phase); # outcome t-1
-
 rdmLossQualtrics$rdmPOC2 = cap_past_event_variable(rdmLossQualtrics,rdmLossQualtrics$rdmOutcome, 2, rdmLossQualtrics$subID,rdmLossQualtrics$phase); # outcome t-2
+
+
+# Scale variables:
+scaleby = max(rdmGainQualtrics$rdmRiskyGain, na.rm = T);
+rdmGainQualtrics$rdmGainSC = rdmGainQualtrics$rdmRiskyGain/scaleby;
+rdmGainQualtrics$rdmSafeSC = rdmGainQualtrics$rdmAlternative/scaleby;
+rdmGainQualtrics$rdmPOC1sc = rdmGainQualtrics$rdmPOC1/scaleby;
+rdmGainQualtrics$rdmPOC2sc = rdmGainQualtrics$rdmPOC2/scaleby;
+
+
+
+# Calculate cumulative earnings (within each phase) for each participant and scale trial so that it is 0-1 for each participant
+# earnings will be 0 to 1, normalized by each participant's max earnings
+# save the max cumulative earnings for each person in a vector
+
+earningsByPhase = vector(); # to store all earnings for each participant
+earningsByPhaseScaled = vector(); # to store earnings scaled by each participants' max earnings within each phase
+trialByPhase = vector(); # to store scaled trial for each participant
+
+maxEarnSubPhase= as.data.frame(matrix(data=NA, nrow = nSubB4exclusion, ncol = 3, dimnames=list(c(NULL), c("subID","maxEarnPhs1", "maxEarnPhs2")))); 
+maxEarnSubPhase$subID = 1:nSubB4exclusion;
+
+for (s in 1:nSubB4exclusion) {
+  sub = rdmGainQualtrics[rdmGainQualtrics$subID==subNumB4exclusion[s],]
+  earningsSub = vector(); # reset earnings vector for each participant
+  trialScaled = vector(); # reset trial vector for each participant
+  earningsSubScaled = vector(); # reset scaled earnings vector for each participant
+  
+  # cumsum function below breaks with NAs, and using na.omit leads cumsum to skip those trials which we don't want. For missed trials ,we want the earnings to be the same as the previous trial, so we deal with it by doing the following:
+  tmp = sub$rdmOutcome; # store subjects outcomes
+  miss = is.na(tmp); # where are the missing trials?
+  tmp[miss] = 0; # replace missing outcomes (NAs) with a 0
+  
+  
+  if (length(unique(sub$phase))==1){ # if sub has phase 1 data only:
+
+    earningsSub = cumsum(tmp); # skip over Nas when calculating cumulative earnings
+    trialScaled = sub$rdmTrial[sub$phase==1]/max(sub$rdmTrial[sub$phase==1]); # scaled trial by max number of trials for participant in phase 1
+    maxEarnSubPhase$maxEarnPhs1[s] = max(earningsSub);
+    earningsSubScaled = earningsSub/max(earningsSub);
+    
+  } else { # if sub has data from phase 1 and 2:
+    earningsSub = c(cumsum(tmp[sub$phase==1]), cumsum(tmp[sub$phase==2]));
+    trialScaled = c(sub$rdmTrial[sub$phase==1]/max(sub$rdmTrial[sub$phase==1]),sub$rdmTrial[sub$phase==2]/max(sub$rdmTrial[sub$phase==2]));
+    maxEarnSubPhase$maxEarnPhs1[s] = max(cumsum(tmp[sub$phase==1]));
+    maxEarnSubPhase$maxEarnPhs2[s] = max(cumsum(tmp[sub$phase==2]));
+    
+    earningsSubScaled = c(cumsum(tmp[sub$phase==1])/max(cumsum(tmp[sub$phase==1])), cumsum(tmp[sub$phase==2])/max(cumsum(tmp[sub$phase==2])));
+  }
+
+  earningsByPhase = c(earningsByPhase,earningsSub);
+  trialByPhase = c(trialByPhase,trialScaled);
+  earningsByPhaseScaled = c(earningsByPhaseScaled,earningsSubScaled)
+  
+}
+
+rdmGainQualtrics$rdmEarnings = earningsByPhase;
+rdmGainQualtrics$rdmEarningSC = earningsByPhaseScaled;
+rdmGainQualtrics$rdmTrialSC = trialByPhase;
+
+# Replace 0s in the maxEarnSubPhase dataframe with NAs (there are 0s because we had to make them 0s for cumsum to work the way we want)
+maxEarnSubPhase$maxEarnPhs1[maxEarnSubPhase$maxEarnPhs1==0]= NA;
+maxEarnSubPhase$maxEarnPhs2[maxEarnSubPhase$maxEarnPhs2==0]= NA;
+
+# quick summary about cumulative earnings: 
+# phase 1: range = $1394 - $2549, median = $1891, mean = $1901
+# phase 2: range = $1354 - $2700, median = $1870, mean = $1890
+
+
+
+# Make a day overall variable (1:40 instead of 1:20) because even though 1:20 os true within-phase, its 1:40 across phases (or across the entire experiment)
+rdmGainQualtrics$dayOverall = rdmGainQualtrics$day + rdmGainQualtrics$phaseRecode*20;
+rdmLossQualtrics$dayOverall = rdmLossQualtrics$day + rdmLossQualtrics$phaseRecode*20;
+
+# Rescale day to be 0-1
+rdmGainQualtrics$daySC = rdmGainQualtrics$day/max(rdmGainQualtrics$day)
+rdmGainQualtrics$dayOverallSC = rdmGainQualtrics$dayOverall/max(rdmGainQualtrics$dayOverall)
+
+rdmLossQualtrics$daySC = rdmLossQualtrics$day/max(rdmLossQualtrics$day)
+rdmLossQualtrics$dayOverallSC = rdmLossQualtrics$dayOverall/max(rdmLossQualtrics$dayOverall)
+
+
+# Scale affective variables by max values for each affective measure
+rdmGainQualtrics$stai_s_score_scaled = rdmGainQualtrics$stai_s_score/max(rdmGainQualtrics$stai_s_score, na.rm = T);
+rdmGainQualtrics$stai_t_score_scaled = rdmGainQualtrics$stai_t_score/max(rdmGainQualtrics$stai_t_score, na.rm = T);
+rdmGainQualtrics$uclal_score_scaled = rdmGainQualtrics$uclal_score/max(rdmGainQualtrics$uclal_score, na.rm = T);
+rdmGainQualtrics$pss_score_scaled = rdmGainQualtrics$pss_score/max(rdmGainQualtrics$pss_score, na.rm = T);
+
+rdmGainQualtrics$covq_PAB_q1_personalRisk_scaled = rdmGainQualtrics$covq_PAB_q1_personalRisk/max(rdmGainQualtrics$covq_PAB_q1_personalRisk, na.rm = T)
+
+rdmGainQualtrics$covq_PAB_q1_personalRisk_scaledNoNA = rdmGainQualtrics$covq_PAB_q1_personalRisk_scaled;
+rdmGainQualtrics$covq_PAB_q1_personalRisk_scaledNoNA[is.na(rdmGainQualtrics$covq_PAB_q1_personalRisk_scaledNoNA)] = 0;
+
+rdmLossQualtrics$stai_s_score_scaled = rdmLossQualtrics$stai_s_score/max(rdmLossQualtrics$stai_s_score,na.rm = T);
+rdmLossQualtrics$stai_t_score_scaled = rdmLossQualtrics$stai_t_score/max(rdmLossQualtrics$stai_t_score,na.rm = T);
+rdmLossQualtrics$uclal_score_scaled = rdmLossQualtrics$uclal_score/max(rdmLossQualtrics$uclal_score, na.rm = T);
+rdmLossQualtrics$pss_score_scaled = rdmLossQualtrics$pss_score/max(rdmLossQualtrics$pss_score, na.rm = T);
+
+rdmLossQualtrics$covq_PAB_q1_personalRisk_scaled = rdmLossQualtrics$covq_PAB_q1_personalRisk/max(rdmLossQualtrics$covq_PAB_q1_personalRisk, na.rm = T)
+
+rdmLossQualtrics$covq_PAB_q1_personalRisk_scaledNoNA = rdmLossQualtrics$covq_PAB_q1_personalRisk_scaled;
+rdmLossQualtrics$covq_PAB_q1_personalRisk_scaledNoNA[is.na(rdmLossQualtrics$covq_PAB_q1_personalRisk_scaledNoNA)] = 0;
+
+
+# For gain only task, create variables for shift analysis
+rdmGainQualtrics$signedShift = c(0, diff(rdmGainQualtrics$rdmGroundEV));
+rdmGainQualtrics$signedShift[rdmGainQualtrics$rdmTrial==1] = 0; # first trial is always 0
+rdmGainQualtrics$posShift = rdmGainQualtrics$signedShift*as.numeric(rdmGainQualtrics$signedShift>0);
+rdmGainQualtrics$negShift = rdmGainQualtrics$signedShift*as.numeric(rdmGainQualtrics$signedShift<0);
 
 
