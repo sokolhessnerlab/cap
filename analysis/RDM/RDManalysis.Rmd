@@ -5,8 +5,9 @@ date: "5/13/2021"
 output: html_document
 ---
 
-Data set up is taken care of by RDMsteup.Rmd script. HRB working on the configuration part so it will run automatically in this script but until then it has to be run by hand.
+Data set up is taken care of by RDMsteup.R script. 
 ```{r setup, include=FALSE}
+rm(list=ls())
 
 library('config')
 config = config::get()
@@ -17,31 +18,43 @@ source(setup_source) #, local = knitr::knit_global())
 
 ```
 
+Plot an example choice set for the gain-only task
+```{r}
+plot(rdmGainQualtrics$rdmAlternative[rdmGainQualtrics$subID==1], col=rdmGainQualtrics$rdmGroundEV, pch=16, xlab="trial", ylab="safe ($)", main="Safe amounts across the task\ncolors = levels")
+
+plot(rdmGainQualtrics$rdmRiskyGain[rdmGainQualtrics$subID==1], col=rdmGainQualtrics$rdmGroundEV, pch=16, xlab="trial", ylab="risky gain ($)", main="Risky gain amounts across the task\ncolors = levels")
+
+plot(rdmGainQualtrics$rdmGroundEV[rdmGainQualtrics$subID==1], col=rdmGainQualtrics$rdmGroundEV, pch=16, xlab="trial", ylab="levelor context ($)", main="Context created by shared expected values")
+
+
+```
+ 
+
 
 ### Risky decision-making analysis
-#### Probability of gambling
+#### Probability of gambling GAIN ONLY TASK
 ```{r}
 # GROUP LEVEL
-Phs1Pgam = mean(rdmQualtrics$rdmChoice[rdmQualtrics$phase==1], na.rm=T); # phase 1 pgamble = 0.3901198
-Phse2Pgam = mean(rdmQualtrics$rdmChoice[rdmQualtrics$phase==2], na.rm=T); # phase 2 pgamble = 0.3783025
-bothPhsPgam = mean(rdmQualtrics$rdmChoice[rdmQualtrics$subID %in% BothPhsSubIDs], na.rm=T); # pgamble across participants who completed both phase 1 and phase (n=313) = 0.3867135
+
+Phs1Pgam = mean(rdmGainQualtrics$rdmChoice[rdmGainQualtrics$phase==1], na.rm=T); # phase 1 pgamble = 0.3901198
+Phse2Pgam = mean(rdmGainQualtrics$rdmChoice[rdmGainQualtrics$phase==2], na.rm=T); # phase 2 pgamble = 0.3783025
+bothPhsPgam = mean(rdmGainQualtrics$rdmChoice[rdmGainQualtrics$subID %in% BothPhsSubIDs], na.rm=T); # pgamble across participants who completed both phase 1 and phase (n=313) = 0.3867135
 
 # 95% CI
 # phase 1 (n=518)
-me1 = qnorm(.975)*(Phs1Pgam/sqrt(Phs1nSub)); #0.03359551
-Phs1Pgam + me1; #0.4237153
-Phs1Pgam - me1; #0.3565243
+me1 = qnorm(.975)*(Phs1Pgam/sqrt(Phs1nSub)); #0.03277965
+Phs1Pgam + me1; #0.4134254
+Phs1Pgam - me1; #0.3478662
 
 # phase 2 (n=326)
-me2 = qnorm(.975)*(Phse2Pgam/sqrt(Phs2nSub)); #0.04106563
-Phse2Pgam + me2; #0.4193681
-Phse2Pgam - me2; #0.3372368
+me2 = qnorm(.975)*(Phse2Pgam/sqrt(Phs2nSub)); #0.04032889
+Phse2Pgam + me2; #0.4118445
+Phse2Pgam - me2; #0.3311867
 
 # phase 1 and phase 2 (n = 313)
-me3 = qnorm(.975)*(bothPhsPgam/sqrt(BothPhsnSub)); #0.04284156
-bothPhsPgam + me3; #0.4295551
-bothPhsPgam - me3; #0.343872
-
+me3 = qnorm(.975)*(bothPhsPgam/sqrt(BothPhsnSub)); #0.04192421
+bothPhsPgam + me3; #0.4203572
+bothPhsPgam - me3; #0.3365088
 
 
 # INDIVIDUAL LEVEL
@@ -53,9 +66,9 @@ pGambleSubID = as.data.frame(matrix(data=NA, nrow =nSubB4exclusion, ncol=6, dimn
 for (s in 1:nSubB4exclusion) {
   
   
-  subPhs1 = rdmQualtrics[rdmQualtrics$subID==subNumB4exclusion[s] & rdmQualtrics$phase==1,rdmColumns];
-  subPhs2 = rdmQualtrics[rdmQualtrics$subID==subNumB4exclusion[s] & rdmQualtrics$phase==2,rdmColumns];
-  subDay = rdmQualtrics$day[rdmQualtrics$subID==subNumB4exclusion[s]]
+  subPhs1 = rdmGainQualtrics[rdmGainQualtrics$subID==subNumB4exclusion[s] & rdmGainQualtrics$phase==1,rdmColumns];
+  subPhs2 = rdmGainQualtrics[rdmGainQualtrics$subID==subNumB4exclusion[s] & rdmGainQualtrics$phase==2,rdmColumns];
+  subDay = rdmGainQualtrics$day[rdmGainQualtrics$subID==subNumB4exclusion[s]]
   
   pGambleSubID$subID[s] = subNumB4exclusion[s]
   pGambleSubID$day[s] = subDay[1]
@@ -66,5 +79,50 @@ for (s in 1:nSubB4exclusion) {
  
 };
 
+# plot histogram of the change in risk-taking between phases (diff > 0 = more risk taking phase 1; diff < 0 =more risk taking phase 2; diff = 0, similar risk taking across phases)
+summary(pGambleSubID$diffPgam); # mean = -.0112 (indicating generally more risk taking in phase 2)
+hist(pGambleSubID$diffPgam, main="Distribution of change in risk taking", xlab="change in risk-taking\n p(gamble phase 1) - p(gamble phase 2)", ylab="number of participants",breaks = 100);
+
+
+plot(pGambleSubID$phs1pgam, pGambleSubID$phs2pgam, abline(a=0, b=1), xlab="p(gamble phase 1)", ylab="p(gamble phase 2)", main="Risk-taking in both phases (mean in red)");
+points(mean(pGambleSubID$phs1pgam,na.rm=T), mean(pGambleSubID$phs2pgam,na.rm=T), col="red", pch=17);
+
+
 ```
+
+#### Simple regressions for risky decision-making GAIN ONLY TASK
+```{r}
+# these models take a few minutes each
+m1phase=glmer(rdmChoice~ 1 + rdmGainSC + rdmSafeSC + rdmGroundEV + phaseRecode + dayOverallSC + (0 + rdmGainSC + rdmSafeSC|subID),data=rdmGainQualtrics,family="binomial", control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) );
+
+Summary(m1phase); # AIC = 73516.2
+
+#              Estimate Std. Error z value Pr(>|z|)    
+#(Intercept)   -0.46892    0.04361 -10.753  < 2e-16 ***
+#rdmGainSC     13.65856    0.60706  22.500  < 2e-16 ***
+#rdmSafeSC    -37.95784    1.21530 -31.233  < 2e-16 ***
+#rdmGroundEV    0.12255    0.02589   4.734 2.21e-06 ***
+#phaseRecode   -0.20388    0.07474  -2.728  0.00637 ** 
+#dayOverallSC   0.22000    0.14472   1.520  0.12847  
+
+# less risk taking in phase 2
+
+m1stais = glmer(rdmChoice~  1 + rdmGainSC +rdmSafeSC + rdmGroundEV + stai_s_score_scaled + (0 + rdmGainSC + rdmSafeSC|subID), data=rdmGainQualtrics, family="binomial", control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) );
+# no effect of stais
+# AIC = 73317.3
+
+m1stait = glmer(rdmChoice~  1 + rdmGainSC +rdmSafeSC + rdmGroundEV + stai_t_score_scaled + (0 + rdmGainSC + rdmSafeSC|subID), data=rdmGainQualtrics, family="binomial", control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) );
+# AIC = 
+
+m1uclal = glmer(rdmChoice~  1 + rdmGainSC +rdmSafeSC + rdmGroundEV + uclal_score_scaled + (0 + rdmGainSC + rdmSafeSC|subID), data=rdmGainQualtrics, family="binomial", control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) );
+# AIC = 
+
+m1pss = glmer(rdmChoice~  1 + rdmGainSC +rdmSafeSC + rdmGroundEV + pss_score_scaled + (0 + rdmGainSC + rdmSafeSC|subID), data=rdmGainQualtrics, family="binomial", control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) )
+# AIC = 
+
+m1covidrisk = glmer(rdmChoice~  1 + rdmGainSC + rdmSafeSC + rdmGroundEV + covq_PAB_q1_personalRisk_scaledNoNA + (0 + rdmGainSC + rdmSafeSC|subID), data=rdmGainQualtrics, family="binomial", control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) )
+# AIC = 
+
+```
+
 
