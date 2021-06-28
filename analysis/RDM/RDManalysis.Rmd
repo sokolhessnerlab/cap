@@ -93,9 +93,9 @@ points(mean(pGambleSubID$phs1pgam,na.rm=T), mean(pGambleSubID$phs2pgam,na.rm=T),
 #### Simple regressions for risky decision-making GAIN ONLY TASK
 ```{r}
 # these models take a few minutes each
-m1phase=glmer(rdmChoice~ 1 + rdmGainSC + rdmSafeSC + rdmGroundEV + phaseRecode + dayOverallSC + (0 + rdmGainSC + rdmSafeSC|subID),data=rdmGainQualtrics,family="binomial", control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) );
+m1phaseDay=glmer(rdmChoice~ 1 + rdmGainSC + rdmSafeSC + rdmGroundEV + phaseRecode + dayOverallSC + (0 + rdmGainSC + rdmSafeSC|subID),data=rdmGainQualtrics,family="binomial", control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) );
 
-Summary(m1phase); # AIC = 73516.2
+Summary(m1phaseDay); # AIC = 73516.2
 
 #              Estimate Std. Error z value Pr(>|z|)    
 #(Intercept)   -0.46892    0.04361 -10.753  < 2e-16 ***
@@ -107,22 +107,75 @@ Summary(m1phase); # AIC = 73516.2
 
 # less risk taking in phase 2
 
+
+m1phase=glmer(rdmChoice~ 1 + rdmGainSC + rdmSafeSC + rdmGroundEV + phaseRecode  + (0 + rdmGainSC + rdmSafeSC|subID),data=rdmGainQualtrics,family="binomial", na.action=na.exclude, control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) );
+
+Summary(m1phase); # AIC =73516.4
+#              Estimate Std. Error z value Pr(>|z|)    
+# (Intercept)  -0.41266    0.02299 -17.949  < 2e-16 ***
+# rdmGainSC    13.65568    0.61218  22.306  < 2e-16 ***
+# rdmSafeSC   -37.95829    1.10180 -34.451  < 2e-16 ***
+# rdmGroundEV   0.12271    0.02488   4.932 8.13e-07 ***
+# phaseRecode  -0.09491    0.02116  -4.486 7.27e-06 ***
+
+
 m1stais = glmer(rdmChoice~  1 + rdmGainSC +rdmSafeSC + rdmGroundEV + stai_s_score_scaled + (0 + rdmGainSC + rdmSafeSC|subID), data=rdmGainQualtrics, family="binomial", control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) );
 # no effect of stais
 # AIC = 73317.3
 
 m1stait = glmer(rdmChoice~  1 + rdmGainSC +rdmSafeSC + rdmGroundEV + stai_t_score_scaled + (0 + rdmGainSC + rdmSafeSC|subID), data=rdmGainQualtrics, family="binomial", control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) );
-# AIC = 
+# no effect of stait
+# AIC = 73318.2 
 
 m1uclal = glmer(rdmChoice~  1 + rdmGainSC +rdmSafeSC + rdmGroundEV + uclal_score_scaled + (0 + rdmGainSC + rdmSafeSC|subID), data=rdmGainQualtrics, family="binomial", control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) );
-# AIC = 
+# no effect of uclal
+# AIC =  73317.8  
 
 m1pss = glmer(rdmChoice~  1 + rdmGainSC +rdmSafeSC + rdmGroundEV + pss_score_scaled + (0 + rdmGainSC + rdmSafeSC|subID), data=rdmGainQualtrics, family="binomial", control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) )
-# AIC = 
+# no effect of pss
+# AIC = 73317.8
 
-m1covidrisk = glmer(rdmChoice~  1 + rdmGainSC + rdmSafeSC + rdmGroundEV + covq_PAB_q1_personalRisk_scaledNoNA + (0 + rdmGainSC + rdmSafeSC|subID), data=rdmGainQualtrics, family="binomial", control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) )
-# AIC = 
+m1covidrisk = glmer(rdmChoice~  1 + rdmGainSC + rdmSafeSC + rdmGroundEV + covq_PAB_q1_personalRisk_scaledNoNA  + (0 + rdmGainSC + rdmSafeSC|subID), data=rdmGainQualtrics, family="binomial", na.action=na.exclude, control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) ); # adding "na.action = na.exclude" retains original row number which we need when pulling out residuals
+
+# AIC = 73465.6
+#                                      Estimate Std. Error z value Pr(>|z|)    
+# (Intercept)                          -0.08316    0.04824  -1.724   0.0847 .  
+# rdmGainSC                            13.64850    0.59595  22.902  < 2e-16 ***
+# rdmSafeSC                           -38.02249    1.10598 -34.379  < 2e-16 ***
+# rdmGroundEV                           0.12352    0.02482   4.977 6.46e-07 ***
+# covq_PAB_q1_personalRisk_scaledNoNA  -0.62479    0.07379  -8.467  < 2e-16 ***
+
+
+# Affective measures... 
+# - No observed effects (at this level) for STAIS, STAIT, UCLA-L or PSS
+# - covid risk measure predicts less risk -taking
+# model w/ covid risk (AIC = 73465.6) outperforms model with phase and day(AIC = 73516.2) and just phase (AIC =73516.4)
+
+# Should we use covid risk as our model moving forward?
+
+# Get and save predicted values (i.e. residuals)
+rdmGainQualtrics$predm1cr = predict(m1covidrisk, type="link"); # residuals from covid risk model
+rdmGainQualtrics$predm1phs = predict(m1phase, type="link"); # residuals from m1phse
 
 ```
 
+Temporal context + RDM - left off here
+```{r}
+
+# using the residuals from the covid risk model ('pred1mcr') for now since it was the best fitting model
+
+mPotcShiftEarn = glmer(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC + posShift +  (1|subID), data=rdmGainQualtrics, family="binomial", offset=predm1cr);
+# AIC =  67115.6 
+#                         Estimate Std. Error z value Pr(>|z|)    
+# rdmPOC1sc               0.194549   0.059275   3.282  0.00103 ** 
+# rdmEarningSC           -0.047262   0.025171  -1.878  0.06043 .  
+# posShift                0.017172   0.004239   4.051 5.11e-05 ***
+# rdmPOC1sc:rdmEarningSC -0.381397   0.116458  -3.275  0.00106 ** 
+
+```
+
+Affective measures
+```{r}
+
+```
 
