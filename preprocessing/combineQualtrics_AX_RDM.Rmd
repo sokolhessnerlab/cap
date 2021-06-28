@@ -1,5 +1,5 @@
 ---
-title: "CAP study: Add scored qualtrics data to AX and RDM clean datasets"
+title: "CAP study: Add scored qualtrics and quartiles data to AX and RDM clean datasets"
 author: "Hayley Brooks"
 ---
 
@@ -17,11 +17,16 @@ config = config::get()
 
 # load data
 scoredQualtricsPath = file.path(config$path$combined, config$QUALTRICScsvs$Combined_subID_scored_noDuplicates); # scored qualtrics
-scoredQualtrics = read.csv(scoredQualtricsPath)
+scoredQualtrics = read.csv(scoredQualtricsPath);
+
+stateQuartile_csv = file.path("../documentation",config$documentationFiles); # not sure if this will work for everyone but if you're located in the GitHub 'cap/preprocessing/' directory, then this will take you to the cap/documentation directory where the stateQuartile.csv file is located.
+
+
 
 
 rdmDFpath = file.path(config$path$combined, config$RDMcsvs$RDM_allClean); # RDM dataset (both gain and loss tasks)
 rdmDF = read.csv(rdmDFpath);
+stateQuartile = read.csv(stateQuartile_csv); # load state and quartile information
 
 
 axDFpath = file.path(config$path$combined, config$AXcsvs$AX_allClean); # AX dataset
@@ -61,6 +66,35 @@ RDMallClean_Qualtrics = join(rdmDF,qualtricsDF, by=c("subID","phase"));  # RDM
 # using the 'merge' function merges the datasets but rearranges the rows within each participant which is not great if we want to do to temporal stuff. using the join function allows us to merge the datasets and preserve row order.
 
 ```
+
+
+
+Add quartile information based on "loc_state"
+```{r}
+
+#RDM
+tmpQuartileVec = RDMallClean_Qualtrics$loc_state; # create temporary vector and store state info
+tmpQuartileVec[tmpQuartileVec %in% stateQuartile$Quartile.1] = 1; # quartile 1
+tmpQuartileVec[tmpQuartileVec %in% stateQuartile$Quartile.2] = 2; # quartile 2
+tmpQuartileVec[tmpQuartileVec %in% stateQuartile$Quartile.3] = 3; # quartile 3
+tmpQuartileVec[tmpQuartileVec %in% stateQuartile$Quartile.4] = 4; # quartile 4
+tmpQuartileVec[tmpQuartileVec == "District of Columbia"] = 2; # DC is "Columbia" in stateQuartile csv
+
+RDMallClean_Qualtrics$quartile = as.numeric(tmpQuartileVec); # everyone should have 1-4 for quartile except for sub ID 461 phase 1 bc we don't have qualtrics responses for this person.
+
+#AX
+tmpQuartileVec = AXallClean_Qualtrics$loc_state; # create temporary vector and store state info
+tmpQuartileVec[tmpQuartileVec %in% stateQuartile$Quartile.1] = 1; # quartile 1
+tmpQuartileVec[tmpQuartileVec %in% stateQuartile$Quartile.2] = 2; # quartile 2
+tmpQuartileVec[tmpQuartileVec %in% stateQuartile$Quartile.3] = 3; # quartile 3
+tmpQuartileVec[tmpQuartileVec %in% stateQuartile$Quartile.4] = 4; # quartile 4
+tmpQuartileVec[tmpQuartileVec == "District of Columbia"] = 2; # DC is "Columbia" in stateQuartile csv
+
+AXallClean_Qualtrics$quartile = as.numeric(tmpQuartileVec); # everyone should have 1-4 for quartile except for sub ID 461 phase 1 bc we don't have qualtrics responses for this person.
+
+```
+
+
 
 Create separate datasets for the gain only and loss only tasks (but keep the original one as is: "RDMallClean_Qualtrics")
 ```{r}
