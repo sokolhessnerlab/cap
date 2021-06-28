@@ -155,29 +155,31 @@ Any files added to the "preprocessing" folder should be included in this list al
 
 ## 12. [combineQualtrics_AX_RDM.Rmd](./combineQualtrics_AX_RDM.Rmd)
 
--   Loads 3 datasets:
+-   Loads 4 datasets:
     1) QualtricsCombined_subID_scored_noDuplicates.csv
     2) RDMallClean.csv
     3) AXallClean.csv
+    4) stateQuartiles.csv
 
 -   Adds some of the Qualtrics data to the RDM and AX datasets 
--   Scored qualtrics responses, covid questions, location (fips), SES are added to RDM and AX but responses to each STAIS, STAIT, UCLA-L, PSS are not included.
+-   Scored qualtrics responses, covid questions, location (fips), SES are added to RDM and AX but responses to each STAIS, STAIT, UCLA-L, PSS question are not included.
+-   Adds quartile information
 -   Creates separate datasets for gain-only and loss-ony RDM tasks, both of which will have qualtrics information.
 
 -   output #1: AXallClean_Qualtrics.csv
     
-    -   108091 rows with 61 variables
+    -   108091 rows with 62 variables
     -   all of AX data with scored qualtrics responses (544 participants, 2 phases)
     
 -   output #2: RDMallClean_Qualtrics.csv
 
-    -   124572 rows with 70 variables
+    -   124572 rows with 71 variables
     -   all of RDM data (both gain and loss tasks) with scored qualtrics responses (544 participants, 2 phases)
 
 -   output #3: RDMallCleanGain_Qualtrics.csv
-    -   107219 rows with 70 variables
+    -   107219 rows with 71 variables
     -   RDM GAIN-ONLY data with scored qualtrics responses (544 participants, 2 phases)
 
 -   output #4: RDMallCleanLoss_Qualtrics.csv  
-    -   17353 rows with 70 variables
+    -   17353 rows with 71 variables
     -   RDM LOSS-ONLY data with scored qualtrics responses (544 participants, 2 phases)
