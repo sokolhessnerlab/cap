@@ -59,3 +59,4 @@ ses_financialWorryFreq,How often do you worry about financial matters?,"{""Often
 ses_financialWorryFreq_recode,Recoded to numeric scale: How often do you worry about financial matters?,"{0=Almost never, 1=Once in a while, 2=Sometimes, 3=Often, 4=Almost all the time}}",int (scale),0,4,
 ses_needbasedCollegeAid,Do or did you qualify for need-based (not merit-based) financial aid in college?,"{""I do/did not attend college"",""No"", ""Yes"" }",character,,,
 ses_needbasedCollegeAid_recode,Recoded to numeric categorization: Do or did you qualify for need-based (not merit-based) financial aid in college?,"{0=No, 1=Yes, 3=I do/did not attent college}",int (categorical),,,
+quartile,Quartile participant belongs to based on their state responses. Quartile information is located in a stateQuartile.csv file in documentation directory,"{1,2,3,4}",int,1,4,
