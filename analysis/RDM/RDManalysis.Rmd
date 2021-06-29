@@ -24,7 +24,7 @@ plot(rdmGainQualtrics$rdmAlternative[rdmGainQualtrics$subID==1], col=rdmGainQual
 
 plot(rdmGainQualtrics$rdmRiskyGain[rdmGainQualtrics$subID==1], col=rdmGainQualtrics$rdmGroundEV, pch=16, xlab="trial", ylab="risky gain ($)", main="Risky gain amounts across the task\ncolors = levels")
 
-plot(rdmGainQualtrics$rdmGroundEV[rdmGainQualtrics$subID==1], col=rdmGainQualtrics$rdmGroundEV, pch=16, xlab="trial", ylab="levelor context ($)", main="Context created by shared expected values")
+plot(rdmGainQualtrics$rdmGroundEV[rdmGainQualtrics$subID==1], col=rdmGainQualtrics$rdmGroundEV, pch=16, xlab="trial", ylab="level or context ($)", main="Context created by shared expected values")
 
 
 ```
@@ -36,9 +36,9 @@ plot(rdmGainQualtrics$rdmGroundEV[rdmGainQualtrics$subID==1], col=rdmGainQualtri
 ```{r}
 # GROUP LEVEL
 
-Phs1Pgam = mean(rdmGainQualtrics$rdmChoice[rdmGainQualtrics$phase==1], na.rm=T); # phase 1 pgamble = 0.3901198
-Phse2Pgam = mean(rdmGainQualtrics$rdmChoice[rdmGainQualtrics$phase==2], na.rm=T); # phase 2 pgamble = 0.3783025
-bothPhsPgam = mean(rdmGainQualtrics$rdmChoice[rdmGainQualtrics$subID %in% BothPhsSubIDs], na.rm=T); # pgamble across participants who completed both phase 1 and phase (n=313) = 0.3867135
+Phs1Pgam = mean(rdmGainQualtrics$rdmChoice[rdmGainQualtrics$phase==1], na.rm=T); # phase 1 pgamble = 0.3901198 (n=518)
+Phs2Pgam = mean(rdmGainQualtrics$rdmChoice[rdmGainQualtrics$phase==2], na.rm=T); # phase 2 pgamble = 0.3783025 (n=326)
+bothPhsPgam = mean(rdmGainQualtrics$rdmChoice[rdmGainQualtrics$subID %in% BothPhsSubIDs], na.rm=T); # pgamble across participants who completed both phase 1 and phase 2 (n=313) = 0.3867135
 
 # 95% CI
 # phase 1 (n=518)
@@ -47,9 +47,9 @@ Phs1Pgam + me1; #0.4134254
 Phs1Pgam - me1; #0.3478662
 
 # phase 2 (n=326)
-me2 = qnorm(.975)*(Phse2Pgam/sqrt(Phs2nSub)); #0.04032889
-Phse2Pgam + me2; #0.4118445
-Phse2Pgam - me2; #0.3311867
+me2 = qnorm(.975)*(Phs2Pgam/sqrt(Phs2nSub)); #0.04032889
+Phs2Pgam + me2; #0.4118445
+Phs2Pgam - me2; #0.3311867
 
 # phase 1 and phase 2 (n = 313)
 me3 = qnorm(.975)*(bothPhsPgam/sqrt(BothPhsnSub)); #0.04192421
@@ -59,7 +59,7 @@ bothPhsPgam - me3; #0.3365088
 
 # INDIVIDUAL LEVEL
 
-# data frame where each row is a participant and there are 6 columns: {subID, day, phase 1, phase 2, both  phases, diffPgam}. If a participant is not included because they did not complete phase 2 or they were excluded, there will be an NaN in the corresponding  column. "diffPgam" is the difference in probability of gambling between two phases if we have that information for a given participant
+# data frame where each row is a participant and there are 6 columns: {subID, day, phase 1 pgam, phase 2 pgam, both phases pgam, diffPgam}. If a participant is not included because they did not complete phase 2 or they were excluded, there will be an NaN in the corresponding  column. "diffPgam" is the difference in probability of gambling between two phases if we have that information for a given participant
 
 pGambleSubID = as.data.frame(matrix(data=NA, nrow =nSubB4exclusion, ncol=6, dimnames=list(c(NULL), c("subID", "day", "phs1pgam","phs2pgam","bothPhspgam", "diffPgam"))))
 
@@ -79,23 +79,28 @@ for (s in 1:nSubB4exclusion) {
  
 };
 
+# NA bothPhspgam for people who did not participate in phase 2!!
+
 # plot histogram of the change in risk-taking between phases (diff > 0 = more risk taking phase 1; diff < 0 =more risk taking phase 2; diff = 0, similar risk taking across phases)
 summary(pGambleSubID$diffPgam); # mean = -.0112 (indicating generally more risk taking in phase 2)
-hist(pGambleSubID$diffPgam, main="Distribution of change in risk taking", xlab="change in risk-taking\n p(gamble phase 1) - p(gamble phase 2)", ylab="number of participants",breaks = 100);
+hist(pGambleSubID$diffPgam, main="Distribution of change in risk taking", xlab="change in risk-taking\n p(gamble phase 2) - p(gamble phase 1)", ylab="number of participants",breaks = 100);
 
-
-plot(pGambleSubID$phs1pgam, pGambleSubID$phs2pgam, abline(a=0, b=1), xlab="p(gamble phase 1)", ylab="p(gamble phase 2)", main="Risk-taking in both phases (mean in red)");
+par(pty = 's'); # make the figure a square
+plot(pGambleSubID$phs1pgam, pGambleSubID$phs2pgam, abline(a=0, b=1), xlab="p(gamble phase 1)", ylab="p(gamble phase 2)", main="Risk-taking in both phases (mean in red)", asp=1, ylim=c(0,1), xlim=c(0,1));
 points(mean(pGambleSubID$phs1pgam,na.rm=T), mean(pGambleSubID$phs2pgam,na.rm=T), col="red", pch=17);
 
 
 ```
 
 #### Simple regressions for risky decision-making GAIN ONLY TASK
+couple of ways to speed things up:
+1) try running on lab computer
+2) are fixed effects models doing ok (are they producing similar results and running much faster)? If so, we *may* be able to use this as a way to do faster modeling (iterations) and then following up with full mixed regressions.
 ```{r}
 # these models take a few minutes each
 m1phaseDay=glmer(rdmChoice~ 1 + rdmGainSC + rdmSafeSC + rdmGroundEV + phaseRecode + dayOverallSC + (0 + rdmGainSC + rdmSafeSC|subID),data=rdmGainQualtrics,family="binomial", control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) );
 
-Summary(m1phaseDay); # AIC = 73516.2
+summary(m1phaseDay); # AIC = 73516.2
 
 #              Estimate Std. Error z value Pr(>|z|)    
 #(Intercept)   -0.46892    0.04361 -10.753  < 2e-16 ***
@@ -110,7 +115,7 @@ Summary(m1phaseDay); # AIC = 73516.2
 
 m1phase=glmer(rdmChoice~ 1 + rdmGainSC + rdmSafeSC + rdmGroundEV + phaseRecode  + (0 + rdmGainSC + rdmSafeSC|subID),data=rdmGainQualtrics,family="binomial", na.action=na.exclude, control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) );
 
-Summary(m1phase); # AIC =73516.4
+summary(m1phase); # AIC =73516.4
 #              Estimate Std. Error z value Pr(>|z|)    
 # (Intercept)  -0.41266    0.02299 -17.949  < 2e-16 ***
 # rdmGainSC    13.65568    0.61218  22.306  < 2e-16 ***
@@ -119,6 +124,7 @@ Summary(m1phase); # AIC =73516.4
 # phaseRecode  -0.09491    0.02116  -4.486 7.27e-06 ***
 
 
+# CHECK - NUMBER OF OBSERVATIONS MAY BE DIFFERENT HERE BECAUSE DATA IS DIFFERENT
 m1stais = glmer(rdmChoice~  1 + rdmGainSC +rdmSafeSC + rdmGroundEV + stai_s_score_scaled + (0 + rdmGainSC + rdmSafeSC|subID), data=rdmGainQualtrics, family="binomial", control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) );
 # no effect of stais
 # AIC = 73317.3
@@ -145,6 +151,10 @@ m1covidrisk = glmer(rdmChoice~  1 + rdmGainSC + rdmSafeSC + rdmGroundEV + covq_P
 # rdmGroundEV                           0.12352    0.02482   4.977 6.46e-07 ***
 # covq_PAB_q1_personalRisk_scaledNoNA  -0.62479    0.07379  -8.467  < 2e-16 ***
 
+# covid risk mean: 5.26 phase 1 and 5.04 in phase 2
+# covid risk variable is capturing across and within subject stuff, to follow up on this:
+# 1) resrict data to one phase and if the pattern holds up, we atleast know that individual differences do matter
+# 2) relate changes in risk taking to changes in perceived risk (using a variable that captures the difference in covid risk across phase 1)
 
 # Affective measures... 
 # - No observed effects (at this level) for STAIS, STAIT, UCLA-L or PSS
@@ -152,6 +162,7 @@ m1covidrisk = glmer(rdmChoice~  1 + rdmGainSC + rdmSafeSC + rdmGroundEV + covq_P
 # model w/ covid risk (AIC = 73465.6) outperforms model with phase and day(AIC = 73516.2) and just phase (AIC =73516.4)
 
 # Should we use covid risk as our model moving forward?
+# Phase is colinear with a lot of things we care about, basically anything that we expect to change over time in a linear way because pandemic progression was going in one direction (a reason for not including it in the trial-level model - will continue to discuss and think about moving forward). Another thing to keep in mind is being careful about how we talk about this, since phase could just be about repeating the experiment.
 
 # Get and save predicted values (i.e. residuals)
 rdmGainQualtrics$predm1cr = predict(m1covidrisk, type="link"); # residuals from covid risk model
@@ -163,7 +174,7 @@ Temporal context + RDM - left off here
 ```{r}
 
 # using the residuals from the covid risk model ('pred1mcr') for now since it was the best fitting model
-
+# add trial to this model
 mPotcShiftEarn = glmer(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC + posShift +  (1|subID), data=rdmGainQualtrics, family="binomial", offset=predm1cr);
 # AIC =  67115.6 
 #                         Estimate Std. Error z value Pr(>|z|)    
@@ -175,6 +186,7 @@ mPotcShiftEarn = glmer(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC + posShift +  (1|s
 ```
 
 Affective measures
+# in set up, create subject level dataframe for affective measures (vs what we already have at the trial-level)
 ```{r}
 
 ```
