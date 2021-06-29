@@ -12,8 +12,6 @@
 # load packages
 library('config')
 library("lme4");
-library("ggplot2");
-library("ggExtra");
 
 # configuration
 config = config::get()
@@ -23,7 +21,6 @@ rdmGain_csv = file.path(config$path$combined, config$RDMcsvs$RDMgain_qualtrics);
 rdmLoss_csv = file.path(config$path$combined, config$RDMcsvs$RDMloss_qualtrics); # loss only task path
 exclsnPhs1_csv = file.path(config$path$combined, config$EXCLUSIONcsvs$RDM_AX_Qual_Phs1exclusion); # phase 1 exclusion path
 exclsnPhs2_csv = file.path(config$path$combined, config$EXCLUSIONcsvs$RDM_AX_Qual_Phs2exclusion); # phase 2 exclusion path
-
 
 
 rdmGainQualtrics = read.csv(rdmGain_csv); # loads gain only RDM + Qualtrics data both phases (takes several seconds)
@@ -61,7 +58,7 @@ subIDqualPhs2Exclude = excludePhs2$subID[!is.na(excludePhs2$qualPhs2exclude) & e
 
 
 # Put NAs in place of excluded data:
-# For now, ust exclude based on RDM or Qualtrics, don't apply an RDM or Qualtrics exclusion across both. 
+# For now, just exclude based on RDM or Qualtrics, don't apply an RDM or Qualtrics exclusion across both. 
 # This way, we can include as many people as possible within the separate RDM and Qualtrics analyses and when we want to look at RDM + Qualtrics, the NAs will be there for those we need to exclude.
 
 # 
@@ -116,6 +113,8 @@ BothPhsnSub = length(BothPhsSubIDs)
 # Missed trials:
 # Where participants did not respond, an NA is in place for choice and outcome. We are not removing these trials but will make a note of the number of trials per phase that were missed by each participants.
 
+# CONSIDER DELETING THE PART BELOW UP UNTIL LINES 144 BECAUSE THIS IS CALCULATING MISSED TRIALS INCLUDING THOSE WITH NAS FROM THOSE WE EXCLUDED AND WE LATER GO ON T0 CALCULATE THE MISSED TRIALS FOR EACH PARTICIPANT THAT WE ACTUALLY KEEP! SO THIS PART IS MSILEADING - BEFORE DELETING MAKE SURE WE DON'T USE THOSE VARIABLES BELOW OR FIGURE OUT A BETTER WAY TO DO IT. 
+
 ### Which trials were missed?
 # GAIN TASK
 nanIndGain = which(is.na(rdmGainQualtrics$rdmChoice)); # both phases
@@ -131,7 +130,7 @@ nanIndLossPhs2 = which(is.na(rdmLossQualtrics$rdmChoice) & rdmLossQualtrics$phas
 nanIndLossPhs1tot = length(nanIndLossPhs1); # 736 missed trials in phase 1
 nanIndLossPhs2tot = length(nanIndLossPhs2); # 708 missed trials in phase 2
 
-# Summary:
+# Summary:  TO
 # There are a total of 7912 missed trials in the gain-only task across all participants and phases (3850 missed trials phase 1 and 4062 missed trials phase 2). There are a total of 1444 missed trials in the loss-only task across all participants and phases (736 missed trials in phase 1 and 708 missed trials in phase 2). Across both tasks and phases, there is a total of 9356 miss trials.
 
 ### Which participants missed trials and how many did each participant miss?
@@ -309,6 +308,8 @@ for (s in 1:nSubB4exclusion) {
   earningsByPhaseScaled = c(earningsByPhaseScaled,earningsSubScaled)
   
 }
+
+# REPLACE 0 IN RDM GAIN DATASET EARNINGS WITH NA!!! AND DO THE SAME THING FOR TRIAL (NA, NOT TRIAL NUMBER)
 
 rdmGainQualtrics$rdmEarnings = earningsByPhase;
 rdmGainQualtrics$rdmEarningSC = earningsByPhaseScaled;
