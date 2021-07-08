@@ -16,6 +16,13 @@ config = config::get()
 setup_source = file.path(config$code_files$setup_data)
 source(setup_source) #, local = knitr::knit_global())
 
+
+# Looks for existing model file and if its found, then load it and we will now have our previous models in the environment
+modelfile = file.path(config$path$Rdata, config$Rdata_files$models)
+if(exists(modelfile)){
+  load(modelfile)
+}
+
 ```
 
 Plot an example choice set for the gain-only task
@@ -93,54 +100,89 @@ points(mean(pGambleSubID$phs1pgam,na.rm=T), mean(pGambleSubID$phs2pgam,na.rm=T),
 ```
 
 #### Simple regressions for risky decision-making GAIN ONLY TASK
-couple of ways to speed things up:
-1) try running on lab computer
-2) are fixed effects models doing ok (are they producing similar results and running much faster)? If so, we *may* be able to use this as a way to do faster modeling (iterations) and then following up with full mixed regressions.
+1) running on lab computer speeds it up a bit, still take a couple minutes.
+2) Use glm to explore but very carefully (these take a second)
+3) save the R data models (all model names start with "model" except those we don't want saved will start with "tmp")
+ - each model has an if statement (using exist function) so that models we already have don't need to be run again
+
+
+### DOES TASK-RELATED STUFF ACCOUNT FOR RISK-TAKING (main model plus other variations we tried):
 ```{r}
-# these models take a few minutes each
-m1phaseDay=glmer(rdmChoice~ 1 + rdmGainSC + rdmSafeSC + rdmGroundEV + phaseRecode + dayOverallSC + (0 + rdmGainSC + rdmSafeSC|subID),data=rdmGainQualtrics,family="binomial", control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) );
+# Simple, main model that we will take residuals from to do the remaining analyses (has task events only):
+if(!exists('model_task')){
+  model_task = glmer(rdmChoice~ 1 + rdmGainSC + rdmSafeSC + rdmGroundEV + (0 + rdmGainSC + rdmSafeSC|subID),data=rdmGainQualtrics,family="binomial",na.action=na.exclude, control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) );
+}
+# AIC = 73534.3 - this is not the best AIC but we decided that it probably makes the most sense to keep this model simple (just letting task-related stuff do their things) and then see what else accounts for RDM behavior.
 
-summary(m1phaseDay); # AIC = 73516.2
 
-#              Estimate Std. Error z value Pr(>|z|)    
-#(Intercept)   -0.46892    0.04361 -10.753  < 2e-16 ***
-#rdmGainSC     13.65856    0.60706  22.500  < 2e-16 ***
-#rdmSafeSC    -37.95784    1.21530 -31.233  < 2e-16 ***
-#rdmGroundEV    0.12255    0.02589   4.734 2.21e-06 ***
-#phaseRecode   -0.20388    0.07474  -2.728  0.00637 ** 
-#dayOverallSC   0.22000    0.14472   1.520  0.12847  
 
+
+# Other models that we tried for our first-level and aren't going to use for residual analysis but want to save:
+
+# Task events with phase and day:
+if(!exists('model_taskPhaseDay')){
+  model_taskPhaseDay=glmer(rdmChoice~ 1 + rdmGainSC + rdmSafeSC + rdmGroundEV + phaseRecode + dayOverallSC + (0 + rdmGainSC + rdmSafeSC|subID),data=rdmGainQualtrics,family="binomial", na.action=na.exclude, control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) );
+}
+# AIC = 73516.2
+# less risk taking in phase 2
+# no effect of day 
+
+
+# Task events with just phase
+if(!exists('model_taskPhase')){
+  model_taskPhase=glmer(rdmChoice~ 1 + rdmGainSC + rdmSafeSC + rdmGroundEV + phaseRecode + (0 + rdmGainSC + rdmSafeSC|subID),data=rdmGainQualtrics,family="binomial",na.action=na.exclude, control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) );
+}
+# AIC = 73516.4
 # less risk taking in phase 2
 
+```
 
-m1phase=glmer(rdmChoice~ 1 + rdmGainSC + rdmSafeSC + rdmGroundEV + phaseRecode  + (0 + rdmGainSC + rdmSafeSC|subID),data=rdmGainQualtrics,family="binomial", na.action=na.exclude, control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) );
+### Store residuals from our main model (model_task):
+```{r}
+rdmGainQualtrics$predmTask = predict(model_task, type="link"); 
+```
 
-summary(m1phase); # AIC =73516.4
-#              Estimate Std. Error z value Pr(>|z|)    
-# (Intercept)  -0.41266    0.02299 -17.949  < 2e-16 ***
-# rdmGainSC    13.65568    0.61218  22.306  < 2e-16 ***
-# rdmSafeSC   -37.95829    1.10180 -34.451  < 2e-16 ***
-# rdmGroundEV   0.12271    0.02488   4.932 8.13e-07 ***
-# phaseRecode  -0.09491    0.02116  -4.486 7.27e-06 ***
+### Models that involve residuals (the bulk of the analysis):
+
+```{r}
 
 
-# CHECK - NUMBER OF OBSERVATIONS MAY BE DIFFERENT HERE BECAUSE DATA IS DIFFERENT
-m1stais = glmer(rdmChoice~  1 + rdmGainSC +rdmSafeSC + rdmGroundEV + stai_s_score_scaled + (0 + rdmGainSC + rdmSafeSC|subID), data=rdmGainQualtrics, family="binomial", control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) );
+# STAIS, STAIT, UCLAL, PSS:
+if(!exists('model_pred_stais')){
+  model_pred_stais = glmer(rdmChoice~  0 + stai_s_score_scaled + (1|subID), data=rdmGainQualtrics, family="binomial", control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)), offset=predmTask );
+}
+# singular
 # no effect of stais
-# AIC = 73317.3
+# AIC = 68606.6
+# nObs = 98951
 
-m1stait = glmer(rdmChoice~  1 + rdmGainSC +rdmSafeSC + rdmGroundEV + stai_t_score_scaled + (0 + rdmGainSC + rdmSafeSC|subID), data=rdmGainQualtrics, family="binomial", control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) );
+if(!exists('model_pred_stait')){
+  model_pred_stait = glmer(rdmChoice~  0 + stai_t_score_scaled + (1|subID), data=rdmGainQualtrics, family="binomial", control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)), offset=predmTask  );
+}
 # no effect of stait
-# AIC = 73318.2 
+# AIC = 68606.6
+# nObs = 98951
+# singular
 
-m1uclal = glmer(rdmChoice~  1 + rdmGainSC +rdmSafeSC + rdmGroundEV + uclal_score_scaled + (0 + rdmGainSC + rdmSafeSC|subID), data=rdmGainQualtrics, family="binomial", control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) );
+if(!exists('model_pred_uclal')){
+  model_pred_uclal = glmer(rdmChoice~  0 + uclal_score_scaled + (1|subID), data=rdmGainQualtrics, family="binomial", control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) ,offset=predmTask  );
+}
 # no effect of uclal
-# AIC =  73317.8  
+# AIC = 68606.6
+# nObs = 98951
+# singular
 
-m1pss = glmer(rdmChoice~  1 + rdmGainSC +rdmSafeSC + rdmGroundEV + pss_score_scaled + (0 + rdmGainSC + rdmSafeSC|subID), data=rdmGainQualtrics, family="binomial", control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) )
+
+if(!exists('model_pred_pss')){
+  model_pred_pss = glmer(rdmChoice~ 0 + pss_score_scaled + (1|subID), data=rdmGainQualtrics, family="binomial", control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)),offset=predmTask )
+}
 # no effect of pss
-# AIC = 73317.8
+# AIC = 68606.7
+# nObs = 98951
+# singular
 
+
+# COVID RISK: LEFT OFF HERE!
 m1covidrisk = glmer(rdmChoice~  1 + rdmGainSC + rdmSafeSC + rdmGroundEV + covq_PAB_q1_personalRisk_scaledNoNA  + (0 + rdmGainSC + rdmSafeSC|subID), data=rdmGainQualtrics, family="binomial", na.action=na.exclude, control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) ); # adding "na.action = na.exclude" retains original row number which we need when pulling out residuals
 
 # AIC = 73465.6
@@ -168,13 +210,18 @@ m1covidrisk = glmer(rdmChoice~  1 + rdmGainSC + rdmSafeSC + rdmGroundEV + covq_P
 rdmGainQualtrics$predm1cr = predict(m1covidrisk, type="link"); # residuals from covid risk model
 rdmGainQualtrics$predm1phs = predict(m1phase, type="link"); # residuals from m1phse
 
+# This will be our main model: Might make more sense to just do: rdmGainSC + rdmSafeSC + rdmGroundEV + (0 + rdmGainSC + rdmSafeSC|subID) for the first model then everything else using the residuals
+# with a 1 in the random effects, it could wipe out subject level effects that we are interested in  like affective measures (it wouldn't get rid of trial by trial stuff)
+# still save the other models though.
+
+
 ```
 
 Temporal context + RDM - left off here
 ```{r}
 
 # using the residuals from the covid risk model ('pred1mcr') for now since it was the best fitting model
-# add trial to this model
+# add trial scaled to this model
 mPotcShiftEarn = glmer(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC + posShift +  (1|subID), data=rdmGainQualtrics, family="binomial", offset=predm1cr);
 # AIC =  67115.6 
 #                         Estimate Std. Error z value Pr(>|z|)    
@@ -187,7 +234,19 @@ mPotcShiftEarn = glmer(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC + posShift +  (1|s
 
 Affective measures
 # in set up, create subject level dataframe for affective measures (vs what we already have at the trial-level)
+# How do we find what is unique across our qualtrics responses?
+# could do a component type of analysis for all of the qualtrics responses (Gillan et al 2016 does something like this)
+# we could do this in a variety of ways (across all responses v. across all SES responses)
+# Gillan (2016) used a package in R to do it 
+# "Try not to get paralyzed by the world of ways to do this stuff - start simple"
+# Use QualtricsCombined_subID_scored to start - lets just get the summary and standard deviations 
+# then we move toward correllogram / run factor analysis / PCA stuff
 ```{r}
 
+```
+
+```{r}
+# save our models
+save(file=modelfile, list=ls(pattern=glob2rx("model*")));  #A version of this will be how we save the output at the end
 ```
 
