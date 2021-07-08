@@ -21,6 +21,9 @@ default:
     code:
       r_scripts: "./analysis/RDM"
     documentation: "./documentation"
+    Rdata: "/Volumes/CAP/Rdata"
+  Rdata_files:
+    models: "model_output_rdm.Rdata"
   code_files:
     setup_data: "RDMsetup.R"
   RDMcsvs: 
