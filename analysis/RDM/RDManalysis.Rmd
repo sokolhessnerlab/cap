@@ -18,10 +18,11 @@ source(setup_source) #, local = knitr::knit_global())
 
 
 # Looks for existing model file and if its found, then load it and we will now have our previous models in the environment
-modelfile = file.path(config$path$Rdata, config$Rdata_files$models)
-if(exists(modelfile)){
-  load(modelfile)
-}
+outputfile = file.path(config$path$Rdata, config$Rdata_files$models)
+
+#if(exists(outputfile)){
+  load(outputfile)
+#}
 
 ```
 
@@ -105,6 +106,8 @@ points(mean(pGambleSubID$phs1pgam,na.rm=T), mean(pGambleSubID$phs2pgam,na.rm=T),
 3) save the R data models (all model names start with "model" except those we don't want saved will start with "tmp")
  - each model has an if statement (using exist function) so that models we already have don't need to be run again
 
+Note: adding "na.action = na.exclude" retains original row number which we need when pulling out residuals
+
 
 ### DOES TASK-RELATED STUFF ACCOUNT FOR RISK-TAKING (main model plus other variations we tried):
 ```{r}
@@ -114,7 +117,7 @@ if(!exists('model_task')){
 }
 # AIC = 73534.3 - this is not the best AIC but we decided that it probably makes the most sense to keep this model simple (just letting task-related stuff do their things) and then see what else accounts for RDM behavior.
 
-
+# Note: kif we put a 1 in the random effects, it could wipe out subject level effects that we are interested in like affective measures (it wouldn't get rid of trial by trial stuff tho)
 
 
 # Other models that we tried for our first-level and aren't going to use for residual analysis but want to save:
@@ -145,8 +148,6 @@ rdmGainQualtrics$predmTask = predict(model_task, type="link");
 ### Models that involve residuals (the bulk of the analysis):
 
 ```{r}
-
-
 # STAIS, STAIT, UCLAL, PSS:
 if(!exists('model_pred_stais')){
   model_pred_stais = glmer(rdmChoice~  0 + stai_s_score_scaled + (1|subID), data=rdmGainQualtrics, family="binomial", control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)), offset=predmTask );
@@ -182,19 +183,21 @@ if(!exists('model_pred_pss')){
 # singular
 
 
-# COVID RISK: LEFT OFF HERE!
-m1covidrisk = glmer(rdmChoice~  1 + rdmGainSC + rdmSafeSC + rdmGroundEV + covq_PAB_q1_personalRisk_scaledNoNA  + (0 + rdmGainSC + rdmSafeSC|subID), data=rdmGainQualtrics, family="binomial", na.action=na.exclude, control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) ); # adding "na.action = na.exclude" retains original row number which we need when pulling out residuals
+# COVID RISK: 
+if(!exists('model_pred_covidRisk')){
+  model_pred_covidRisk= glmer(rdmChoice ~  0 + covq_PAB_q1_personalRisk_scaledNoNA  + (1|subID), data=rdmGainQualtrics, family="binomial", na.action=na.exclude, control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)), offset=predmTask ); 
+}
 
-# AIC = 73465.6
-#                                      Estimate Std. Error z value Pr(>|z|)    
-# (Intercept)                          -0.08316    0.04824  -1.724   0.0847 .  
-# rdmGainSC                            13.64850    0.59595  22.902  < 2e-16 ***
-# rdmSafeSC                           -38.02249    1.10598 -34.379  < 2e-16 ***
-# rdmGroundEV                           0.12352    0.02482   4.977 6.46e-07 ***
-# covq_PAB_q1_personalRisk_scaledNoNA  -0.62479    0.07379  -8.467  < 2e-16 ***
+# AIC = 68791.1 
+# nObs = 99307
+# effect of covid risk is negative and trending (beta = -.025(.015), p=.0998)
+# it was very significant in the main models above (not using residuals) - possible that the effect will change when in a model with temporal context effects
+# singular
 
 # covid risk mean: 5.26 phase 1 and 5.04 in phase 2
-# covid risk variable is capturing across and within subject stuff, to follow up on this:
+
+# TO DO:
+# covid risk variable is capturing across and within subject stuff:
 # 1) resrict data to one phase and if the pattern holds up, we atleast know that individual differences do matter
 # 2) relate changes in risk taking to changes in perceived risk (using a variable that captures the difference in covid risk across phase 1)
 
@@ -203,36 +206,32 @@ m1covidrisk = glmer(rdmChoice~  1 + rdmGainSC + rdmSafeSC + rdmGroundEV + covq_P
 # - covid risk measure predicts less risk -taking
 # model w/ covid risk (AIC = 73465.6) outperforms model with phase and day(AIC = 73516.2) and just phase (AIC =73516.4)
 
-# Should we use covid risk as our model moving forward?
-# Phase is colinear with a lot of things we care about, basically anything that we expect to change over time in a linear way because pandemic progression was going in one direction (a reason for not including it in the trial-level model - will continue to discuss and think about moving forward). Another thing to keep in mind is being careful about how we talk about this, since phase could just be about repeating the experiment.
 
-# Get and save predicted values (i.e. residuals)
-rdmGainQualtrics$predm1cr = predict(m1covidrisk, type="link"); # residuals from covid risk model
-rdmGainQualtrics$predm1phs = predict(m1phase, type="link"); # residuals from m1phse
+# TEMPORAL CONTEXT WITH COVID RISK:
+if(!exists('model_pred_3timescales_covidRisk')){
+  model_pred_3timescales_covidRisk = glmer(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC + posShift +  rdmTrialSC + covq_PAB_q1_personalRisk_scaledNoNA + (1|subID), data=rdmGainQualtrics, family="binomial", offset=predmTask);
+}
 
-# This will be our main model: Might make more sense to just do: rdmGainSC + rdmSafeSC + rdmGroundEV + (0 + rdmGainSC + rdmSafeSC|subID) for the first model then everything else using the residuals
-# with a 1 in the random effects, it could wipe out subject level effects that we are interested in  like affective measures (it wouldn't get rid of trial by trial stuff)
-# still save the other models though.
+# AIC = 67154.3
+# only covid risk not significant
+# trial and earning opposite effects (both v sig)
+# singular
+#nObs = 97445
 
+# TEMPORAL CONTEXT WITHOUT COVID RISK:
+if(!exists('model_pred_3timescales')){
+  model_pred_3timescales= glmer(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC + posShift +  rdmTrialSC + (1|subID), data=rdmGainQualtrics, family="binomial", offset=predmTask);
+}
 
-```
-
-Temporal context + RDM - left off here
-```{r}
-
-# using the residuals from the covid risk model ('pred1mcr') for now since it was the best fitting model
-# add trial scaled to this model
-mPotcShiftEarn = glmer(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC + posShift +  (1|subID), data=rdmGainQualtrics, family="binomial", offset=predm1cr);
-# AIC =  67115.6 
-#                         Estimate Std. Error z value Pr(>|z|)    
-# rdmPOC1sc               0.194549   0.059275   3.282  0.00103 ** 
-# rdmEarningSC           -0.047262   0.025171  -1.878  0.06043 .  
-# posShift                0.017172   0.004239   4.051 5.11e-05 ***
-# rdmPOC1sc:rdmEarningSC -0.381397   0.116458  -3.275  0.00106 ** 
+# AIC = 67153.2 
+# everything significant, positive effect of past outcome, earnings (positive) and trial (negative) have opposing effects, shift positive, interaction between past outcome and earnings negative
+# singular
+#nObs = 97445
 
 ```
 
-Affective measures
+
+Affective measures: 
 # in set up, create subject level dataframe for affective measures (vs what we already have at the trial-level)
 # How do we find what is unique across our qualtrics responses?
 # could do a component type of analysis for all of the qualtrics responses (Gillan et al 2016 does something like this)
@@ -247,6 +246,6 @@ Affective measures
 
 ```{r}
 # save our models
-save(file=modelfile, list=ls(pattern=glob2rx("model*")));  #A version of this will be how we save the output at the end
+save(file=outputfile, list=ls(pattern=glob2rx("model*"))); 
 ```
 
