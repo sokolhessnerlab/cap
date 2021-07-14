@@ -16,7 +16,7 @@ config = config::get();
 
 # load files
 rdmExclusionPath = file.path(config$path$combined, config$EXCLUSIONcsvs$RDM_exclusion)
-rdmExclusion = read.csv(rdmExcludePath);
+rdmExclusion = read.csv(rdmExclusionPath);
 #rdmexclusion = read.csv("/Volumes/CAP/data/combinedData/rdmExclusion.csv");          # rdm exclusion
 
 axexclusionPath = file.path(config$path$combined, config$EXCLUSIONcsvs$AX_exclusion)
@@ -24,18 +24,18 @@ axexclusion = read.csv(axexclusionPath);
 #axexclusion = read.csv("/Volumes/CAP/data/combinedData/axExclusion.csv");            # ax exclusion
 
 qualexclusionPath = file.path(config$path$combined, config$EXCLUSIONcsvs$QUALTRICS_exclusion)
-qualexlcusion = read.csv(qualexclusionPath);
+qualexclusion = read.csv(qualexclusionPath);
 #qualexclusion = read.csv("/Volumes/CAP/data/combinedData/qualtricsExclusion.csv");   # qualtrics exclusion
 
 dayInfoPath = file.path(config$path$combined, config$SUBcsvs$phase1_participant);
 dayInfo = read.csv(dayInfoPath);
 #dayInfo = read.csv("/Volumes/CAP/data/combinedData/phase1_participant.csv");         # participant info to get day (days are identical across phases so we just need phase 1)
 
-nSub = nrow(rdmexclusion); # number of participants
+nSub = nrow(rdmExclusion); # number of participants
 
 # combine 
-allExclusionPhase1 = cbind(1:nSub,dayInfo[,2], rdmexclusion[3], axexclusion[3], qualexclusion[3]); # phase 1
-allExclusionPhase2 = cbind(1:nSub,dayInfo[,2], rdmexclusion[4], axexclusion[4], qualexclusion[4]); # phase 2
+allExclusionPhase1 = cbind(1:nSub,dayInfo[,2], rdmExclusion[3], axexclusion[3], qualexclusion[3]); # phase 1
+allExclusionPhase2 = cbind(1:nSub,dayInfo[,2], rdmExclusion[4], axexclusion[4], qualexclusion[4]); # phase 2
 
 # set the column names
 ColNamesPhase1 = c("subID", "day", "rdmPhs1exclude", "axPhs1exclude", "qualPhs1exclude"); 
@@ -45,6 +45,11 @@ ColNamesPhase2 = c("subID", "day", "rdmPhs2exclude", "axPhs2exclude", "qualPhs2e
 colnames(allExclusionPhase1) = ColNamesPhase1; 
 colnames(allExclusionPhase2) = ColNamesPhase2; 
 
+# sub 30 and 373 are excluded across the study - take care of that here:
+allExclusionPhase1[allExclusionPhase1$subID==30,3:5]=1;
+allExclusionPhase2[allExclusionPhase2$subID==30,3:5]=1;
+
+allExclusionPhase1[allExclusionPhase1$subID==373,3:5]=1;
 
 
 # save as .csv files
