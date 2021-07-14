@@ -44,12 +44,12 @@ plot(rdmGainQualtrics$rdmGroundEV[rdmGainQualtrics$subID==1], col=rdmGainQualtri
 ```{r}
 # GROUP LEVEL
 
-Phs1Pgam = mean(rdmGainQualtrics$rdmChoice[rdmGainQualtrics$phase==1], na.rm=T); # phase 1 pgamble = 0.3901198 (n=518)
-Phs2Pgam = mean(rdmGainQualtrics$rdmChoice[rdmGainQualtrics$phase==2], na.rm=T); # phase 2 pgamble = 0.3783025 (n=326)
-bothPhsPgam = mean(rdmGainQualtrics$rdmChoice[rdmGainQualtrics$subID %in% BothPhsSubIDs], na.rm=T); # pgamble across participants who completed both phase 1 and phase 2 (n=313) = 0.3867135
+Phs1Pgam = mean(rdmGainQualtrics$rdmChoice[rdmGainQualtrics$phase==1], na.rm=T); # phase 1 pgamble = 0.3901198 (n=516)
+Phs2Pgam = mean(rdmGainQualtrics$rdmChoice[rdmGainQualtrics$phase==2], na.rm=T); # phase 2 pgamble = 0.3783025 (n=325)
+bothPhsPgam = mean(rdmGainQualtrics$rdmChoice[rdmGainQualtrics$subID %in% BothPhsSubIDs], na.rm=T); # pgamble across participants who completed both phase 1 and phase 2 (n=312) = 0.3867135
 
 # 95% CI
-# phase 1 (n=518)
+# phase 1 (n=516)
 me1 = qnorm(.975)*(Phs1Pgam/sqrt(Phs1nSub)); #0.03277965
 Phs1Pgam + me1; #0.4134254
 Phs1Pgam - me1; #0.3478662
