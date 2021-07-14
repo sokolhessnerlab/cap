@@ -47,22 +47,24 @@ nSubB4exclusion = length(subNumB4exclusion);
   # RDM exclusion applies to both gain and loss datasets
 
 # Phase 1: 
-# RDM: 26 participants excluded
+# RDM: 28 participants excluded
 subIDrdmPhs1Exclude = excludePhs1$subID[!is.na(excludePhs1$rdmPhs1exclude) & excludePhs1$rdmPhs1exclude==1]
+
 
 # Qualtrics: 3 participants excluded
 subIDqualPhs1Exclude = excludePhs1$subID[!is.na(excludePhs1$qualPhs1exclude) & excludePhs1$qualPhs1exclude==1]
 
 # Phase 2: 
-# RDM: 31 participants excluded
+# RDM: 32 participants excluded
 subIDrdmPhs2Exclude = excludePhs2$subID[!is.na(excludePhs2$rdmPhs2exclude) & excludePhs2$rdmPhs2exclude==1]
 
-# Qualtrics: 0 participants excluded
+
+# Qualtrics: 1 participant excluded based on age response in phase
 subIDqualPhs2Exclude = excludePhs2$subID[!is.na(excludePhs2$qualPhs2exclude) & excludePhs2$qualPhs2exclude==1]
 
 
 # Put NAs in place of excluded data:
-# For now, just exclude based on RDM or Qualtrics, don't apply an RDM or Qualtrics exclusion across both. 
+# For now, just exclude based on RDM or Qualtrics (except for subs 30 and 373 in phase 1), don't apply an RDM or Qualtrics exclusion across both. 
 # This way, we can include as many people as possible within the separate RDM and Qualtrics analyses and when we want to look at RDM + Qualtrics, the NAs will be there for those we need to exclude.
 
 # 
@@ -70,8 +72,8 @@ subIDqualPhs2Exclude = excludePhs2$subID[!is.na(excludePhs2$qualPhs2exclude) & e
 rdmColumns = c(1:5,7:14,17:18);
 
 
-# Qualtrics stuff starts at column 19, or "stai_s_score" until column 70 or "ses_needbasedCollegeAid_recode"
-qualColumns = c(19:70);
+# Qualtrics stuff starts at column 19, or "stai_s_score" until column 71 or "ses_needbasedCollegeAid_recode"
+qualColumns = c(19:71);
 
 
 # Put NAs in RDM columns for excluded phase 1 and phase 2 participants in both gain and loss datasets
@@ -125,7 +127,7 @@ nanIndGainPhs2 = which(is.na(rdmGainQualtrics$rdmChoice[rdmGainQualtrics$subID %
 nanIndGain = c(nanIndGainPhs1, nanIndGainPhs2);
 
 nanGainPhs1tot = length(nanIndGainPhs1); #756 missed trials phase 1
-nanGainPhs2tot = length(nanIndGainPhs2); #373 missed trials phase 2
+nanGainPhs2tot = length(nanIndGainPhs2); #372 missed trials phase 2
 
 
 # LOSS TASK
@@ -138,15 +140,16 @@ nanLossPhs2tot = length(nanIndLossPhs2); #88 missed trials phase 2
 
 
 
-
+# LEFT OFF HERE CHECKING THIS STUFF AFTER MAKING AGE CHANGE AND EXCLUSION BASED ON AGE - NEED TO SLOW DOWN AND MAKE SURE EVERYTHING IS GOO
+# THEN EDIT THE EXCLUSION DOCUMENT AND ANY DOCUMENTATION FILES THAT MAY NEED TO BE UPDATED
 ### Which participants missed trials and how many did each participant miss?
 # GAIN TASK
-subNanGainPhs1 = unique(rdmGainQualtrics$subID[nanIndGainPhs1]); # 223 participants missed at least one trial
-subNanGainPhs2 = unique(rdmGainQualtrics$subID[nanIndGainPhs2]); # 131 participants missed at least one trial
+subNanGainPhs1 = unique(rdmGainQualtrics$subID[nanIndGainPhs1]); # 222 participants missed at least one trial
+subNanGainPhs2 = unique(rdmGainQualtrics$subID[nanIndGainPhs2]); # 129 participants missed at least one trial
 
 # LOSS TASK
-subNanLossPhs1 = unique(rdmLossQualtrics$subID[nanIndLossPhs1]); # 151 participants missed at least one trial
-subNanLossPhs2 = unique(rdmLossQualtrics$subID[nanIndLossPhs2]); # 65 participants missed at least one trial
+subNanLossPhs1 = unique(rdmLossQualtrics$subID[nanIndLossPhs1]); # 144 participants missed at least one trial
+subNanLossPhs2 = unique(rdmLossQualtrics$subID[nanIndLossPhs2]); # 71 participants missed at least one trial
 
 
 # Create a dataframe that stores subject IDs, missed gain trials phase 1, missed gain trials phase 2, total gain trials phase 1, total gain trials phase 2, missed loss trials phase 1, missed loss trials phase 2, total loss trials phase 1 and total loss trials phase 2.
