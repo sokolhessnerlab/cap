@@ -64,7 +64,7 @@ subIDqualPhs2Exclude = excludePhs2$subID[!is.na(excludePhs2$qualPhs2exclude) & e
 
 
 # Put NAs in place of excluded data:
-# For now, just exclude based on RDM or Qualtrics (except for subs 30 and 373 in phase 1), don't apply an RDM or Qualtrics exclusion across both. 
+# For now, just exclude based on RDM or Qualtrics, don't apply an RDM or Qualtrics exclusion across both. 
 # This way, we can include as many people as possible within the separate RDM and Qualtrics analyses and when we want to look at RDM + Qualtrics, the NAs will be there for those we need to exclude.
 
 # 
@@ -112,7 +112,7 @@ Phs2nSub = length(Phs2subIDs);
 BothPhsSubIDs = Phs2subIDs[Phs2subIDs %in% Phs1subIDs];
 BothPhsnSub = length(BothPhsSubIDs)
 
-# Prior to exclusion, there were 544 participants. After exclusion, we have risky decision-making data for 518 participants in phase 1 and 326 participants in phase 2, and 313 participants that are included in both phases.
+# Prior to exclusion, there were 544 participants. After exclusion, we have risky decision-making data for 516 participants in phase 1 and 325 participants in phase 2, and 312 participants that are included in both phases.
 
 
 
@@ -122,8 +122,11 @@ BothPhsnSub = length(BothPhsSubIDs)
 
 ### Which trials were missed?
 # GAIN TASK
-nanIndGainPhs1 = which(is.na(rdmGainQualtrics$rdmChoice[rdmGainQualtrics$subID %in% Phs1subIDs &  rdmGainQualtrics$phase==1])); # missed trials indices phase 1
-nanIndGainPhs2 = which(is.na(rdmGainQualtrics$rdmChoice[rdmGainQualtrics$subID %in% Phs2subIDs &  rdmGainQualtrics$phase==2])); # missed trials indices phase 2
+nanIndGainPhs1 = which(is.na(rdmGainQualtrics$rdmChoice) & rdmGainQualtrics$subID %in% Phs1subIDs & rdmGainQualtrics$phase ==1) # 756 missed trials indices phase 1
+
+nanIndGainPhs2 = which(is.na(rdmGainQualtrics$rdmChoice) & rdmGainQualtrics$subID %in% Phs2subIDs & rdmGainQualtrics$phase ==2)  # missed trials indices phase 2
+  
+  
 nanIndGain = c(nanIndGainPhs1, nanIndGainPhs2);
 
 nanGainPhs1tot = length(nanIndGainPhs1); #756 missed trials phase 1
@@ -131,17 +134,15 @@ nanGainPhs2tot = length(nanIndGainPhs2); #372 missed trials phase 2
 
 
 # LOSS TASK
-nanIndLossPhs1 = which(is.na(rdmLossQualtrics$rdmChoice[rdmLossQualtrics$subID %in% Phs1subIDs &  rdmLossQualtrics$phase==1])); # missed trials indices phase 1
-nanIndLossPhs2 = which(is.na(rdmLossQualtrics$rdmChoice[rdmLossQualtrics$subID %in% Phs2subIDs &  rdmLossQualtrics$phase==2])); # missed trials indices phase 2
+nanIndLossPhs1 = which(is.na(rdmLossQualtrics$rdmChoice) & rdmLossQualtrics$subID %in% Phs2subIDs & rdmLossQualtrics$phase ==1) # missed trials indices phase 1
+nanIndLossPhs2 = which(is.na(rdmLossQualtrics$rdmChoice) & rdmLossQualtrics$subID %in% Phs2subIDs & rdmLossQualtrics$phase ==2); # missed trials indices phase 2
 nanIndLoss = c(nanIndLossPhs1, nanIndLossPhs2);
 
-nanLossPhs1tot = length(nanIndLossPhs1); #245 missed trials phase 1
+nanLossPhs1tot = length(nanIndLossPhs1); #383 missed trials phase 1
 nanLossPhs2tot = length(nanIndLossPhs2); #88 missed trials phase 2
 
 
-
-# LEFT OFF HERE CHECKING THIS STUFF AFTER MAKING AGE CHANGE AND EXCLUSION BASED ON AGE - NEED TO SLOW DOWN AND MAKE SURE EVERYTHING IS GOO
-# THEN EDIT THE EXCLUSION DOCUMENT AND ANY DOCUMENTATION FILES THAT MAY NEED TO BE UPDATED
+#left off here!!!!
 ### Which participants missed trials and how many did each participant miss?
 # GAIN TASK
 subNanGainPhs1 = unique(rdmGainQualtrics$subID[nanIndGainPhs1]); # 222 participants missed at least one trial
