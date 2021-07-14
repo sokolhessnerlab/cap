@@ -44,25 +44,25 @@ plot(rdmGainQualtrics$rdmGroundEV[rdmGainQualtrics$subID==1], col=rdmGainQualtri
 ```{r}
 # GROUP LEVEL
 
-Phs1Pgam = mean(rdmGainQualtrics$rdmChoice[rdmGainQualtrics$phase==1], na.rm=T); # phase 1 pgamble = 0.3901198 (n=516)
-Phs2Pgam = mean(rdmGainQualtrics$rdmChoice[rdmGainQualtrics$phase==2], na.rm=T); # phase 2 pgamble = 0.3783025 (n=325)
-bothPhsPgam = mean(rdmGainQualtrics$rdmChoice[rdmGainQualtrics$subID %in% BothPhsSubIDs], na.rm=T); # pgamble across participants who completed both phase 1 and phase 2 (n=312) = 0.3867135
+Phs1Pgam = mean(rdmGainQualtrics$rdmChoice[rdmGainQualtrics$phase==1], na.rm=T); # phase 1 pgamble = 0.3813811 (n=516)
+Phs2Pgam = mean(rdmGainQualtrics$rdmChoice[rdmGainQualtrics$phase==2], na.rm=T); # phase 2 pgamble = 0.3725557 (n=325)
+bothPhsPgam = mean(rdmGainQualtrics$rdmChoice[rdmGainQualtrics$subID %in% BothPhsSubIDs], na.rm=T); # pgamble across participants who completed both phase 1 and phase 2 (n=312) = 0.3795581
 
 # 95% CI
 # phase 1 (n=516)
-me1 = qnorm(.975)*(Phs1Pgam/sqrt(Phs1nSub)); #0.03277965
-Phs1Pgam + me1; #0.4134254
-Phs1Pgam - me1; #0.3478662
+me1 = qnorm(.975)*(Phs1Pgam/sqrt(Phs1nSub)); #0.03290655
+Phs1Pgam + me1; #0.4142876
+Phs1Pgam - me1; #0.3484745
 
-# phase 2 (n=326)
-me2 = qnorm(.975)*(Phs2Pgam/sqrt(Phs2nSub)); #0.04032889
-Phs2Pgam + me2; #0.4118445
-Phs2Pgam - me2; #0.3311867
+# phase 2 (n=325)
+me2 = qnorm(.975)*(Phs2Pgam/sqrt(Phs2nSub)); #0.04050397
+Phs2Pgam + me2; #0.4130596
+Phs2Pgam - me2; #0.3320517
 
-# phase 1 and phase 2 (n = 313)
-me3 = qnorm(.975)*(bothPhsPgam/sqrt(BothPhsnSub)); #0.04192421
-bothPhsPgam + me3; #0.4203572
-bothPhsPgam - me3; #0.3365088
+# phase 1 and phase 2 (n = 312)
+me3 = qnorm(.975)*(bothPhsPgam/sqrt(BothPhsnSub)); #0.04211619
+bothPhsPgam + me3; #0.4216743
+bothPhsPgam - me3; #0.3374419
 
 
 # INDIVIDUAL LEVEL
@@ -81,16 +81,21 @@ for (s in 1:nSubB4exclusion) {
   pGambleSubID$subID[s] = subNumB4exclusion[s]
   pGambleSubID$day[s] = subDay[1]
   pGambleSubID$phs1pgam[s] = mean(subPhs1$rdmChoice, na.rm=T)
-  pGambleSubID$phs2pgam[s] = mean(subPhs2$rdmChoice, na.rm=T)
-  pGambleSubID$bothPhspgam[s] = mean(c(subPhs1$rdmChoice, subPhs2$rdmChoice), na.rm=T)
-  pGambleSubID$diffPgam[s] = pGambleSubID$phs2pgam[s] - pGambleSubID$phs1pgam[s]
- 
+  
+  
+  if(s %in% Phs1subIDs & s %in% Phs2subIDs){ # for those participants who completed phase 1 and phase 2
+    pGambleSubID$phs2pgam[s] = mean(subPhs2$rdmChoice, na.rm=T)
+    pGambleSubID$bothPhspgam[s] = mean(c(subPhs1$rdmChoice, subPhs2$rdmChoice), na.rm=T)
+    pGambleSubID$diffPgam[s] = pGambleSubID$phs2pgam[s] - pGambleSubID$phs1pgam[s]
+  }
+
+
 };
 
-# NA bothPhspgam for people who did not participate in phase 2!!
 
-# plot histogram of the change in risk-taking between phases (diff > 0 = more risk taking phase 1; diff < 0 =more risk taking phase 2; diff = 0, similar risk taking across phases)
-summary(pGambleSubID$diffPgam); # mean = -.0112 (indicating generally more risk taking in phase 2)
+# plot histogram of the change in risk-taking
+# difference is phase 2 - phase 1, so diff > 0 = more risk taking phase 2; diff < 0 = more risk taking phase 1; diff = 0, similar risk taking across phases
+summary(pGambleSubID$diffPgam); # mean =-0.01178 (indicating generally more risk taking in phase 1)
 hist(pGambleSubID$diffPgam, main="Distribution of change in risk taking", xlab="change in risk-taking\n p(gamble phase 2) - p(gamble phase 1)", ylab="number of participants",breaks = 100);
 
 par(pty = 's'); # make the figure a square
@@ -115,9 +120,9 @@ Note: adding "na.action = na.exclude" retains original row number which we need 
 if(!exists('model_task')){
   model_task = glmer(rdmChoice~ 1 + rdmGainSC + rdmSafeSC + rdmGroundEV + (0 + rdmGainSC + rdmSafeSC|subID),data=rdmGainQualtrics,family="binomial",na.action=na.exclude, control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) );
 }
-# AIC = 73534.3 - this is not the best AIC but we decided that it probably makes the most sense to keep this model simple (just letting task-related stuff do their things) and then see what else accounts for RDM behavior.
+# AIC = 73436.9 - this is not the best AIC but we decided that it probably makes the most sense to keep this model simple (just letting task-related stuff do their things) and then see what else accounts for RDM behavior.
 
-# Note: kif we put a 1 in the random effects, it could wipe out subject level effects that we are interested in like affective measures (it wouldn't get rid of trial by trial stuff tho)
+# Note: if we put a 1 in the random effects, it could wipe out subject level effects that we are interested in like affective measures (it wouldn't get rid of trial by trial stuff tho)
 
 
 # Other models that we tried for our first-level and aren't going to use for residual analysis but want to save:
@@ -126,7 +131,7 @@ if(!exists('model_task')){
 if(!exists('model_taskPhaseDay')){
   model_taskPhaseDay=glmer(rdmChoice~ 1 + rdmGainSC + rdmSafeSC + rdmGroundEV + phaseRecode + dayOverallSC + (0 + rdmGainSC + rdmSafeSC|subID),data=rdmGainQualtrics,family="binomial", na.action=na.exclude, control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) );
 }
-# AIC = 73516.2
+# AIC = 73419.3
 # less risk taking in phase 2
 # no effect of day 
 
@@ -135,7 +140,7 @@ if(!exists('model_taskPhaseDay')){
 if(!exists('model_taskPhase')){
   model_taskPhase=glmer(rdmChoice~ 1 + rdmGainSC + rdmSafeSC + rdmGroundEV + phaseRecode + (0 + rdmGainSC + rdmSafeSC|subID),data=rdmGainQualtrics,family="binomial",na.action=na.exclude, control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) );
 }
-# AIC = 73516.4
+# AIC = 73419.2
 # less risk taking in phase 2
 
 ```
@@ -154,23 +159,23 @@ if(!exists('model_pred_stais')){
 }
 # singular
 # no effect of stais
-# AIC = 68606.6
-# nObs = 98951
+# AIC = 68601.5
+# nObs = 98833
 
 if(!exists('model_pred_stait')){
   model_pred_stait = glmer(rdmChoice~  0 + stai_t_score_scaled + (1|subID), data=rdmGainQualtrics, family="binomial", control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)), offset=predmTask  );
 }
 # no effect of stait
-# AIC = 68606.6
-# nObs = 98951
+# AIC = 68601.5
+# nObs = 98833
 # singular
 
 if(!exists('model_pred_uclal')){
   model_pred_uclal = glmer(rdmChoice~  0 + uclal_score_scaled + (1|subID), data=rdmGainQualtrics, family="binomial", control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)) ,offset=predmTask  );
 }
 # no effect of uclal
-# AIC = 68606.6
-# nObs = 98951
+# AIC = 68601.5
+# nObs = 98833
 # singular
 
 
@@ -178,8 +183,8 @@ if(!exists('model_pred_pss')){
   model_pred_pss = glmer(rdmChoice~ 0 + pss_score_scaled + (1|subID), data=rdmGainQualtrics, family="binomial", control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)),offset=predmTask )
 }
 # no effect of pss
-# AIC = 68606.7
-# nObs = 98951
+# AIC = 68601.6
+# nObs = 98833
 # singular
 
 
@@ -188,13 +193,13 @@ if(!exists('model_pred_covidRisk')){
   model_pred_covidRisk= glmer(rdmChoice ~  0 + covq_PAB_q1_personalRisk_scaledNoNA  + (1|subID), data=rdmGainQualtrics, family="binomial", na.action=na.exclude, control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)), offset=predmTask ); 
 }
 
-# AIC = 68791.1 
-# nObs = 99307
-# effect of covid risk is negative and trending (beta = -.025(.015), p=.0998)
+# AIC =  68719.1
+# nObs = 98951
+# effect of covid risk is negative and trending (beta = -0.02480(0.01496), p=0.0973)
 # it was very significant in the main models above (not using residuals) - possible that the effect will change when in a model with temporal context effects
 # singular
 
-# covid risk mean: 5.26 phase 1 and 5.04 in phase 2
+# covid risk mean: 5.26 phase 1 and 5.04 in phase 2 - TODO: follow up on this when we make individual-level affect dataframe
 
 # TO DO:
 # covid risk variable is capturing across and within subject stuff:
@@ -212,21 +217,22 @@ if(!exists('model_pred_3timescales_covidRisk')){
   model_pred_3timescales_covidRisk = glmer(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC + posShift +  rdmTrialSC + covq_PAB_q1_personalRisk_scaledNoNA + (1|subID), data=rdmGainQualtrics, family="binomial", offset=predmTask);
 }
 
-# AIC = 67154.3
+# AIC = 67085.1
 # only covid risk not significant
 # trial and earning opposite effects (both v sig)
+# poc effect significant and has a negative interaction with earnings
 # singular
-#nObs = 97445
+# nObs = 97093
 
 # TEMPORAL CONTEXT WITHOUT COVID RISK:
 if(!exists('model_pred_3timescales')){
   model_pred_3timescales= glmer(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC + posShift +  rdmTrialSC + (1|subID), data=rdmGainQualtrics, family="binomial", offset=predmTask);
 }
 
-# AIC = 67153.2 
+# AIC =  67083.9
 # everything significant, positive effect of past outcome, earnings (positive) and trial (negative) have opposing effects, shift positive, interaction between past outcome and earnings negative
 # singular
-#nObs = 97445
+# nObs = 97093
 
 ```
 
