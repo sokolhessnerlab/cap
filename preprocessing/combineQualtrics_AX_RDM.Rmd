@@ -45,14 +45,15 @@ library(plyr) # need this for 'join' function
 
 We can pair down scoredQualtrics to make it easier to work with, lets keep the columns we want
 
-1) stai_s_score (column 33)
-2) stai_t_score (column 56)
-3) pss_score (column 67)
-4) pss_stressedToday (column 70)
-5) uclal_score (column 91)
-6) columns 92:140 (e.g. covid qs, location, etc)
+1) stai_s_score (column 120)
+2) stai_t_score (column 119)
+3) pss_score (column 121)
+4) pss_stressedToday (column 65)
+5) uclal_score (column 122)
+6) columns 86:114 (e.g. covid qs, location, etc)
+7) columns 117:141 (^ continued)
 ```{r}
-qualtricsDF = scoredQualtrics[,c(33,56,67,70,91:140)]; # keep only the columns we listed above
+qualtricsDF = scoredQualtrics[,c(65,86:114,117:141)]; # keep only the columns we listed above
 ```
 
 Merge the data frames by sub ID and phase (this will also get rid of the redundant columns subID and phase):
@@ -74,26 +75,55 @@ Add quartile information based on "loc_state"
 
 #RDM
 tmpQuartileVec = RDMallClean_Qualtrics$loc_state; # create temporary vector and store state info
-tmpQuartileVec[tmpQuartileVec %in% stateQuartile$Quartile.1] = 1; # quartile 1
-tmpQuartileVec[tmpQuartileVec %in% stateQuartile$Quartile.2] = 2; # quartile 2
-tmpQuartileVec[tmpQuartileVec %in% stateQuartile$Quartile.3] = 3; # quartile 3
-tmpQuartileVec[tmpQuartileVec %in% stateQuartile$Quartile.4] = 4; # quartile 4
-tmpQuartileVec[tmpQuartileVec == "District of Columbia"] = 2; # DC is "Columbia" in stateQuartile csv
+tmpQuartileVecNumeric = vector(length = length(tmpQuartileVec)); # numerical vector to store values 1-4 for quartiles since tmpQuartileVec is table with factors
 
-RDMallClean_Qualtrics$quartile = as.numeric(tmpQuartileVec); # everyone should have 1-4 for quartile except for sub ID 461 phase 1 bc we don't have qualtrics responses for this person.
+tmpQuartileVecNumeric[tmpQuartileVec %in% stateQuartile$Quartile.1] = 1; # quartile 1
+tmpQuartileVecNumeric[tmpQuartileVec %in% stateQuartile$Quartile.2] = 2; # quartile 2
+tmpQuartileVecNumeric[tmpQuartileVec %in% stateQuartile$Quartile.3] = 3; # quartile 3
+tmpQuartileVecNumeric[tmpQuartileVec %in% stateQuartile$Quartile.4] = 4; # quartile 4
+tmpQuartileVecNumeric[tmpQuartileVec == "District of Columbia"] = 2; # DC is "Columbia" in stateQuartile csv
+
+RDMallClean_Qualtrics$quartile = tmpQuartileVecNumeric; # everyone should have 1-4 for quartile except for sub ID 461 phase 1 bc we don't have qualtrics responses for this person.
 
 #AX
 tmpQuartileVec = AXallClean_Qualtrics$loc_state; # create temporary vector and store state info
-tmpQuartileVec[tmpQuartileVec %in% stateQuartile$Quartile.1] = 1; # quartile 1
-tmpQuartileVec[tmpQuartileVec %in% stateQuartile$Quartile.2] = 2; # quartile 2
-tmpQuartileVec[tmpQuartileVec %in% stateQuartile$Quartile.3] = 3; # quartile 3
-tmpQuartileVec[tmpQuartileVec %in% stateQuartile$Quartile.4] = 4; # quartile 4
-tmpQuartileVec[tmpQuartileVec == "District of Columbia"] = 2; # DC is "Columbia" in stateQuartile csv
+tmpQuartileVecNumeric = vector(length = length(tmpQuartileVec)); # numerical vector to store values 1-4 for quartiles since tmpQuartileVec is table with factors
 
-AXallClean_Qualtrics$quartile = as.numeric(tmpQuartileVec); # everyone should have 1-4 for quartile except for sub ID 461 phase 1 bc we don't have qualtrics responses for this person.
+tmpQuartileVecNumeric[tmpQuartileVec %in% stateQuartile$Quartile.1] = 1; # quartile 1
+tmpQuartileVecNumeric[tmpQuartileVec %in% stateQuartile$Quartile.2] = 2; # quartile 2
+tmpQuartileVecNumeric[tmpQuartileVec %in% stateQuartile$Quartile.3] = 3; # quartile 3
+tmpQuartileVecNumeric[tmpQuartileVec %in% stateQuartile$Quartile.4] = 4; # quartile 4
+tmpQuartileVecNumeric[tmpQuartileVec == "District of Columbia"] = 2; # DC is "Columbia" in stateQuartile csv
+
+AXallClean_Qualtrics$quartile = as.numeric(tmpQuartileVecNumeric); # everyone should have 1-4 for quartile except for sub ID 461 phase 1 bc we don't have qualtrics responses for this person.
 
 ```
 
+
+Age was only collected in phase 1, lets fill in age for phase 2 demo_age variable based on phase 1 response
+```{r}
+
+#AX
+for(s in 1:nSub){
+  subData = AXallClean_Qualtrics[AXallClean_Qualtrics$subID==subNum[s],]
+  
+  if (length(unique(subData$phase))>1){ #if we have phase 2 data for this participant
+    
+    AXallClean_Qualtrics$demo_age[AXallClean_Qualtrics$subID==subNum[s] & AXallClean_Qualtrics$phase==2] = subData$demo_age[1]; # replace phase 2 demo_age with sub's age
+  }
+}
+
+#RDM
+for(s in 1:nSub){
+  subData = RDMallClean_Qualtrics[RDMallClean_Qualtrics$subID==subNum[s],]
+  
+  if (length(unique(subData$phase))>1){ #if we have phase 2 data for this participant
+    
+    RDMallClean_Qualtrics$demo_age[RDMallClean_Qualtrics$subID==subNum[s] & RDMallClean_Qualtrics$phase==2] = subData$demo_age[1]; # replace phase 2 demo_age with sub's age
+  }
+}
+
+```
 
 
 Create separate datasets for the gain only and loss only tasks (but keep the original one as is: "RDMallClean_Qualtrics")
