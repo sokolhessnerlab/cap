@@ -6,9 +6,9 @@ Based on risky decision-making exclusion criteria, we excluded 28 (26 based on r
 
 We then noted missed trials in the gain- and loss-only tasks of the remaining participants. Similar to the exclusion method above, we did not remove missed trials and instead they are noted by NAs for choice and outcome variables. 
 
-In phase 1, 222 participants missed a total of 756 gain-only trials (mean = 1.338; median = 0; range = 0-21) and 144 participants missed a total of 383 loss-only trials (mean = .4537; median = 0; range = 0-7) resulting in a total 60,886 gain-only and 9,477 loss-only trials. 
+In phase 1, 294 participants missed a total of 756 gain-only trials (mean = 1.465; median = 1; range = 0-18) and 166 participants missed a total of 245 loss-only trials (mean = .4748; median = 0; range = 0-7) resulting in a total 60,648 gain-only and 9,437 loss-only trials. 
 
-In phase 2, 129 participants missed a total of 372 gain-only trials (mean = .862; median = 0; range = 0-15) and 71 participants missed a total of 88 loss-only trials (mean = .2117; median = 0; range = 0-3) resulting in a total of 38,421 gain-only and 6,432 loss-only trials. 
+In phase 2, 161 participants missed a total of 372 gain-only trials (mean = 1.45; median = 0; range = 0-14) and 72 participants missed a total of 88 loss-only trials (mean = .2708; median = 0; range = 0-3) resulting in a total of 38,303 gain-only and 6,412 loss-only trials. 
 
 ### Exclusion for Qualtrics responses
 
