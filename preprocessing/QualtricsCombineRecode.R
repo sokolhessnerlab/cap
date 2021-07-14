@@ -54,7 +54,7 @@ cap_qualtrics_combined$covq_NOW_interact_q6_socialMedia <- NULL
 cap_qualtrics_combined$covq_PAB_q10_socialDistanceTime <- NULL
 cap_qualtrics_combined$demo_gender_other <- NULL
 cap_qualtrics_combined$demo_race_other <- NULL
-cap_qualtrics_combined$demo_age <- NULL 
+#cap_qualtrics_combined$demo_age <- NULL 
 cap_qualtrics_combined$ses_childhood_income <- NULL
 cap_qualtrics_combined$ses_childhood_householdSize <- NULL
 cap_qualtrics_combined$ses_current_income <- NULL
