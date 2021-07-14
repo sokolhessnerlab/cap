@@ -8,7 +8,7 @@ We then noted missed trials in the gain- and loss-only tasks of the remaining pa
 
 In phase 1, 223 participants missed a total of 756 gain-only trials (mean = 1.338; median = 0; range = 0-21) and 151 participants missed a total of 245 loss-only trials (mean = .4537; median = 0; range = 0-7) resulting in a total 60,886 gain-only and 9,477 loss-only trials. 
 
-In phase 2, 131 participants missed a total of 373 gain-only trials (mean = .862; median = 0; range = 0-15) and 65 participants missed a total of 88 loss-only trials (mean = .2117; median = 0; range = 0-3) resulting in a total of 38,421 gain-only and 6,432 loss-only trials. 
+In phase 2, 131 participants missed a total of 372 gain-only trials (mean = .862; median = 0; range = 0-15) and 65 participants missed a total of 88 loss-only trials (mean = .2117; median = 0; range = 0-3) resulting in a total of 38,421 gain-only and 6,432 loss-only trials. 
 
 ### Exclusion for Qualtrics responses
 
