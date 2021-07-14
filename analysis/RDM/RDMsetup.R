@@ -134,23 +134,22 @@ nanGainPhs2tot = length(nanIndGainPhs2); #372 missed trials phase 2
 
 
 # LOSS TASK
-nanIndLossPhs1 = which(is.na(rdmLossQualtrics$rdmChoice) & rdmLossQualtrics$subID %in% Phs2subIDs & rdmLossQualtrics$phase ==1) # missed trials indices phase 1
+nanIndLossPhs1 = which(is.na(rdmLossQualtrics$rdmChoice) & rdmLossQualtrics$subID %in% Phs1subIDs & rdmLossQualtrics$phase ==1) # missed trials indices phase 1
 nanIndLossPhs2 = which(is.na(rdmLossQualtrics$rdmChoice) & rdmLossQualtrics$subID %in% Phs2subIDs & rdmLossQualtrics$phase ==2); # missed trials indices phase 2
 nanIndLoss = c(nanIndLossPhs1, nanIndLossPhs2);
 
-nanLossPhs1tot = length(nanIndLossPhs1); #383 missed trials phase 1
+nanLossPhs1tot = length(nanIndLossPhs1); #245 missed trials phase 1
 nanLossPhs2tot = length(nanIndLossPhs2); #88 missed trials phase 2
 
 
-#left off here!!!!
 ### Which participants missed trials and how many did each participant miss?
 # GAIN TASK
-subNanGainPhs1 = unique(rdmGainQualtrics$subID[nanIndGainPhs1]); # 222 participants missed at least one trial
-subNanGainPhs2 = unique(rdmGainQualtrics$subID[nanIndGainPhs2]); # 129 participants missed at least one trial
+subNanGainPhs1 = unique(rdmGainQualtrics$subID[nanIndGainPhs1]); # 294 participants missed at least one trial
+subNanGainPhs2 = unique(rdmGainQualtrics$subID[nanIndGainPhs2]); # 161 participants missed at least one trial
 
 # LOSS TASK
-subNanLossPhs1 = unique(rdmLossQualtrics$subID[nanIndLossPhs1]); # 144 participants missed at least one trial
-subNanLossPhs2 = unique(rdmLossQualtrics$subID[nanIndLossPhs2]); # 71 participants missed at least one trial
+subNanLossPhs1 = unique(rdmLossQualtrics$subID[nanIndLossPhs1]); # 166 participants missed at least one trial
+subNanLossPhs2 = unique(rdmLossQualtrics$subID[nanIndLossPhs2]); # 72 participants missed at least one trial
 
 
 # Create a dataframe that stores subject IDs, missed gain trials phase 1, missed gain trials phase 2, total gain trials phase 1, total gain trials phase 2, missed loss trials phase 1, missed loss trials phase 2, total loss trials phase 1 and total loss trials phase 2.
