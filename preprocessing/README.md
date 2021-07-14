@@ -168,18 +168,18 @@ Any files added to the "preprocessing" folder should be included in this list al
 
 -   output #1: AXallClean_Qualtrics.csv
     
-    -   108091 rows with 62 variables
+    -   108091 rows with 63 variables
     -   all of AX data with scored qualtrics responses (544 participants, 2 phases)
     
 -   output #2: RDMallClean_Qualtrics.csv
 
-    -   124572 rows with 71 variables
+    -   124572 rows with 72 variables
     -   all of RDM data (both gain and loss tasks) with scored qualtrics responses (544 participants, 2 phases)
 
 -   output #3: RDMallCleanGain_Qualtrics.csv
-    -   107219 rows with 71 variables
+    -   107219 rows with 72 variables
     -   RDM GAIN-ONLY data with scored qualtrics responses (544 participants, 2 phases)
 
 -   output #4: RDMallCleanLoss_Qualtrics.csv  
-    -   17353 rows with 71 variables
+    -   17353 rows with 72 variables
     -   RDM LOSS-ONLY data with scored qualtrics responses (544 participants, 2 phases)
