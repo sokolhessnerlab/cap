@@ -21,18 +21,22 @@ rdmGain_csv = file.path(config$path$combined, config$RDMcsvs$RDMgain_qualtrics);
 rdmLoss_csv = file.path(config$path$combined, config$RDMcsvs$RDMloss_qualtrics); # loss only task path
 exclsnPhs1_csv = file.path(config$path$combined, config$EXCLUSIONcsvs$RDM_AX_Qual_Phs1exclusion); # phase 1 exclusion path
 exclsnPhs2_csv = file.path(config$path$combined, config$EXCLUSIONcsvs$RDM_AX_Qual_Phs2exclusion); # phase 2 exclusion path
-
+qualtricsBothPhs = file.path(config$path$combined, config$QUALTRICScsvs$Combined_subID_scored_noDuplicates); # qualtrics responses path
 
 rdmGainQualtrics = read.csv(rdmGain_csv); # loads gain only RDM + Qualtrics data both phases (takes several seconds)
 rdmLossQualtrics = read.csv(rdmLoss_csv); # loads loss only RDM + Qualtrics data both phases (takes several seconds)
 excludePhs1 = read.csv(exclsnPhs1_csv); # loads exclusion for phase 1
 excludePhs2 = read.csv(exclsnPhs2_csv); # loads exclusion for phase 2
+qualtricsBothPhs = read.csv(qualtricsBothPhs); # load qualtrics responses
+
+
 
 # Remove the extra "X" column present as the first column in datasets
 rdmGainQualtrics = rdmGainQualtrics[,(2:ncol(rdmGainQualtrics))];
 rdmLossQualtrics = rdmLossQualtrics[,(2:ncol(rdmLossQualtrics))];
 excludePhs1 = excludePhs1[,(2:ncol(excludePhs1))];
 excludePhs2 = excludePhs2[,(2:ncol(excludePhs2))];
+qualtricsBothPhs = qualtricsBothPhs[,(4:ncol(qualtricsBothPhs))]; # qualtrics has 3 columns of X variable
 
 # we are going to exclude some people so lets save the original number of subjects
 subNumB4exclusion = unique(rdmGainQualtrics$subID);  # there are the same number of participants in gain and loss datasets
@@ -112,35 +116,37 @@ BothPhsnSub = length(BothPhsSubIDs)
 
 # Missed trials:
 # Where participants did not respond, an NA is in place for choice and outcome. We are not removing these trials but will make a note of the number of trials per phase that were missed by each participants.
-
-# CONSIDER DELETING THE PART BELOW UP UNTIL LINES 144 BECAUSE THIS IS CALCULATING MISSED TRIALS INCLUDING THOSE WITH NAS FROM THOSE WE EXCLUDED AND WE LATER GO ON T0 CALCULATE THE MISSED TRIALS FOR EACH PARTICIPANT THAT WE ACTUALLY KEEP! SO THIS PART IS MSILEADING - BEFORE DELETING MAKE SURE WE DON'T USE THOSE VARIABLES BELOW OR FIGURE OUT A BETTER WAY TO DO IT. 
+# At this point in the script, we have NAs for people who are excluded.
 
 ### Which trials were missed?
 # GAIN TASK
-nanIndGain = which(is.na(rdmGainQualtrics$rdmChoice)); # both phases
-nanIndGainPhs1 = which(is.na(rdmGainQualtrics$rdmChoice) & rdmGainQualtrics$phase==1); # phase 1 missed trial
-nanIndGainPhs2 = which(is.na(rdmGainQualtrics$rdmChoice) & rdmGainQualtrics$phase==2); # phase 2 missed trials
-nanIndGainPhs1tot = length(nanIndGainPhs1); # 3850 missed trials in phase 1
-nanIndGainPhs2tot = length(nanIndGainPhs2); # 4062 missed trials in phase 2
+nanIndGainPhs1 = which(is.na(rdmGainQualtrics$rdmChoice[rdmGainQualtrics$subID %in% Phs1subIDs &  rdmGainQualtrics$phase==1])); # missed trials indices phase 1
+nanIndGainPhs2 = which(is.na(rdmGainQualtrics$rdmChoice[rdmGainQualtrics$subID %in% Phs2subIDs &  rdmGainQualtrics$phase==2])); # missed trials indices phase 2
+nanIndGain = c(nanIndGainPhs1, nanIndGainPhs2);
+
+nanGainPhs1tot = length(nanIndGainPhs1); #756 missed trials phase 1
+nanGainPhs2tot = length(nanIndGainPhs2); #373 missed trials phase 2
+
 
 # LOSS TASK
-nanIndLoss = which(is.na(rdmLossQualtrics$rdmChoice)); # both phases
-nanIndLossPhs1 = which(is.na(rdmLossQualtrics$rdmChoice) & rdmLossQualtrics$phase==1); # phase 1 missed trial
-nanIndLossPhs2 = which(is.na(rdmLossQualtrics$rdmChoice) & rdmLossQualtrics$phase==2); # phase 2 missed trials
-nanIndLossPhs1tot = length(nanIndLossPhs1); # 736 missed trials in phase 1
-nanIndLossPhs2tot = length(nanIndLossPhs2); # 708 missed trials in phase 2
+nanIndLossPhs1 = which(is.na(rdmLossQualtrics$rdmChoice[rdmLossQualtrics$subID %in% Phs1subIDs &  rdmLossQualtrics$phase==1])); # missed trials indices phase 1
+nanIndLossPhs2 = which(is.na(rdmLossQualtrics$rdmChoice[rdmLossQualtrics$subID %in% Phs2subIDs &  rdmLossQualtrics$phase==2])); # missed trials indices phase 2
+nanIndLoss = c(nanIndLossPhs1, nanIndLossPhs2);
 
-# Summary:  TO
-# There are a total of 7912 missed trials in the gain-only task across all participants and phases (3850 missed trials phase 1 and 4062 missed trials phase 2). There are a total of 1444 missed trials in the loss-only task across all participants and phases (736 missed trials in phase 1 and 708 missed trials in phase 2). Across both tasks and phases, there is a total of 9356 miss trials.
+nanLossPhs1tot = length(nanIndLossPhs1); #245 missed trials phase 1
+nanLossPhs2tot = length(nanIndLossPhs2); #88 missed trials phase 2
+
+
+
 
 ### Which participants missed trials and how many did each participant miss?
 # GAIN TASK
-subNanGainPhs1 = unique(rdmGainQualtrics$subID[nanIndGainPhs1]); # 320 participants missed at least one trial
-subNanGainPhs2 = unique(rdmGainQualtrics$subID[nanIndGainPhs2]); # 193 participants missed at least one trial
+subNanGainPhs1 = unique(rdmGainQualtrics$subID[nanIndGainPhs1]); # 223 participants missed at least one trial
+subNanGainPhs2 = unique(rdmGainQualtrics$subID[nanIndGainPhs2]); # 131 participants missed at least one trial
 
 # LOSS TASK
-subNanLossPhs1 = unique(rdmLossQualtrics$subID[nanIndLossPhs1]); # 192 participants missed at least one trial
-subNanLossPhs2 = unique(rdmLossQualtrics$subID[nanIndLossPhs2]); # 103 participants missed at least one trial
+subNanLossPhs1 = unique(rdmLossQualtrics$subID[nanIndLossPhs1]); # 151 participants missed at least one trial
+subNanLossPhs2 = unique(rdmLossQualtrics$subID[nanIndLossPhs2]); # 65 participants missed at least one trial
 
 
 # Create a dataframe that stores subject IDs, missed gain trials phase 1, missed gain trials phase 2, total gain trials phase 1, total gain trials phase 2, missed loss trials phase 1, missed loss trials phase 2, total loss trials phase 1 and total loss trials phase 2.
@@ -309,7 +315,6 @@ for (s in 1:nSubB4exclusion) {
   
 }
 
-# REPLACE 0 IN RDM GAIN DATASET EARNINGS WITH NA!!! AND DO THE SAME THING FOR TRIAL (NA, NOT TRIAL NUMBER)
 
 rdmGainQualtrics$rdmEarnings = earningsByPhase;
 rdmGainQualtrics$rdmEarningSC = earningsByPhaseScaled;
@@ -318,6 +323,20 @@ rdmGainQualtrics$rdmTrialSC = trialByPhase;
 # Replace 0s in the maxEarnSubPhase dataframe with NAs (there are 0s because we had to make them 0s for cumsum to work the way we want)
 maxEarnSubPhase$maxEarnPhs1[maxEarnSubPhase$maxEarnPhs1==0]= NA;
 maxEarnSubPhase$maxEarnPhs2[maxEarnSubPhase$maxEarnPhs2==0]= NA;
+
+
+# for excluded participants, replace 0s in earnings and trial varibles with NA
+rdmGainQualtrics$rdmEarnings[rdmGainQualtrics$subID %in% subIDrdmPhs1Exclude & rdmGainQualtrics$phase==1] = NA;
+rdmGainQualtrics$rdmEarnings[rdmGainQualtrics$subID %in% subIDrdmPhs2Exclude & rdmGainQualtrics$phase==2] = NA;
+
+rdmGainQualtrics$rdmEarningsSC[rdmGainQualtrics$subID %in% subIDrdmPhs1Exclude & rdmGainQualtrics$phase==1] = NA;
+rdmGainQualtrics$rdmEarningsSC[rdmGainQualtrics$subID %in% subIDrdmPhs2Exclude & rdmGainQualtrics$phase==2] = NA;
+
+rdmGainQualtrics$rdmTrial[rdmGainQualtrics$subID %in% subIDrdmPhs1Exclude & rdmGainQualtrics$phase==1] = NA;
+rdmGainQualtrics$rdmTrial[rdmGainQualtrics$subID %in% subIDrdmPhs2Exclude & rdmGainQualtrics$phase==2] = NA;
+
+rdmGainQualtrics$rdmTrialSC[rdmGainQualtrics$subID %in% subIDrdmPhs1Exclude & rdmGainQualtrics$phase==1] = NA;
+rdmGainQualtrics$rdmTrialSC[rdmGainQualtrics$subID %in% subIDrdmPhs2Exclude & rdmGainQualtrics$phase==2] = NA;
 
 # quick summary about cumulative earnings: 
 # phase 1: range = $1394 - $2549, median = $1891, mean = $1901
@@ -364,5 +383,19 @@ rdmGainQualtrics$signedShift = c(0, diff(rdmGainQualtrics$rdmGroundEV));
 rdmGainQualtrics$signedShift[rdmGainQualtrics$rdmTrial==1] = 0; # first trial is always 0
 rdmGainQualtrics$posShift = rdmGainQualtrics$signedShift*as.numeric(rdmGainQualtrics$signedShift>0);
 rdmGainQualtrics$negShift = rdmGainQualtrics$signedShift*as.numeric(rdmGainQualtrics$signedShift<0);
+
+
+# left off here - age is not in the qualtrics Both phases so we need to go back and figure that out.
+# create a dataframe that includes phase 1 and phase 2 qualtrics responses where each row is a participant and contains responses from phase 1 and phase 2
+# for now, lets keep overall scores for pss, uclal, stait and stais, covid risk
+# when we want to add more variables to this for analysis, it should be simple
+
+#colnames(qualtricsBothPhs)
+
+# some of the columns we know we want:
+#c("stai_s_score","stai_t_score","pss_score","pss_stressedToday","uclal_score","covq_PAB_q1_personalRisk","phase", "subID"  )
+
+
+
 
 
