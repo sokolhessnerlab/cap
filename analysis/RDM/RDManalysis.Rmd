@@ -20,9 +20,9 @@ source(setup_source) #, local = knitr::knit_global())
 # Looks for existing model file and if its found, then load it and we will now have our previous models in the environment
 outputfile = file.path(config$path$Rdata, config$Rdata_files$models)
 
-#if(exists(outputfile)){
+if(file.exists(outputfile)){
   load(outputfile)
-#}
+}
 
 ```
 
@@ -99,8 +99,8 @@ summary(pGambleSubID$diffPgam); # mean =-0.01178 (indicating generally more risk
 hist(pGambleSubID$diffPgam, main="Distribution of change in risk taking", xlab="change in risk-taking\n p(gamble phase 2) - p(gamble phase 1)", ylab="number of participants",breaks = 100);
 
 par(pty = 's'); # make the figure a square
-plot(pGambleSubID$phs1pgam, pGambleSubID$phs2pgam, abline(a=0, b=1), xlab="p(gamble phase 1)", ylab="p(gamble phase 2)", main="Risk-taking in both phases (mean in red)", asp=1, ylim=c(0,1), xlim=c(0,1));
-points(mean(pGambleSubID$phs1pgam,na.rm=T), mean(pGambleSubID$phs2pgam,na.rm=T), col="red", pch=17);
+plot(pGambleSubID$phs1pgam, pGambleSubID$phs2pgam, abline(a=0, b=1), xlab="p(gamble phase 1)", ylab="p(gamble phase 2)", main="Risk-taking in both phases (mean in red)", asp=1, ylim=c(0,1), xlim=c(0,1), pch=16, col=rgb(red=0, green=0, blue=0, alpha = 0.3), cex = 3);
+points(mean(pGambleSubID$phs1pgam,na.rm=T), mean(pGambleSubID$phs2pgam,na.rm=T), col="red", pch=17, cex=3);
 
 
 ```
