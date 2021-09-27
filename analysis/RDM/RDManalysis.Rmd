@@ -214,16 +214,62 @@ if(!exists('model_pred_covidRisk')){
 if(!exists('model_pred_covidRisk_phase1')){
   model_pred_covidRisk= glm(rdmChoice ~  0 + covq_PAB_q1_personalRisk_scaledNoNA, data=rdmGainQualtrics, family="binomial", na.action=na.exclude, offset=predmTask ); 
 }
+#                                     Estimate Std. Error z value Pr(>|z|)  
+# covq_PAB_q1_personalRisk_scaledNoNA -0.02480    0.01496  -1.658   0.0973 .
 
+# AIC 68717
+# COVID perceived risk doesn't significantly affect risk-taking, overall. 
 
+# Might this differ across separate phases?
+if(!exists('model_pred_covidRisk_phase1')){
+  model_pred_covidRisk_phase1 = glmer(rdmChoice ~  0 + covq_PAB_q1_personalRisk_scaledNoNA  + (1|subID), data=rdmGainQualtrics[rdmGainQualtrics$phase==1,], family="binomial", na.action=na.exclude, control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)), offset=predmTask );
+}
+# No significant effect of perceived risk in phase 1 (B = -0.009468, p = 0.805)
 
-# interacting phaseRecode with covid risk (noNA) with no glmer, there is a small positive effect of covid risk, bigger positive effect of phase and interaction between covid risk and phase where people are basically around .5 pgam on first phase regardless of how they perceive risk but there is a big split during phase 2 where people who have high perceived covid risk in phase 2 gamble much less and those who have low perceived covid risk in phase 2 gamble much more, but people in middle stay the same.
+if(!exists('model_pred_covidRisk_phase2')){
+  model_pred_covidRisk_phase2 = glmer(rdmChoice ~  0 + covq_PAB_q1_personalRisk_scaledNoNA  + (1|subID), data=rdmGainQualtrics[rdmGainQualtrics$phase==2,], family="binomial", na.action=na.exclude, control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)), offset=predmTask );
+}
+# Significant effect of perceived risk in phase 2 (B = -0.23339, p = 0.0012*)
 
-# if we run the same model with dayoverall scaled variable, the pattern is the same as phase (but with day, we capture more data points with 40 days).
+# --> Perceived COVID risk appears to negatively affect risk-taking in phase 2, but not phase 1.
 
-#Day is much better AIC than phase model
+# This shows up when interacting phase with perceived COVID risk
+if(~exists('model_pred_covidRisk_x_phase')){
+  model_pred_covidRisk_x_phase = glmer(rdmChoice ~  0 + covq_PAB_q1_personalRisk_scaledNoNA*phaseRecode + (1|subID), data=rdmGainQualtrics, family="binomial", na.action=na.exclude, control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)), offset=predmTask );
+}
+#                                                 Estimate Std. Error z value Pr(>|z|)    
+# covq_PAB_q1_personalRisk_scaledNoNA              0.02820    0.01886   1.495 0.134911    
+# phaseRecode                                      0.14423    0.04178   3.453 0.000555 ***
+# covq_PAB_q1_personalRisk_scaledNoNA:phaseRecode -0.36164    0.07078  -5.109 3.23e-07 ***
 
-# variability in gambling is smaller during phase 1 than phase 2 (where its really big) and this matches with the covid risk interaction with phase and/or day.
+# Two opposing effects... risk-taking significantly INCREASES in phase 2 when perceived COVID risk is 0/low, but DECREASES in phase 2 the higher participants perceive the risk of COVID. 
+
+# A very similar approaching using DAY instead of PHASE outperforms on the basis of AIC:
+if(~exists('model_pred_covidRisk_x_dayOverallSC')){
+  model_pred_covidRisk_x_dayOverallSC = glmer(rdmChoice ~  0 + covq_PAB_q1_personalRisk_scaledNoNA*dayOverallSC + (1|subID), data=rdmGainQualtrics, family="binomial", na.action=na.exclude, control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)), offset=predmTask );
+}
+# NOTE: none of these models *should* be glmers; RFX terms have 0 variance
+#                                                  Estimate Std. Error z value Pr(>|z|)    
+# covq_PAB_q1_personalRisk_scaledNoNA               0.08122    0.02828   2.872  0.00408 ** 
+# dayOverallSC                                      0.24912    0.04984   4.999 5.77e-07 ***
+# covq_PAB_q1_personalRisk_scaledNoNA:dayOverallSC -0.62073    0.09634  -6.443 1.17e-10 ***
+
+# This implies a small positive relationship between perceived COVID risk and risk-taking on Day 0, followed by two contrasting effects; a positive effect of Day (INCREASED risk-taking for those with 0/low perceived COVID risk with increasing day), and a strong negative interaction between Day and perceived COVID risk (DECREASED risk-taking for those who perceive significant COVID risk as day increases)
+
+# Predicted p(gamble) by perceived COVID risk and Day are...
+# no perceived risk: 0.5 on Day 0, 0.56 on Day 40 [RISES]
+# moderate perceived risk: 0.51 on Day 0, 0.49 on Day 40 [STAYS FLAT]
+# high perceived risk: 0.52 on Day 0, 0.43 on Day 40 [DROPS]
+
+# This pattern predicts more variability across participants in risk-taking in phase 2 than phase 1. Estimates of variance across phase corroborate this:
+var_phase1 = var(pGambleSubID$phs1pgam[is.finite(pGambleSubID$phs2pgam)],na.rm=T)
+# 0.0389
+var_phase2 = var(pGambleSubID$phs2pgam,na.rm=T)
+# 0.0461
+
+var.test(pGambleSubID$phs1pgam[is.finite(pGambleSubID$phs2pgam)],pGambleSubID$phs2pgam)
+# These variances aren't significantly different; p = 0.14
+
 
 
 # 2) relate changes in risk taking to changes in perceived risk (using a variable that captures the difference in covid risk across phase 1)
