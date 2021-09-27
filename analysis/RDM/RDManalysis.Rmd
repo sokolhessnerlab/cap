@@ -190,20 +190,42 @@ if(!exists('model_pred_pss')){
 
 # COVID RISK: 
 if(!exists('model_pred_covidRisk')){
-  model_pred_covidRisk= glmer(rdmChoice ~  0 + covq_PAB_q1_personalRisk_scaledNoNA  + (1|subID), data=rdmGainQualtrics, family="binomial", na.action=na.exclude, control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)), offset=predmTask ); 
+  model_pred_covidRisk= glm(rdmChoice ~  0 + covq_PAB_q1_personalRisk_scaledNoNA, data=rdmGainQualtrics, family="binomial", na.action=na.exclude, offset=predmTask ); 
 }
 
 # AIC =  68719.1
 # nObs = 98951
 # effect of covid risk is negative and trending (beta = -0.02480(0.01496), p=0.0973)
 # it was very significant in the main models above (not using residuals) - possible that the effect will change when in a model with temporal context effects
-# singular
+# singular because random effects have very small variance when using GLMER - use GLM instead (beta and pvalue are exactly the same in glmer and glm)
 
 # covid risk mean: 5.26 phase 1 and 5.04 in phase 2 - TODO: follow up on this when we make individual-level affect dataframe
 
 # TO DO:
 # covid risk variable is capturing across and within subject stuff:
 # 1) resrict data to one phase and if the pattern holds up, we atleast know that individual differences do matter
+  # using this model to see becauase concern about using offset and putting covid risk in second-step model is making it hard to see effects: rdmChoice ~ 1 + rdmGainSC + rdmSafeSC + rdmGroundEV + covq_PAB_q1_personalRisk_scaledNoNA
+  # just phase 1 data - negative and significant; just phase 2 - negative and significant 
+  
+  # using glmer(rdmChoice ~  0 + covq_PAB_q1_personalRisk_scaledNoNA  + (1|subID) with offset and restricting data to just one     phase, Phase 1: beta = -0.009468, p = .81 and Phase 2: beta = -0.23339, p = 0.0012
+  # so this means that its always the case that lower covid risk is associated with more risk-taking but more so in phase 2.
+  # if lower covid risk means more risk-taking then risk-taking should increase in phase 2 but it decreases
+
+if(!exists('model_pred_covidRisk_phase1')){
+  model_pred_covidRisk= glm(rdmChoice ~  0 + covq_PAB_q1_personalRisk_scaledNoNA, data=rdmGainQualtrics, family="binomial", na.action=na.exclude, offset=predmTask ); 
+}
+
+
+
+# interacting phaseRecode with covid risk (noNA) with no glmer, there is a small positive effect of covid risk, bigger positive effect of phase and interaction between covid risk and phase where people are basically around .5 pgam on first phase regardless of how they perceive risk but there is a big split during phase 2 where people who have high perceived covid risk in phase 2 gamble much less and those who have low perceived covid risk in phase 2 gamble much more, but people in middle stay the same.
+
+# if we run the same model with dayoverall scaled variable, the pattern is the same as phase (but with day, we capture more data points with 40 days).
+
+#Day is much better AIC than phase model
+
+# variability in gambling is smaller during phase 1 than phase 2 (where its really big) and this matches with the covid risk interaction with phase and/or day.
+
+
 # 2) relate changes in risk taking to changes in perceived risk (using a variable that captures the difference in covid risk across phase 1)
 
 # Affective measures... 
@@ -214,7 +236,7 @@ if(!exists('model_pred_covidRisk')){
 
 # TEMPORAL CONTEXT WITH COVID RISK:
 if(!exists('model_pred_3timescales_covidRisk')){
-  model_pred_3timescales_covidRisk = glmer(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC + posShift +  rdmTrialSC + covq_PAB_q1_personalRisk_scaledNoNA + (1|subID), data=rdmGainQualtrics, family="binomial", offset=predmTask);
+  model_pred_3timescales_covidRisk = glm(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC + posShift +  rdmTrialSC + covq_PAB_q1_personalRisk_scaledNoNA + (1|subID), data=rdmGainQualtrics, family="binomial", offset=predmTask);
 }
 
 # AIC = 67085.1
