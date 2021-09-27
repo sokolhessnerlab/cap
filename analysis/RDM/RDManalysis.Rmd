@@ -5,7 +5,7 @@ date: "5/13/2021"
 output: html_document
 ---
 
-Data set up is taken care of by RDMsteup.R script. 
+Data set up is taken care of by RDMsetup.R script. 
 ```{r setup, include=FALSE}
 rm(list=ls())
 
