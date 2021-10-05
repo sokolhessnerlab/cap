@@ -31,14 +31,15 @@ pIDlength=24;
 # 2) Then remove the additional column (eg. X5e7ffbc0a27f256e3290542f)
 
 
-# the misformatted .csv files are in "/Volumes/CAP/data/rawData/phase1/day3/riskyChoiceMisformatted"
-# day3AX =list.files(path = "/Volumes/CAP/data/rawData/phase1/day3/axcptMisformatted", pattern = "csv$"); # pull out the misformatted files
+## the misformatted .csv files are in "/Volumes/CAP/data/rawData/phase1/day3/axcptMisformatted"
+#day3AX = list.files(path = sprintf('%s/phase1/day3/axcptMisformatted',file.path(config$path$raw)), pattern="csv$"); # pull out the misformatted files
+
 # extractIDax = substr(day3AX,1,pIDlength); # get list of prolific ID numbers
 # nS = length(extractIDax); # number of subjects for phase 1, day 3
 # 
 # for (s in 1:nS) {
-#   tmpcsv = read.csv(sprintf("/Volumes/CAP/data/rawData/phase1/day3/axcptMisformatted/%s", day3AX[s])); # read one sub's csv
-# 
+#   #tmpcsv = read.csv(sprintf("/Volumes/CAP/data/rawData/phase1/day3/axcptMisformatted/%s", day3AX[s])); # read one sub's csv
+#    tmpcsv = read.csv(sprintf('%s/phase1/day3/axcptMisformatted/%s',file.path(config$path$raw),day3AX[s])); # read one sub's csv - this line is consistent with config file
 #   tmpcsv$participant = extractIDax[s]; # save prolific ID in "participant" column
 # 
 #   
@@ -51,35 +52,43 @@ pIDlength=24;
 #     tmpcsv = tmpcsv[,-ind]; # remove it
 #   };
 # 
-#   write.csv(tmpcsv,sprintf("/Volumes/CAP/data/rawData/phase1/day3/axcpt/%s", day3AX[s]), row.names = F); # save new .csv file
+#   #write.csv(tmpcsv,sprintf("/Volumes/CAP/data/rawData/phase1/day3/axcpt/%s", day3AX[s]), row.names = F); # save new .csv file
+# write.csv(sprintf('%s/phase1/day3/axcpt/%s',file.path(config$path$raw),day3AX[s]),row.names = F); save new .csv file- this line is consistent with config file
 # };
 
 # STEP 1B: fix csv file for phase 1, day 11, participant 5e89e8053cbd1167d2a5c85a.
 # this prolific ID also did not get recorded correctly (participant put in their name ('Ty') instead of the participant #)
 # commented out because it doesn't need to be run again
-# tmpcsv = read.csv("/Volumes/CAP/data/rawData/phase1/day11/axcptMisformatted/5e89e8053cbd1167d2a5c85a_capAXCPT_2020-04-06_15h23.34.855.csv");
+## tmpcsv = read.csv("/Volumes/CAP/data/rawData/phase1/day11/axcptMisformatted/5e89e8053cbd1167d2a5c85a_capAXCPT_2020-04-06_15h23.34.855.csv");
+
+# tmpcsv = read.csv(sprintf('%s/phase1/day11/axcptMisformatted/5e89e8053cbd1167d2a5c85a_capAXCPT_2020-04-06_15h23.34.855.csv',file.path(config$path$raw))); # updated line above to be more consistent with config
+
 # tmpcsv$participant = "5e89e8053cbd1167d2a5c85a";
 # ind = which(colnames(tmpcsv) == "Ty"); # which column is the funky one that needs to be removed?
 # tmpcsv = tmpcsv[,-ind]; # remove it
 # 
-# write.csv(tmpcsv,"/Volumes/CAP/data/rawData/phase1/day11/axcpt/5e89e8053cbd1167d2a5c85a_CAPpsychopy_2020-04-06_15h01.17.219.csv", row.names = F); # save new .csv file 
+## write.csv(tmpcsv,"/Volumes/CAP/data/rawData/phase1/day11/axcpt/5e89e8053cbd1167d2a5c85a_CAPpsychopy_2020-04-06_15h01.17.219.csv", row.names = F); # save new .csv file 
 
-
+# write.csv(tmpcsv,sprintf('%s/phase1/day11/axcpt/5e89e8053cbd1167d2a5c85a_CAPpsychopy_2020-04-06_15h01.17.219.csv',file.path(config$path$raw)), row.names=F); # save new .csv file --> updated line above to be more consistent with config
 
 # STEP 2: For each day, combine the raw AX data for each participant and save as a single large csv file (this takes several minutes to run)
 for (p in phase) {
   for (d in day) {
-    tmpTable <- list.files(path = sprintf("/Volumes/CAP/data/rawData/phase%d/day%d/axcpt", p, d), pattern = "*.csv", full.names = TRUE) %>%    # Get all the csv files in specified folder
+    
+    
+    tmpTable <- list.files(path = sprintf("%s/phase%d/day%d/axcpt", file.path(config$path$raw), p, d), pattern = "*.csv", full.names = TRUE) %>%    # Get all the csv files in specified folder 
       lapply(read_csv) %>%    # Store all files in list
       bind_rows               # combine all csv files
     
     tmpTable$day = d; # add day column
     tmpTable = as.data.frame(tmpTable);
     
-    tmpVec =list.files(path = sprintf("/Volumes/CAP/data/rawData/phase%d/day%d/axcpt", p, d), pattern = "csv$");
+    #tmpVec =list.files(path = sprintf("/Volumes/CAP/data/rawData/phase%d/day%d/axcpt", p, d), pattern = "csv$");
+    tmpVec =list.files(path = sprintf("%s/phase%d/day%d/axcpt", file.path(config$path$raw), p, d), pattern = "csv$");
     
     if (length(unique(tmpTable$participant)) == length(tmpVec)){
-      file2save = sprintf("/Volumes/CAP/data/rawData/combinedRawData/AXday/collateAXphase%dday%d.csv",p,d,p,d)
+      #file2save = sprintf("/Volumes/CAP/data/rawData/combinedRawData/AXday/collateAXphase%dday%d.csv",p,d,p,d)
+      file2save = sprintf("%s/AXday/collateAXphase%dday%d.csv",config$path$combined_raw,p,d,p,d)
       write.csv(tmpTable, file=file2save, row.names = F);
     } 
   }
@@ -94,7 +103,9 @@ collateSuccess[,1,] = 1:20; # fill in days
 
 for (p in phase) {
   for (d in day) {
-    collateSuccess[d,2,p] = file.exists(sprintf("/Volumes/CAP/data/rawData/combinedRawData/AXday/collateAXphase%dday%d.csv", p,d,p,d))
+    collateSuccess[d,2,p] = file.exists(sprintf("%s/AXday/collateAXphase%dday%d.csv",config$path$combined_raw,p,d,p,d))
+    
+    
   }
 }; # no days are missing! (all 1s in the collate column mean success - any 0s mean there was an error for the corresponding day)
 
@@ -107,7 +118,7 @@ storeCSVnames = array(data=NA, dim=c(length(day), 1, length(phase)));
 
 for (p in phase) {
   for (d in day) {
-    storeCSVnames[d,1,p] = sprintf("/Volumes/CAP/data/rawData/combinedRawData/AXday/collateAXphase%dday%d.csv", p,d,p,d);
+    storeCSVnames[d,1,p] = sprintf("%s/AXday/collateAXphase%dday%d.csv",config$path$combined_raw,p,d,p,d);
   }
   
   tmpTable <- storeCSVnames[,,p] %>%    # Get all the csv files for one phase
@@ -117,13 +128,15 @@ for (p in phase) {
   tmpTable = as.data.frame(tmpTable); 
   tmpTable$phase = p;
   
-  write.csv(tmpTable, sprintf("/Volumes/CAP/data/rawData/combinedRawData/AXphase/AXphase%d.csv", p), row.names = F); # save the csv file for each phase
+  write.csv(tmpTable, sprintf("%s/AXphase/AXphase%d.csv", config$path$combined_raw, p), row.names = F); # save the csv file for each phase
 };
 
 
 # STEP 4: combine phase 1 and phase 2 raw data into one big .csv file
 
-bothPhaseCSV = c("/Volumes/CAP/data/rawData/combinedRawData/AXphase/AXphase1.csv","/Volumes/CAP/data/rawData/combinedRawData/AXphase/AXphase2.csv");
+#bothPhaseCSV = c("/Volumes/CAP/data/rawData/combinedRawData/AXphase/AXphase1.csv","/Volumes/CAP/data/rawData/combinedRawData/AXphase/AXphase2.csv");
+
+bothPhaseCSV = c(sprintf("%s/AXphase/AXphase1.csv", config$path$combined_raw), sprintf("%s/AXphase/AXphase2.csv", config$path$combined_raw))
 
 tmpTable <- bothPhaseCSV %>%    # Get all the csv files for one phase
   lapply(read_csv) %>%    # Store all files in list
@@ -131,7 +144,6 @@ tmpTable <- bothPhaseCSV %>%    # Get all the csv files for one phase
 
 tmpTable = as.data.frame(tmpTable);
 
-write.csv(tmpTable, "/Volumes/CAP/data/rawData/combinedRawData/AXall.csv", row.names = F); #save it
-
-
+#write.csv(tmpTable, "/Volumes/CAP/data/rawData/combinedRawData/AXall.csv", row.names = F); #save it
+write.csv(tmpTable, sprintf("%s/AXall.csv", config$path$combined_raw), row.names = F); #save it --> updated line above to be more consistent with config file
 
