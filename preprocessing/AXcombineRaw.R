@@ -145,5 +145,5 @@ tmpTable <- bothPhaseCSV %>%    # Get all the csv files for one phase
 tmpTable = as.data.frame(tmpTable);
 
 #write.csv(tmpTable, "/Volumes/CAP/data/rawData/combinedRawData/AXall.csv", row.names = F); #save it
-write.csv(tmpTable, sprintf("%s/AXall.csv", config$path$combined_raw), row.names = F); #save it --> updated line above to be more consistent with config file
+write.csv(tmpTable, file.path(config$path$combined_raw, config$AXcsvs$AX_rawCombined), row.names = F); #save it --> updated line above to be more consistent with config file
 
