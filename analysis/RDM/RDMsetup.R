@@ -398,7 +398,28 @@ rdmGainQualtrics$negShift = rdmGainQualtrics$signedShift*as.numeric(rdmGainQualt
 # some of the columns we know we want:
 #c("stai_s_score","stai_t_score","pss_score","pss_stressedToday","uclal_score","covq_PAB_q1_personalRisk","phase", "subID"  )
 
-
+ "phase"                                   "rdmTask"                                 "rdmTrial"                               
+ "pss_stressedToday"                       "covq_PAB_q1_personalRisk"                "covq_PAB_q2_threat"                     
+ "covq_PAB_q3_personallyDie"               "covq_PAB_q4_otherPersonDie"              "covq_attentionCheck_select_6"           
+ "covq_PAB_q5_currentCases"                "covq_PAB_q6_tested"                      "covq_PAB_q7_personalCovidSuspect"       
+ "covq_PAB_q8_knowPositivePerson"          "covq_PAB_q9_socialDistanceLevel"         "demo_gender"                            
+ "demo_race"                               "demo_ethnicity"                          "demo_age"                               
+ "loc_state"                               "loc_county"                              "ses_childhood_freeReducedLunch"         
+ "ses_childhood_communityComp"             "ses_childhood_nationalComp"              "ses_motherEdLevel"                      
+ "ses_fatherEdLevel"                       "ses_childhoood_homeOwnership"            "ses_current_billHelp"                   
+ "ses_current_mainResponsibilities"        "ses_personalEdLevel"                     "ses_financialWorryFreq"                 
+ "ses_needbasedCollegeAid"                 "covq_attentionCheck_passed"              "loc_fips"                               
+ "stai_t_score"                            "stai_s_score"                            "pss_score"                              
+ "uclal_score"                             "covq_PAB_q5_currentCases_recode"         "covq_PAB_q6_tested_recode"              
+ "covq_PAB_q7_personalCovidSuspect_recode" "covq_PAB_q8_knowPositivePerson_recode"   "covq_PAB_q9_socialDistanceLevel_recode" 
+ "demo_gender_recode"                      "demo_race_recode"                        "demo_ethnicity_recode"                  
+ "ses_childhood_freeReducedLunch_recode"   "ses_childhood_communityComp_recode"      "ses_childhood_nationalComp_recode"      
+ "ses_motherEdLevel_recode"                "ses_fatherEdLevel_recode"                "ses_childhoood_homeOwnership_recode"    
+ "ses_current_billHelp_recode"             "ses_current_mainResponsibilities_recode" "ses_personalEdLevel_recode"             
+ "ses_financialWorryFreq_recode"           "ses_needbasedCollegeAid_recode"          "quartile"                                                "dayOverall"                             
+ "daySC"                                   "dayOverallSC"                            "stai_s_score_scaled"                    
+ "stai_t_score_scaled"                     "uclal_score_scaled"                      "pss_score_scaled"                       
+ "covq_PAB_q1_personalRisk_scaled"         "covq_PAB_q1_personalRisk_scaledNoNA"
 
 
 
