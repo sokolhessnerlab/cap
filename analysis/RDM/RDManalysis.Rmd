@@ -189,25 +189,22 @@ if(!exists('model_pred_pss')){
 
 
 # COVID RISK: 
-if(!exists('model_pred_covidRisk')){
-  model_pred_covidRisk= glm(rdmChoice ~  0 + covq_PAB_q1_personalRisk_scaledNoNA, data=rdmGainQualtrics, family="binomial", na.action=na.exclude, offset=predmTask ); 
-}
-
-# AIC =  68719.1
-# nObs = 98951
-# effect of covid risk is negative and trending (beta = -0.02480(0.01496), p=0.0973)
-# it was very significant in the main models above (not using residuals) - possible that the effect will change when in a model with temporal context effects
-# singular because random effects have very small variance when using GLMER - use GLM instead (beta and pvalue are exactly the same in glmer and glm)
 
 # covid risk mean: 5.26 phase 1 and 5.04 in phase 2 - TODO: follow up on this when we make individual-level affect dataframe
 
-# TO DO:
+
+# GLMER models turning out singular warning because random effects have very small variance - use GLM instead (beta and pvalue are exactly the same in glmer and glm)
+
+
+
 # covid risk variable is capturing across and within subject stuff:
 # 1) resrict data to one phase and if the pattern holds up, we atleast know that individual differences do matter
-  # using this model to see becauase concern about using offset and putting covid risk in second-step model is making it hard to see effects: rdmChoice ~ 1 + rdmGainSC + rdmSafeSC + rdmGroundEV + covq_PAB_q1_personalRisk_scaledNoNA
-  # just phase 1 data - negative and significant; just phase 2 - negative and significant 
   
-  # using glmer(rdmChoice ~  0 + covq_PAB_q1_personalRisk_scaledNoNA  + (1|subID) with offset and restricting data to just one     phase, Phase 1: beta = -0.009468, p = .81 and Phase 2: beta = -0.23339, p = 0.0012
+# Adding covid risk to trial-level model (*prior to residuals*) to address concern that putting covid risk in second-step model may be making it difficult to see effects: rdmChoice ~ 1 + rdmGainSC + rdmSafeSC + rdmGroundEV + covq_PAB_q1_personalRisk_scaledNoNA
+# just phase 1 data - negative and significant; just phase 2 - negative and significant 
+  
+# When doing: glmer(rdmChoice ~  0 + covq_PAB_q1_personalRisk_scaledNoNA  + (1|subID) with offset and restricting data to just one phase
+# Phase 1: beta = -0.009468, p = .81 and Phase 2: beta = -0.23339, p = 0.0012
   # so this means that its always the case that lower covid risk is associated with more risk-taking but more so in phase 2.
   # if lower covid risk means more risk-taking then risk-taking should increase in phase 2 but it decreases
 
@@ -234,7 +231,7 @@ if(!exists('model_pred_covidRisk_phase2')){
 # --> Perceived COVID risk appears to negatively affect risk-taking in phase 2, but not phase 1.
 
 # This shows up when interacting phase with perceived COVID risk
-if(~exists('model_pred_covidRisk_x_phase')){
+if(!exists('model_pred_covidRisk_x_phase')){
   model_pred_covidRisk_x_phase = glmer(rdmChoice ~  0 + covq_PAB_q1_personalRisk_scaledNoNA*phaseRecode + (1|subID), data=rdmGainQualtrics, family="binomial", na.action=na.exclude, control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)), offset=predmTask );
 }
 #                                                 Estimate Std. Error z value Pr(>|z|)    
@@ -244,8 +241,8 @@ if(~exists('model_pred_covidRisk_x_phase')){
 
 # Two opposing effects... risk-taking significantly INCREASES in phase 2 when perceived COVID risk is 0/low, but DECREASES in phase 2 the higher participants perceive the risk of COVID. 
 
-# A very similar approaching using DAY instead of PHASE outperforms on the basis of AIC:
-if(~exists('model_pred_covidRisk_x_dayOverallSC')){
+# A very similar approach using DAY instead of PHASE outperforms on the basis of AIC:
+if(!exists('model_pred_covidRisk_x_dayOverallSC')){
   model_pred_covidRisk_x_dayOverallSC = glmer(rdmChoice ~  0 + covq_PAB_q1_personalRisk_scaledNoNA*dayOverallSC + (1|subID), data=rdmGainQualtrics, family="binomial", na.action=na.exclude, control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)), offset=predmTask );
 }
 # NOTE: none of these models *should* be glmers; RFX terms have 0 variance
