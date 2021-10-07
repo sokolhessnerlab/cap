@@ -277,6 +277,12 @@ var.test(pGambleSubID$phs1pgam[is.finite(pGambleSubID$phs2pgam)],pGambleSubID$ph
 # model w/ covid risk (AIC = 73465.6) outperforms model with phase and day(AIC = 73516.2) and just phase (AIC =73516.4)
 
 
+# To Do once the individual-level df is made --> 
+# difference in covid risk across phases (just plot it) 
+# look at variance and do variance test
+# is covid risk related to any of the affective measures?
+
+
 # TEMPORAL CONTEXT WITH COVID RISK:
 if(!exists('model_pred_3timescales_covidRisk')){
   model_pred_3timescales_covidRisk = glm(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC + posShift +  rdmTrialSC + covq_PAB_q1_personalRisk_scaledNoNA + (1|subID), data=rdmGainQualtrics, family="binomial", offset=predmTask);
