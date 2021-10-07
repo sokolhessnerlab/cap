@@ -388,38 +388,23 @@ rdmGainQualtrics$posShift = rdmGainQualtrics$signedShift*as.numeric(rdmGainQualt
 rdmGainQualtrics$negShift = rdmGainQualtrics$signedShift*as.numeric(rdmGainQualtrics$signedShift<0);
 
 
-# left off here - age is not in the qualtrics Both phases so we need to go back and figure that out.
+# left off here
 # create a dataframe that includes phase 1 and phase 2 qualtrics responses where each row is a participant and contains responses from phase 1 and phase 2
-# for now, lets keep overall scores for pss, uclal, stait and stais, covid risk
-# when we want to add more variables to this for analysis, it should be simple
-
-#colnames(qualtricsBothPhs)
-
-# some of the columns we know we want:
-#c("stai_s_score","stai_t_score","pss_score","pss_stressedToday","uclal_score","covq_PAB_q1_personalRisk","phase", "subID"  )
-
- "phase"                                   "rdmTask"                                 "rdmTrial"                               
- "pss_stressedToday"                       "covq_PAB_q1_personalRisk"                "covq_PAB_q2_threat"                     
- "covq_PAB_q3_personallyDie"               "covq_PAB_q4_otherPersonDie"              "covq_attentionCheck_select_6"           
- "covq_PAB_q5_currentCases"                "covq_PAB_q6_tested"                      "covq_PAB_q7_personalCovidSuspect"       
- "covq_PAB_q8_knowPositivePerson"          "covq_PAB_q9_socialDistanceLevel"         "demo_gender"                            
- "demo_race"                               "demo_ethnicity"                          "demo_age"                               
- "loc_state"                               "loc_county"                              "ses_childhood_freeReducedLunch"         
- "ses_childhood_communityComp"             "ses_childhood_nationalComp"              "ses_motherEdLevel"                      
- "ses_fatherEdLevel"                       "ses_childhoood_homeOwnership"            "ses_current_billHelp"                   
- "ses_current_mainResponsibilities"        "ses_personalEdLevel"                     "ses_financialWorryFreq"                 
- "ses_needbasedCollegeAid"                 "covq_attentionCheck_passed"              "loc_fips"                               
- "stai_t_score"                            "stai_s_score"                            "pss_score"                              
- "uclal_score"                             "covq_PAB_q5_currentCases_recode"         "covq_PAB_q6_tested_recode"              
- "covq_PAB_q7_personalCovidSuspect_recode" "covq_PAB_q8_knowPositivePerson_recode"   "covq_PAB_q9_socialDistanceLevel_recode" 
- "demo_gender_recode"                      "demo_race_recode"                        "demo_ethnicity_recode"                  
- "ses_childhood_freeReducedLunch_recode"   "ses_childhood_communityComp_recode"      "ses_childhood_nationalComp_recode"      
- "ses_motherEdLevel_recode"                "ses_fatherEdLevel_recode"                "ses_childhoood_homeOwnership_recode"    
- "ses_current_billHelp_recode"             "ses_current_mainResponsibilities_recode" "ses_personalEdLevel_recode"             
- "ses_financialWorryFreq_recode"           "ses_needbasedCollegeAid_recode"          "quartile"                                                "dayOverall"                             
- "daySC"                                   "dayOverallSC"                            "stai_s_score_scaled"                    
- "stai_t_score_scaled"                     "uclal_score_scaled"                      "pss_score_scaled"                       
- "covq_PAB_q1_personalRisk_scaled"         "covq_PAB_q1_personalRisk_scaledNoNA"
-
-
-
+# The columns we know we want:
+# colKeep = c("subID", "phase","rdmTrial","dayOverall", "dayOverallSC", "quartile", "loc_fips", "loc_state", "loc_county", "demo_race_recode", "demo_ethnicity_recode", "demo_gender_recode", "demo_age","stai_s_score_scaled","stai_t_score_scaled","pss_score_scaled","pss_stressedToday","uclal_score_scaled","covq_PAB_q1_personalRisk_scaled");
+# 
+# 
+# newColnames = c("subID", "phase","rdmTrial","dayOverall", "dayOverallSC", "quartile_phs1", "loc_fips_phs1", "loc_state_phs1", "loc_county_phs1", "demo_race_recode", "demo_ethnicity_recode", "demo_gender_recode", "demo_age","stai_s_score_scaled_phs1","stai_t_score_scaled_phs1","pss_score_scaled_phs1","pss_stressedToday_phs1","uclal_score_scaled_phs1","covq_PAB_q1_personalRisk_scaled_phs1", "quartile_phs2", "loc_fips_phs2", "loc_state_phs2", "loc_county_phs2", "demo_race_recode", "demo_ethnicity_recode", "demo_gender_recode", "demo_age","stai_s_score_scaled_phs2","stai_t_score_scaled_phs2","pss_score_scaled_phs2","pss_stressedToday_phs2","uclal_score_scaled_phs2","covq_PAB_q1_personalRisk_scaled_phs2");
+# 
+# capSubLevel_demoAffect = as.data.frame(matrix(data=NA, nrow=length(Phs1subIDs), ncol=length(newColnames), dimnames = list(c(NULL),c(newColnames)))); # create dataframe with column names
+# 
+# dfKeep = rdmGainQualtrics[,colnames(rdmGainQualtrics) %in% colKeep]; # pull out just the columns we want to keep for the individual-level df
+# 
+# for (s in 1:length(Phs1subIDs)) {
+#   
+#   phs1tmp = dfKeep[dfKeep$subID ==Phs1subIDs[s] & dfKeep$phase==1 & dfKeep$rdmTrial==1,];
+#  # phs2tmp = dfKeep[dfKeep$subID ==Phs1subIDs[s] & dfKeep$phase==2 & dfKeep$rdmTrial==1,];
+#   
+#   capSubLevel_demoAffect[s,1:length(colKeep)] = phs1tmp
+#   
+# }
