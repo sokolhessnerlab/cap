@@ -365,7 +365,7 @@ rdmGainQualtrics$stai_t_score_scaled = rdmGainQualtrics$stai_t_score/max(rdmGain
 rdmGainQualtrics$uclal_score_scaled = rdmGainQualtrics$uclal_score/max(rdmGainQualtrics$uclal_score, na.rm = T);
 rdmGainQualtrics$pss_score_scaled = rdmGainQualtrics$pss_score/max(rdmGainQualtrics$pss_score, na.rm = T);
 
-rdmGainQualtrics$covq_PAB_q1_personalRisk_scaled = rdmGainQualtrics$covq_PAB_q1_personalRisk/max(rdmGainQualtrics$covq_PAB_q1_personalRisk, na.rm = T)
+rdmGainQualtrics$covq_PAB_q1_personalRisk_scaled = (rdmGainQualtrics$covq_PAB_q1_personalRisk-1)/max(rdmGainQualtrics$covq_PAB_q1_personalRisk-1, na.rm = T)
 
 rdmGainQualtrics$covq_PAB_q1_personalRisk_scaledNoNA = rdmGainQualtrics$covq_PAB_q1_personalRisk_scaled;
 rdmGainQualtrics$covq_PAB_q1_personalRisk_scaledNoNA[is.na(rdmGainQualtrics$covq_PAB_q1_personalRisk_scaledNoNA)] = 0;

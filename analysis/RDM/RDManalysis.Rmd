@@ -82,7 +82,6 @@ for (s in 1:nSubB4exclusion) {
   pGambleSubID$day[s] = subDay[1]
   pGambleSubID$phs1pgam[s] = mean(subPhs1$rdmChoice, na.rm=T)
   
-  
   if(s %in% Phs1subIDs & s %in% Phs2subIDs){ # for those participants who completed phase 1 and phase 2
     pGambleSubID$phs2pgam[s] = mean(subPhs2$rdmChoice, na.rm=T)
     pGambleSubID$bothPhspgam[s] = mean(c(subPhs1$rdmChoice, subPhs2$rdmChoice), na.rm=T)
@@ -208,25 +207,25 @@ if(!exists('model_pred_pss')){
   # so this means that its always the case that lower covid risk is associated with more risk-taking but more so in phase 2.
   # if lower covid risk means more risk-taking then risk-taking should increase in phase 2 but it decreases
 
-if(!exists('model_pred_covidRisk_phase1')){
+if(!exists('model_pred_covidRisk')){
   model_pred_covidRisk= glm(rdmChoice ~  0 + covq_PAB_q1_personalRisk_scaledNoNA, data=rdmGainQualtrics, family="binomial", na.action=na.exclude, offset=predmTask ); 
 }
 #                                     Estimate Std. Error z value Pr(>|z|)  
-# covq_PAB_q1_personalRisk_scaledNoNA -0.02480    0.01496  -1.658   0.0973 .
+# covq_PAB_q1_personalRisk_scaledNoNA -0.03103    0.01589  -1.953   0.0509 .
 
-# AIC 68717
+# AIC 68716
 # COVID perceived risk doesn't significantly affect risk-taking, overall. 
 
 # Might this differ across separate phases?
 if(!exists('model_pred_covidRisk_phase1')){
   model_pred_covidRisk_phase1 = glmer(rdmChoice ~  0 + covq_PAB_q1_personalRisk_scaledNoNA  + (1|subID), data=rdmGainQualtrics[rdmGainQualtrics$phase==1,], family="binomial", na.action=na.exclude, control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)), offset=predmTask );
 }
-# No significant effect of perceived risk in phase 1 (B = -0.009468, p = 0.805)
+# No significant effect of perceived risk in phase 1 (B = -0.01345, p = 0.741)
 
 if(!exists('model_pred_covidRisk_phase2')){
   model_pred_covidRisk_phase2 = glmer(rdmChoice ~  0 + covq_PAB_q1_personalRisk_scaledNoNA  + (1|subID), data=rdmGainQualtrics[rdmGainQualtrics$phase==2,], family="binomial", na.action=na.exclude, control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)), offset=predmTask );
 }
-# Significant effect of perceived risk in phase 2 (B = -0.23339, p = 0.0012*)
+# Significant effect of perceived risk in phase 2 (B = -0.25427, p = 0.000968 ***)
 
 # --> Perceived COVID risk appears to negatively affect risk-taking in phase 2, but not phase 1.
 
@@ -235,9 +234,11 @@ if(!exists('model_pred_covidRisk_x_phase')){
   model_pred_covidRisk_x_phase = glmer(rdmChoice ~  0 + covq_PAB_q1_personalRisk_scaledNoNA*phaseRecode + (1|subID), data=rdmGainQualtrics, family="binomial", na.action=na.exclude, control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)), offset=predmTask );
 }
 #                                                 Estimate Std. Error z value Pr(>|z|)    
-# covq_PAB_q1_personalRisk_scaledNoNA              0.02820    0.01886   1.495 0.134911    
-# phaseRecode                                      0.14423    0.04178   3.453 0.000555 ***
-# covq_PAB_q1_personalRisk_scaledNoNA:phaseRecode -0.36164    0.07078  -5.109 3.23e-07 ***
+# covq_PAB_q1_personalRisk_scaledNoNA              0.02604    0.02000   1.302  0.19280    
+# phaseRecode                                      0.10718    0.03481   3.079  0.00208 ** 
+# covq_PAB_q1_personalRisk_scaledNoNA:phaseRecode -0.32243    0.06385  -5.050 4.42e-07 ***
+#
+# AIC: 68690.6
 
 # Two opposing effects... risk-taking significantly INCREASES in phase 2 when perceived COVID risk is 0/low, but DECREASES in phase 2 the higher participants perceive the risk of COVID. 
 
@@ -247,11 +248,15 @@ if(!exists('model_pred_covidRisk_x_dayOverallSC')){
 }
 # NOTE: none of these models *should* be glmers; RFX terms have 0 variance
 #                                                  Estimate Std. Error z value Pr(>|z|)    
-# covq_PAB_q1_personalRisk_scaledNoNA               0.08122    0.02828   2.872  0.00408 ** 
-# dayOverallSC                                      0.24912    0.04984   4.999 5.77e-07 ***
-# covq_PAB_q1_personalRisk_scaledNoNA:dayOverallSC -0.62073    0.09634  -6.443 1.17e-10 ***
+# covq_PAB_q1_personalRisk_scaledNoNA               0.08415    0.03001   2.805  0.00504 ** 
+# dayOverallSC                                      0.19198    0.04150   4.626 3.73e-06 ***
+# covq_PAB_q1_personalRisk_scaledNoNA:dayOverallSC -0.56599    0.09012  -6.281 3.37e-10 ***
+#
+# AIC: 68682.4 <-- MUCH better than phase 
 
 # This implies a small positive relationship between perceived COVID risk and risk-taking on Day 0, followed by two contrasting effects; a positive effect of Day (INCREASED risk-taking for those with 0/low perceived COVID risk with increasing day), and a strong negative interaction between Day and perceived COVID risk (DECREASED risk-taking for those who perceive significant COVID risk as day increases)
+
+# (if you run this model with phaseRecode and daySC (which is 1:20, 1:20), you recover the above pattern, no 3-way interaction btwn day, phase, & COVID risk)
 
 # Predicted p(gamble) by perceived COVID risk and Day are...
 # no perceived risk: 0.5 on Day 0, 0.56 on Day 40 [RISES]
@@ -266,6 +271,44 @@ var_phase2 = var(pGambleSubID$phs2pgam,na.rm=T)
 
 var.test(pGambleSubID$phs1pgam[is.finite(pGambleSubID$phs2pgam)],pGambleSubID$phs2pgam)
 # These variances aren't significantly different; p = 0.14
+
+
+# ANALYSES FOR SUBJECT-LEVEL DATA (TWO FORMS: 1 - col names are shared, each participant has 1-2 rows; 2 - each participant has 1 row, mult. sep. col. e.g. staisPhs1, staisPhs2)
+# - Affective measures (STAIT, STAIS, PSS, UCLAL <--> perceived COVID risk) (overall correlogram)
+# - COVID Q analysis (multiple COVID questions - internally correlated?) [is perceived COVID risk similar or different from other COVID measures]
+#   - use PCA or similar data-driven approach? (within phase 1)
+#   - trends across days/phases
+# - Affective measures analysis
+#   - use PCA or similar data-driven approach? (within phase 1)
+#   - trends across days/phases
+
+covriskphs1 = rdmGainQualtrics$covq_PAB_q1_personalRisk_scaled[which((rdmGainQualtrics$rdmTrial==1)&(rdmGainQualtrics$phase==1))]; # perceived covid risk, phase 1
+covriskphs2 = rdmGainQualtrics$covq_PAB_q1_personalRisk_scaled[which((rdmGainQualtrics$rdmTrial==1)&(rdmGainQualtrics$phase==2))]; # perceived COVID risk, phase 2
+
+var(covriskphs1,na.rm=T); # 0.06312781
+var(covriskphs2,na.rm=T); # 0.06240118
+
+mean(covriskphs1,na.rm=T); # 0.5322816
+mean(covriskphs2,na.rm=T); # 0.5015385
+
+rdmGainQualtrics$covq_PAB_q1_personalRisk_centeredscaledNoNA = (rdmGainQualtrics$covq_PAB_q1_personalRisk-5)/4;
+rdmGainQualtrics$covq_PAB_q1_personalRisk_centeredscaledNoNA[is.na(rdmGainQualtrics$covq_PAB_q1_personalRisk_centeredscaledNoNA)] = 0;
+
+if(!exists('model_pred_covidRiskCentered_x_dayOverallSC')){
+  model_pred_covidRiskCentered_x_dayOverallSC = glmer(rdmChoice ~  1 + covq_PAB_q1_personalRisk_centeredscaledNoNA*dayOverallSC + (1|subID), data=rdmGainQualtrics, family="binomial", na.action=na.exclude, control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)), offset=predmTask );
+}
+
+#                                                          Estimate Std. Error z value Pr(>|z|)   
+# (Intercept)                                               0.05343    0.01807   2.956  0.00312 **
+# covq_PAB_q1_personalRisk_centeredscaledNoNA               0.01071    0.03546   0.302  0.76265   
+# dayOverallSC                                             -0.10857    0.03402  -3.192  0.00141 **
+# covq_PAB_q1_personalRisk_centeredscaledNoNA:dayOverallSC -0.22195    0.06870  -3.231  0.00124 **
+#
+# AIC: 68686.4 <-- worse
+
+
+
+
 
 
 
