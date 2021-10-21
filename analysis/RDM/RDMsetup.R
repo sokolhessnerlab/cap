@@ -16,7 +16,7 @@ library("lme4");
 # configuration
 config = config::get()
 
-# load data 
+# load data
 rdmGain_csv = file.path(config$path$combined, config$RDMcsvs$RDMgain_qualtrics); # gain only task path
 rdmLoss_csv = file.path(config$path$combined, config$RDMcsvs$RDMloss_qualtrics); # loss only task path
 exclsnPhs1_csv = file.path(config$path$combined, config$EXCLUSIONcsvs$RDM_AX_Qual_Phs1exclusion); # phase 1 exclusion path
@@ -40,13 +40,13 @@ qualtricsBothPhs = qualtricsBothPhs[,(4:ncol(qualtricsBothPhs))]; # qualtrics ha
 
 # we are going to exclude some people so lets save the original number of subjects
 subNumB4exclusion = unique(rdmGainQualtrics$subID);  # there are the same number of participants in gain and loss datasets
-nSubB4exclusion = length(subNumB4exclusion); 
+nSubB4exclusion = length(subNumB4exclusion);
 
 
 ## Apply the exclusions to the data set by place NAs in trials for excluded participants
   # RDM exclusion applies to both gain and loss datasets
 
-# Phase 1: 
+# Phase 1:
 # RDM: 28 participants excluded
 subIDrdmPhs1Exclude = excludePhs1$subID[!is.na(excludePhs1$rdmPhs1exclude) & excludePhs1$rdmPhs1exclude==1]
 
@@ -54,7 +54,7 @@ subIDrdmPhs1Exclude = excludePhs1$subID[!is.na(excludePhs1$rdmPhs1exclude) & exc
 # Qualtrics: 3 participants excluded
 subIDqualPhs1Exclude = excludePhs1$subID[!is.na(excludePhs1$qualPhs1exclude) & excludePhs1$qualPhs1exclude==1]
 
-# Phase 2: 
+# Phase 2:
 # RDM: 32 participants excluded
 subIDrdmPhs2Exclude = excludePhs2$subID[!is.na(excludePhs2$rdmPhs2exclude) & excludePhs2$rdmPhs2exclude==1]
 
@@ -64,10 +64,10 @@ subIDqualPhs2Exclude = excludePhs2$subID[!is.na(excludePhs2$qualPhs2exclude) & e
 
 
 # Put NAs in place of excluded data:
-# For now, just exclude based on RDM or Qualtrics, don't apply an RDM or Qualtrics exclusion across both. 
+# For now, just exclude based on RDM or Qualtrics, don't apply an RDM or Qualtrics exclusion across both.
 # This way, we can include as many people as possible within the separate RDM and Qualtrics analyses and when we want to look at RDM + Qualtrics, the NAs will be there for those we need to exclude.
 
-# 
+#
 # column order is funky. RDM stuff is in columns 1-5, 7-14, 17-18, and day, phase, and subID are dispersed throughout.
 rdmColumns = c(1:5,7:14,17:18);
 
@@ -102,13 +102,13 @@ rdmLossQualtrics[rdmLossQualtrics$subID %in% subIDqualPhs2Exclude & rdmLossQualt
 
 # Participant IDs included in phase 1 RDM
 Phs1subIDs = excludePhs1$subID[excludePhs1$rdmPhs1exclud==0];
-Phs1nSub = length(Phs1subIDs); 
+Phs1nSub = length(Phs1subIDs);
 
 # Participant IDs included in phase 2 RDM
 Phs2subIDs = excludePhs2$subID[!is.na(excludePhs2$rdmPhs2exclude) & excludePhs2$rdmPhs2exclude==0];
 Phs2nSub = length(Phs2subIDs);
 
-# Participant IDs included in both phases 
+# Participant IDs included in both phases
 BothPhsSubIDs = Phs2subIDs[Phs2subIDs %in% Phs1subIDs];
 BothPhsnSub = length(BothPhsSubIDs)
 
@@ -125,8 +125,8 @@ BothPhsnSub = length(BothPhsSubIDs)
 nanIndGainPhs1 = which(is.na(rdmGainQualtrics$rdmChoice) & rdmGainQualtrics$subID %in% Phs1subIDs & rdmGainQualtrics$phase ==1) # 756 missed trials indices phase 1
 
 nanIndGainPhs2 = which(is.na(rdmGainQualtrics$rdmChoice) & rdmGainQualtrics$subID %in% Phs2subIDs & rdmGainQualtrics$phase ==2)  # missed trials indices phase 2
-  
-  
+
+
 nanIndGain = c(nanIndGainPhs1, nanIndGainPhs2);
 
 nanGainPhs1tot = length(nanIndGainPhs1); #756 missed trials phase 1
@@ -156,41 +156,41 @@ subNanLossPhs2 = unique(rdmLossQualtrics$subID[nanIndLossPhs2]); # 72 participan
 subID_missTri_totTri = as.data.frame(matrix(data=NA, nrow = nSubB4exclusion, ncol=9, dimnames = list(c(NULL), c("subID", "missGainTriPhs1", "missGainTriPhs2","totalGainTriPhs1", "totalGainTriPhs2", "missLossTriPhs1", "missLossTriPhs2","totalLossTriPhs1", "totalLossTriPhs2"))));
 
 for (s in 1:nSubB4exclusion){
-  
+
   subID_missTri_totTri$subID[s] = subNumB4exclusion[s]; # store sub IDs
-  
-  
+
+
   # Phase 1:
   if(subID_missTri_totTri$subID[s] %in% subIDrdmPhs1Exclude){ # if participant s was excluded, then put NaN for their rows in phase 1
-    
+
     subID_missTri_totTri$missGainTriPhs1[s] = NaN; # missed gain trials
     subID_missTri_totTri$totalGainTriPhs1[s] = NaN; # total gain trials
     subID_missTri_totTri$missLossTriPhs1[s] = NaN; # miss loss trials
     subID_missTri_totTri$totalLossTriPhs1[s] = NaN; # total loss trials
-  
+
     }else{ # otherwise, do the following:
-    
+
     subID_missTri_totTri$missGainTriPhs1[s] = sum(rdmGainQualtrics$subID[nanIndGainPhs1] == subNumB4exclusion[s]); # missed gain trials
     subID_missTri_totTri$totalGainTriPhs1[s] = sum(!is.na(rdmGainQualtrics$rdmChoice) & rdmGainQualtrics$phase==1 & rdmGainQualtrics$subID==subNumB4exclusion[s]); # total gain trials
     subID_missTri_totTri$missLossTriPhs1[s] = sum(rdmLossQualtrics$subID[nanIndLossPhs1] == subNumB4exclusion[s]); # missed loss trials
     subID_missTri_totTri$totalLossTriPhs1[s] = sum(!is.na(rdmLossQualtrics$rdmChoice) & rdmLossQualtrics$phase==1 & rdmLossQualtrics$subID==subNumB4exclusion[s]); # total loss trials
   }
-  
-  
+
+
   # Phase 2:
  if(subID_missTri_totTri$subID[s] %in%  subIDrdmPhs2Exclude | !subID_missTri_totTri$subID[s] %in% Phs2subIDs){ # if participant s was excluded or they didn't participate in phase 2, then put NaN for their rows in phase 2
    subID_missTri_totTri$missGainTriPhs2[s] = NaN; # missed gain trials
    subID_missTri_totTri$totalGainTriPhs2[s] = NaN; # total gain trials
    subID_missTri_totTri$missLossTriPhs2[s] = NaN; # miss loss trials
    subID_missTri_totTri$totalLossTriPhs2[s] = NaN; # total loss trials
-   
+
  }else {
    subID_missTri_totTri$missGainTriPhs2[s] = sum(rdmGainQualtrics$subID[nanIndGainPhs2] == subNumB4exclusion[s]);
    subID_missTri_totTri$totalGainTriPhs2[s] = sum(!is.na(rdmGainQualtrics$rdmChoice) & rdmGainQualtrics$phase==2 & rdmGainQualtrics$subID==subNumB4exclusion[s])
    subID_missTri_totTri$missLossTriPhs2[s] = sum(rdmLossQualtrics$subID[nanIndLossPhs2] == subNumB4exclusion[s]);
    subID_missTri_totTri$totalLossTriPhs2[s] = sum(!is.na(rdmLossQualtrics$rdmChoice) & rdmLossQualtrics$phase==2 & rdmLossQualtrics$subID==subNumB4exclusion[s])
  }
-  
+
 };
 
 
@@ -202,7 +202,7 @@ write.csv(file=subID_missTri_totTri_OutputPath, subID_missTri_totTri, row.names 
 
 
 
-## CREATING NEW VARIABLES FOR ANALYSES! 
+## CREATING NEW VARIABLES FOR ANALYSES!
 
 # add a new variable for phase where phase 1 is now 0 and phase 2 is now 1
 # gain task
@@ -226,30 +226,30 @@ cap_past_event_variable <- function(DFname, DFwithVariable, trialsBack, DFwithSu
   # DFwithSubID = full name of dataframe + sub id variable (e.g. rdmGainQualtrics$subID)
   # DFwithPhase = full name of dataframe + phase variable (e.g. rdmGainQualtrics$phase)
   # scaled = 1 = yes, 0 = no (scaled by max risky gain amount)
-  
+
   newMat = as.data.frame(matrix(data=NA,nrow=nrow(DFname), ncol=3), dimnames=list(c(NULL), c("newVar", "subDiff", "phaseDiff", "taskDiff")));
-  
+
   newMat$newVar <- DFwithVariable; #take data from columns
   newMat$newVar[(trialsBack + 1):nrow(newMat)] <- newMat$newVar[1:(nrow(newMat)-trialsBack)]; # removes first row, shifts everything up
   newMat$newVar[1:trialsBack] <- NaN #put Nan in for rows that we shifted everything back by
-  
+
   newMat$subDiff<-c(0,diff(DFwithSubID)); #note when sub ID changes
   newMat$phaseDiff<-c(0,diff(DFwithPhase)); # note when phase changes
-  
-  
+
+
   subIDchange = which(newMat$subDiff!=0); # where there is a subject id change
   phasechange = which(newMat$phaseDiff!=0); # where there is a phase change
-  
+
   newMat$newVar[subIDchange] = NaN
   newMat$newVar[phasechange] = NaN
-  
+
   if(trialsBack>1){ # if we want to go back more than one trial
     for (t in 1:(trialsBack-1)) {
       newMat$newVar[subIDchange+t] = NaN
       newMat$newVar[phasechange+t] = NaN
     }
   }
-  
+
   return(newMat$newVar)
 }
 
@@ -281,7 +281,7 @@ earningsByPhase = vector(); # to store all earnings for each participant
 earningsByPhaseScaled = vector(); # to store earnings scaled by each participants' max earnings within each phase
 trialByPhase = vector(); # to store scaled trial for each participant
 
-maxEarnSubPhase= as.data.frame(matrix(data=NA, nrow = nSubB4exclusion, ncol = 3, dimnames=list(c(NULL), c("subID","maxEarnPhs1", "maxEarnPhs2")))); 
+maxEarnSubPhase= as.data.frame(matrix(data=NA, nrow = nSubB4exclusion, ncol = 3, dimnames=list(c(NULL), c("subID","maxEarnPhs1", "maxEarnPhs2"))));
 maxEarnSubPhase$subID = 1:nSubB4exclusion;
 
 for (s in 1:nSubB4exclusion) {
@@ -289,33 +289,33 @@ for (s in 1:nSubB4exclusion) {
   earningsSub = vector(); # reset earnings vector for each participant
   trialScaled = vector(); # reset trial vector for each participant
   earningsSubScaled = vector(); # reset scaled earnings vector for each participant
-  
+
   # cumsum function below breaks with NAs, and using na.omit leads cumsum to skip those trials which we don't want. For missed trials ,we want the earnings to be the same as the previous trial, so we deal with it by doing the following:
   tmp = sub$rdmOutcome; # store subjects outcomes
   miss = is.na(tmp); # where are the missing trials?
   tmp[miss] = 0; # replace missing outcomes (NAs) with a 0
-  
-  
+
+
   if (length(unique(sub$phase))==1){ # if sub has phase 1 data only:
 
     earningsSub = cumsum(tmp); # skip over Nas when calculating cumulative earnings
     trialScaled = sub$rdmTrial[sub$phase==1]/max(sub$rdmTrial[sub$phase==1]); # scaled trial by max number of trials for participant in phase 1
     maxEarnSubPhase$maxEarnPhs1[s] = max(earningsSub);
     earningsSubScaled = earningsSub/max(earningsSub);
-    
+
   } else { # if sub has data from phase 1 and 2:
     earningsSub = c(cumsum(tmp[sub$phase==1]), cumsum(tmp[sub$phase==2]));
     trialScaled = c(sub$rdmTrial[sub$phase==1]/max(sub$rdmTrial[sub$phase==1]),sub$rdmTrial[sub$phase==2]/max(sub$rdmTrial[sub$phase==2]));
     maxEarnSubPhase$maxEarnPhs1[s] = max(cumsum(tmp[sub$phase==1]));
     maxEarnSubPhase$maxEarnPhs2[s] = max(cumsum(tmp[sub$phase==2]));
-    
+
     earningsSubScaled = c(cumsum(tmp[sub$phase==1])/max(cumsum(tmp[sub$phase==1])), cumsum(tmp[sub$phase==2])/max(cumsum(tmp[sub$phase==2])));
   }
 
   earningsByPhase = c(earningsByPhase,earningsSub);
   trialByPhase = c(trialByPhase,trialScaled);
   earningsByPhaseScaled = c(earningsByPhaseScaled,earningsSubScaled)
-  
+
 }
 
 
@@ -341,7 +341,7 @@ rdmGainQualtrics$rdmTrial[rdmGainQualtrics$subID %in% subIDrdmPhs2Exclude & rdmG
 rdmGainQualtrics$rdmTrialSC[rdmGainQualtrics$subID %in% subIDrdmPhs1Exclude & rdmGainQualtrics$phase==1] = NA;
 rdmGainQualtrics$rdmTrialSC[rdmGainQualtrics$subID %in% subIDrdmPhs2Exclude & rdmGainQualtrics$phase==2] = NA;
 
-# quick summary about cumulative earnings: 
+# quick summary about cumulative earnings:
 # phase 1: range = $1394 - $2549, median = $1891, mean = $1901
 # phase 2: range = $1354 - $2700, median = $1870, mean = $1890
 
@@ -401,34 +401,43 @@ subLevelLong = as.data.frame(matrix(data=NA, nrow=sum(Phs1nSub, BothPhsnSub), nc
 
 for (s in 1:Phs1nSub) {
   sub = rdmGainQualtrics[rdmGainQualtrics$subID==Phs1subIDs[s],colKeep]; # pull out one participant and the columns we want to keep
-  
+
   r = min(which(is.na(subLevelLong[,1])))
-  
+
   if(Phs1subIDs[s] %in% BothPhsSubIDs) { # if participant was in both phases
     subLevelLong[r,] = sub[1,]; # store first row of participant's data from phase 1
     subLevelLong[r+1,] = sub[sub$phase==2,][1,]; # store first row of participant's data from phase 2
   } else {
     subLevelLong[r,] = sub[1,]; # store first row of participant's data from phase 1
   }
-  
+
 }
 
 colnames(subLevelLong) = colnames(sub); # add column names
 
 # 2) The wide individual-level data frame (all data for one participant is in a single row)
+# use subLevelLong to make subLevelWide
 
+subLevelWide = as.data.frame(matrix(data=NA, nrow = Phs1nSub, ncol = ncol(subLevelLong)*2)); # column # will be adjusted when we delete redundancy between phases below.
 
-# newColnames = c("subID", "phase","rdmTrial","dayOverall", "dayOverallSC", "quartile_phs1", "loc_fips_phs1", "loc_state_phs1", "loc_county_phs1", "demo_race_recode", "demo_ethnicity_recode", "demo_gender_recode", "demo_age","stai_s_score_scaled_phs1","stai_t_score_scaled_phs1","pss_score_scaled_phs1","pss_stressedToday_phs1","uclal_score_scaled_phs1","covq_PAB_q1_personalRisk_scaled_phs1", "quartile_phs2", "loc_fips_phs2", "loc_state_phs2", "loc_county_phs2", "demo_race_recode", "demo_ethnicity_recode", "demo_gender_recode", "demo_age","stai_s_score_scaled_phs2","stai_t_score_scaled_phs2","pss_score_scaled_phs2","pss_stressedToday_phs2","uclal_score_scaled_phs2","covq_PAB_q1_personalRisk_scaled_phs2");
-# 
-# capSubLevel_demoAffect = as.data.frame(matrix(data=NA, nrow=length(Phs1subIDs), ncol=length(newColnames), dimnames = list(c(NULL),c(newColnames)))); # create dataframe with column names
-# 
-# dfKeep = rdmGainQualtrics[,colnames(rdmGainQualtrics) %in% colKeep]; # pull out just the columns we want to keep for the individual-level df
-# 
-# for (s in 1:length(Phs1subIDs)) {
-#   
-#   phs1tmp = dfKeep[dfKeep$subID ==Phs1subIDs[s] & dfKeep$phase==1 & dfKeep$rdmTrial==1,];
-#  # phs2tmp = dfKeep[dfKeep$subID ==Phs1subIDs[s] & dfKeep$phase==2 & dfKeep$rdmTrial==1,];
-#   
-#   capSubLevel_demoAffect[s,1:length(colKeep)] = phs1tmp
-#   
-# }
+for (s in 1:Phs1nSub) {
+  sub = rdmGainQualtrics[rdmGainQualtrics$subID==Phs1subIDs[s],colKeep]; # pull out one participant and the columns we want to keep
+
+  #r = min(which(is.na(subLevelLong[,1])))
+
+  if(Phs1subIDs[s] %in% BothPhsSubIDs) { # if participant was in both phases
+    subLevelWide[s,] = cbind(sub[1,],sub[sub$phase==2,][1,]); # in a single row, store phase 1 and phase 2 data for participant
+
+  } else {
+    subLevelWide[s,1:ncol(sub)] = sub[1,]; # in a single row, store phase 1 data for participant (the rest will be NaN)
+  }
+
+}
+
+wideColNames = c("subID", "phs1_phase","phs1_rdmTrial", "phs1_dayOverall", "phs1_dayOverallSC", "phs1_quartile", "phs1_loc_fips", "phs1_loc_state", "phs1_loc_county", "demo_race_recode","demo_ethnicity_recode","demo_gender_recode","demo_age","phs1_stai_s_score_scaled","phs1_stai_t_score_scaled", "phs1_pss_score_scaled", "phs1_pss_stressedToday"   ,"phs1_uclal_score_scaled","phs1_covq_PAB_q1_personalRisk_scaled", "phs2_subID","phs2_phase", "phs2_rdmTrial","phs2_dayOverall","phs2_dayOverallSC","phs2_quartile", "phs2_loc_fips","phs2_loc_state","phs2_loc_county" ,"phs2_demo_race_recode","phs2_demo_ethnicity_recode","phs2_demo_gender_recode", "phs2_demo_age","phs2_stai_s_score_scaled","phs2_stai_t_score_scaled","phs2_pss_score_scaled","phs2_pss_stressedToday", "phs2_uclal_score_scaled","phs2_covq_PAB_q1_personalRisk_scale"); #This includes redundancies that will be renamed!
+
+colnames(subLevelWide) = wideColNames; # add column names
+
+discardCols = c("phs1_phase","phs1_rdmTrial","phs2_subID","phs2_phase", "phs2_rdmTrial", "phs2_demo_race_recode","phs2_demo_ethnicity_recode","phs2_demo_gender_recode", "phs2_demo_age"); # columns that will be discarded for redundancy
+
+subLevelWide = subLevelWide[!names(subLevelWide) %in% discardCols]; # discard columns
