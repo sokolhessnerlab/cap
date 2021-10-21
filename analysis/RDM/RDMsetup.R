@@ -388,12 +388,36 @@ rdmGainQualtrics$posShift = rdmGainQualtrics$signedShift*as.numeric(rdmGainQualt
 rdmGainQualtrics$negShift = rdmGainQualtrics$signedShift*as.numeric(rdmGainQualtrics$signedShift<0);
 
 
-# left off here
-# create a dataframe that includes phase 1 and phase 2 qualtrics responses where each row is a participant and contains responses from phase 1 and phase 2
-# The columns we know we want:
-# colKeep = c("subID", "phase","rdmTrial","dayOverall", "dayOverallSC", "quartile", "loc_fips", "loc_state", "loc_county", "demo_race_recode", "demo_ethnicity_recode", "demo_gender_recode", "demo_age","stai_s_score_scaled","stai_t_score_scaled","pss_score_scaled","pss_stressedToday","uclal_score_scaled","covq_PAB_q1_personalRisk_scaled");
-# 
-# 
+# Individual-level dataframes
+# 1) each row is a person and phase (some participants will have two rows - should be 828 rows)
+# 2) each row is one person and includes data from both phases (516 rows)
+
+# 1 the "long" individual-level dataframe (subLevelLong) because some participants have two rows
+# The columns we know we want from rdmGainQualtrics:
+colKeep = c("subID", "phase","rdmTrial","dayOverall", "dayOverallSC", "quartile", "loc_fips", "loc_state", "loc_county", "demo_race_recode", "demo_ethnicity_recode", "demo_gender_recode", "demo_age","stai_s_score_scaled","stai_t_score_scaled","pss_score_scaled","pss_stressedToday","uclal_score_scaled","covq_PAB_q1_personalRisk_scaled");
+
+subLevelLong = as.data.frame(matrix(data=NA, nrow=sum(Phs1nSub, BothPhsnSub), ncol = length(colKeep))); # nrow = number of subs in phase 1 (516) + those who returned (312)
+
+
+for (s in 1:Phs1nSub) {
+  sub = rdmGainQualtrics[rdmGainQualtrics$subID==Phs1subIDs[s],colKeep]; # pull out one participant and the columns we want to keep
+  
+  r = min(which(is.na(subLevelLong[,1])))
+  
+  if(Phs1subIDs[s] %in% BothPhsSubIDs) { # if participant was in both phases
+    subLevelLong[r,] = sub[1,]; # store first row of participant's data from phase 1
+    subLevelLong[r+1,] = sub[sub$phase==2,][1,]; # store first row of participant's data from phase 2
+  } else {
+    subLevelLong[r,] = sub[1,]; # store first row of participant's data from phase 1
+  }
+  
+}
+
+colnames(subLevelLong) = colnames(sub); # add column names
+
+# 2) The wide individual-level data frame (all data for one participant is in a single row)
+
+
 # newColnames = c("subID", "phase","rdmTrial","dayOverall", "dayOverallSC", "quartile_phs1", "loc_fips_phs1", "loc_state_phs1", "loc_county_phs1", "demo_race_recode", "demo_ethnicity_recode", "demo_gender_recode", "demo_age","stai_s_score_scaled_phs1","stai_t_score_scaled_phs1","pss_score_scaled_phs1","pss_stressedToday_phs1","uclal_score_scaled_phs1","covq_PAB_q1_personalRisk_scaled_phs1", "quartile_phs2", "loc_fips_phs2", "loc_state_phs2", "loc_county_phs2", "demo_race_recode", "demo_ethnicity_recode", "demo_gender_recode", "demo_age","stai_s_score_scaled_phs2","stai_t_score_scaled_phs2","pss_score_scaled_phs2","pss_stressedToday_phs2","uclal_score_scaled_phs2","covq_PAB_q1_personalRisk_scaled_phs2");
 # 
 # capSubLevel_demoAffect = as.data.frame(matrix(data=NA, nrow=length(Phs1subIDs), ncol=length(newColnames), dimnames = list(c(NULL),c(newColnames)))); # create dataframe with column names
