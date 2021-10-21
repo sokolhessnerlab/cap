@@ -272,16 +272,6 @@ var_phase2 = var(pGambleSubID$phs2pgam,na.rm=T)
 var.test(pGambleSubID$phs1pgam[is.finite(pGambleSubID$phs2pgam)],pGambleSubID$phs2pgam)
 # These variances aren't significantly different; p = 0.14
 
-
-# ANALYSES FOR SUBJECT-LEVEL DATA (TWO FORMS: 1 - col names are shared, each participant has 1-2 rows; 2 - each participant has 1 row, mult. sep. col. e.g. staisPhs1, staisPhs2)
-# - Affective measures (STAIT, STAIS, PSS, UCLAL <--> perceived COVID risk) (overall correlogram)
-# - COVID Q analysis (multiple COVID questions - internally correlated?) [is perceived COVID risk similar or different from other COVID measures]
-#   - use PCA or similar data-driven approach? (within phase 1)
-#   - trends across days/phases
-# - Affective measures analysis
-#   - use PCA or similar data-driven approach? (within phase 1)
-#   - trends across days/phases
-
 covriskphs1 = rdmGainQualtrics$covq_PAB_q1_personalRisk_scaled[which((rdmGainQualtrics$rdmTrial==1)&(rdmGainQualtrics$phase==1))]; # perceived covid risk, phase 1
 covriskphs2 = rdmGainQualtrics$covq_PAB_q1_personalRisk_scaled[which((rdmGainQualtrics$rdmTrial==1)&(rdmGainQualtrics$phase==2))]; # perceived COVID risk, phase 2
 
@@ -307,11 +297,6 @@ if(!exists('model_pred_covidRiskCentered_x_dayOverallSC')){
 # AIC: 68686.4 <-- worse
 
 
-
-
-
-
-
 # 2) relate changes in risk taking to changes in perceived risk (using a variable that captures the difference in covid risk across phase 1)
 
 # Affective measures... 
@@ -319,12 +304,62 @@ if(!exists('model_pred_covidRiskCentered_x_dayOverallSC')){
 # - covid risk measure predicts less risk -taking
 # model w/ covid risk (AIC = 73465.6) outperforms model with phase and day(AIC = 73516.2) and just phase (AIC =73516.4)
 
+```
 
-# To Do once the individual-level df is made --> 
-# difference in covid risk across phases (just plot it) 
+
+#### ANALYSIS USING SUBJECT-LEVEL DATA
+Affective measures: 
+# How do we find what is unique across our qualtrics responses?
+# Could do a component type of analysis for all of the qualtrics responses (Gillan et al 2016 does something like this). We could do this in a variety of ways (across all responses v. across all SES responses). Gillan (2016) used a package in R to do it 
+# "Try not to get paralyzed by the world of ways to do this stuff - start simple"
+# then we move toward correllogram / run factor analysis / PCA stuff
+
+```{r}
+# There are two subject-level dataframes
+# 1) wide: each participant has a row with separate columns for phase 1 and phase 2 data
+# 2) long: each participant has 1-2 rows with one column for variables
+
+
+# Look at relationship between affective measures (STAIT, STAIS, PSS, UCLAL <--> perceived COVID risk) (overall correlogram)
+
+library("GGally"); # load package we need for correlogram
+
+# phase one only - all affective measures
+tmpPhs1 = subLevelWide[names(subLevelWide) %in% c("phs1_stai_s_score_scaled", "phs1_stai_t_score_scaled", "phs1_pss_score_scaled", "phs1_pss_stressedToday", "phs1_uclal_score_scaled", "phs1_covq_PAB_q1_personalRisk_scaled")];
+ggpairs(tmpPhs1, title = "Phase 1 correlogram", columnLabels = c("state anxiety", "trait anxiety", "stress", "stress today", "loneliness", "covid risk"));
+
+# phase one only - all affective measures
+tmpPhs2 = subLevelWide[names(subLevelWide) %in% c("phs2_stai_s_score_scaled", "phs2_stai_t_score_scaled", "phs2_pss_score_scaled", "phs2_pss_stressedToday", "phs2_uclal_score_scaled", "phs2_covq_PAB_q1_personalRisk_scaled")];
+ggpairs(tmpPhs2, title = "Phase 2 correlogram", columnLabels = c("state anxiety", "trait anxiety", "stress", "stress today", "loneliness", "covid risk"));
+
+# phase 1 and 2 covid risk
+tmpCovidRisk = subLevelWide[names(subLevelWide) %in% c("phs1_covq_PAB_q1_personalRisk_scaled", "phs2_covq_PAB_q1_personalRisk_scaled")];
+ggpairs(tmpCovidRisk, title = "covid risky between phases", columnLabels = c("phs 1 covid risk", "phs 2 covid risk"));
+
+
+
+# difference in covid risk across phases (just plot it)
+covidriskDiff = subLevelWide$phs1_covq_PAB_q1_personalRisk_scaled - subLevelWide$phs2_covq_PAB_q1_personalRisk_scaled;
+hist(covidriskDiff, main=sprintf("covid risk difference\n mean = %.5s, range = %s - %s", mean(covidriskDiff, na.rm=T), min(covidriskDiff, na.rm = T), c(max(covidriskDiff,na.rm=T)) ), xlab = "phase 1 - phase 2", ylab="number of people", breaks=5)
+
 # look at variance and do variance test
 # is covid risk related to any of the affective measures?
 
+
+
+# - COVID Q analysis (multiple COVID questions - internally correlated?) [is perceived COVID risk similar or different from other COVID measures]
+#   - use PCA or similar data-driven approach? (within phase 1)
+#   - trends across days/phases
+# - Affective measures analysis
+#   - use PCA or similar data-driven approach? (within phase 1)
+#   - trends across days/phases
+
+
+
+```
+
+
+```{r}
 
 # TEMPORAL CONTEXT WITH COVID RISK:
 if(!exists('model_pred_3timescales_covidRisk')){
@@ -347,22 +382,9 @@ if(!exists('model_pred_3timescales')){
 # everything significant, positive effect of past outcome, earnings (positive) and trial (negative) have opposing effects, shift positive, interaction between past outcome and earnings negative
 # singular
 # nObs = 97093
-
 ```
 
 
-Affective measures: 
-# in set up, create subject level dataframe for affective measures (vs what we already have at the trial-level)
-# How do we find what is unique across our qualtrics responses?
-# could do a component type of analysis for all of the qualtrics responses (Gillan et al 2016 does something like this)
-# we could do this in a variety of ways (across all responses v. across all SES responses)
-# Gillan (2016) used a package in R to do it 
-# "Try not to get paralyzed by the world of ways to do this stuff - start simple"
-# Use QualtricsCombined_subID_scored to start - lets just get the summary and standard deviations 
-# then we move toward correllogram / run factor analysis / PCA stuff
-```{r}
-
-```
 
 ```{r}
 # save our models
