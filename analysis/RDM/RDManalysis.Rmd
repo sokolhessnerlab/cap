@@ -328,7 +328,7 @@ library("GGally"); # load package we need for correlogram
 tmpPhs1 = subLevelWide[names(subLevelWide) %in% c("phs1_stai_s_score_scaled", "phs1_stai_t_score_scaled", "phs1_pss_score_scaled", "phs1_pss_stressedToday", "phs1_uclal_score_scaled", "phs1_covq_PAB_q1_personalRisk_scaled")];
 ggpairs(tmpPhs1, title = "Phase 1 correlogram", columnLabels = c("state anxiety", "trait anxiety", "stress", "stress today", "loneliness", "covid risk"));
 
-# phase one only - all affective measures
+# phase two only - all affective measures
 tmpPhs2 = subLevelWide[names(subLevelWide) %in% c("phs2_stai_s_score_scaled", "phs2_stai_t_score_scaled", "phs2_pss_score_scaled", "phs2_pss_stressedToday", "phs2_uclal_score_scaled", "phs2_covq_PAB_q1_personalRisk_scaled")];
 ggpairs(tmpPhs2, title = "Phase 2 correlogram", columnLabels = c("state anxiety", "trait anxiety", "stress", "stress today", "loneliness", "covid risk"));
 
@@ -337,13 +337,41 @@ tmpCovidRisk = subLevelWide[names(subLevelWide) %in% c("phs1_covq_PAB_q1_persona
 ggpairs(tmpCovidRisk, title = "covid risky between phases", columnLabels = c("phs 1 covid risk", "phs 2 covid risk"));
 
 
-
 # difference in covid risk across phases (just plot it)
 covidriskDiff = subLevelWide$phs1_covq_PAB_q1_personalRisk_scaled - subLevelWide$phs2_covq_PAB_q1_personalRisk_scaled;
-hist(covidriskDiff, main=sprintf("covid risk difference\n mean = %.5s, range = %s - %s", mean(covidriskDiff, na.rm=T), min(covidriskDiff, na.rm = T), c(max(covidriskDiff,na.rm=T)) ), xlab = "phase 1 - phase 2", ylab="number of people", breaks=5)
+hist(covidriskDiff, main=sprintf("covid risk difference\n mean = %.5s, range = %s - %s", mean(covidriskDiff, na.rm=T), min(covidriskDiff, na.rm = T), c(max(covidriskDiff,na.rm=T)) ), xlab = "phase 1 - phase 2", ylab="number of people", breaks=10);
+# 98 people have covidriskDiff = 0 (histogram shows the 98 below zero)
 
-# look at variance and do variance test
-# is covid risk related to any of the affective measures?
+# how does change in covid risk relate to phase 2 (end-state affect)
+tmpPhs2covidDiff = subLevelWide[names(subLevelWide) %in% c("phs2_stai_s_score_scaled", "phs2_stai_t_score_scaled", "phs2_pss_score_scaled", "phs2_pss_stressedToday", "phs2_uclal_score_scaled", "covidRiskDiff")];
+ggpairs(tmpPhs2covidDiff, title = "Phase 2 correlogram with covid risk diff", columnLabels = c("state anxiety", "trait anxiety", "stress", "stress today", "loneliness", "covid risk diff"));
+# not seeing a relationship between change covid risk and end state affect (phase 2)
+
+
+
+
+# difference in stait across phases (just plot it)
+staitDiff = subLevelWide$phs1_stai_t_score_scaled - subLevelWide$phs2_stai_t_score_scaled
+hist(staitDiff, main=sprintf("stait difference\n mean = %.5s, range = %s - %s", mean(staitDiff, na.rm=T), min(staitDiff, na.rm = T), c(max(staitDiff,na.rm=T)) ), xlab = "phase 1 - phase 2", ylab="number of people", breaks=10);
+
+# difference in stais across phases (just plot it)
+staisDiff = subLevelWide$phs1_stai_s_score_scaled - subLevelWide$phs2_stai_s_score_scaled
+hist(staisDiff, main=sprintf("stais difference\n mean = %.5s, range = %s - %s", mean(staisDiff, na.rm=T), min(staisDiff, na.rm = T), c(max(staisDiff,na.rm=T)) ), xlab = "phase 1 - phase 2", ylab="number of people", breaks=10);
+
+# difference in pss across phases (just plot it)
+pssDiff = subLevelWide$phs1_pss_score_scaled - subLevelWide$phs2_pss_score_scaled
+hist(pssDiff, main=sprintf("pss difference\n mean = %.5s, range = %s - %s", mean(pssDiff, na.rm=T), min(pssDiff, na.rm = T), c(max(pssDiff,na.rm=T)) ), xlab = "phase 1 - phase 2", ylab="number of people", breaks=10);
+
+# difference in uclal across phases (just plot it)
+uclalDiff = subLevelWide$phs1_uclal_score_scaled - subLevelWide$phs2_uclal_score_scaled
+hist(uclalDiff, main=sprintf("uclal difference\n mean = %.5s, range = %s - %s", mean(uclalDiff, na.rm=T), min(uclalDiff, na.rm = T), c(max(uclalDiff,na.rm=T)) ), xlab = "phase 1 - phase 2", ylab="number of people", breaks=10);
+
+
+
+
+# look at variance and do variance test of covid risk
+# is covid risk related to any of the affective measures? - answered above
+# is change in covid risk related to change in affective measures - not done yet
 
 
 
