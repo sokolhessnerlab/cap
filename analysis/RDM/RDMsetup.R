@@ -227,7 +227,7 @@ cap_past_event_variable <- function(DFname, DFwithVariable, trialsBack, DFwithSu
   # DFwithPhase = full name of dataframe + phase variable (e.g. rdmGainQualtrics$phase)
   # scaled = 1 = yes, 0 = no (scaled by max risky gain amount)
 
-  newMat = as.data.frame(matrix(data=NA,nrow=nrow(DFname), ncol=3), dimnames=list(c(NULL), c("newVar", "subDiff", "phaseDiff", "taskDiff")));
+  newMat = as.data.frame(matrix(data=NA,nrow=nrow(DFname), ncol=4), dimnames=list(c(NULL), c("newVar", "subDiff", "phaseDiff", "taskDiff")));
 
   newMat$newVar <- DFwithVariable; #take data from columns
   newMat$newVar[(trialsBack + 1):nrow(newMat)] <- newMat$newVar[1:(nrow(newMat)-trialsBack)]; # removes first row, shifts everything up
