@@ -221,7 +221,7 @@ rdmLossQualtrics$phaseRecode[rdmLossQualtrics$phaseRecode==2] = 1;
 
 cap_past_event_variable <- function(DFname, DFwithVariable, trialsBack, DFwithSubID, DFwithPhase, scaled){
   # DFname = name of the dataframe
-  # DFwithVariable = full name of dataframe + variable name (e.g. rdmGainQualtrics$outcome)
+  # DFwithVariable = full name of dataframe + variable name that we want to shift (e.g. rdmGainQualtrics$outcome)
   # trialsBack = numeric; how many trials are we look back?
   # DFwithSubID = full name of dataframe + sub id variable (e.g. rdmGainQualtrics$subID)
   # DFwithPhase = full name of dataframe + phase variable (e.g. rdmGainQualtrics$phase)
