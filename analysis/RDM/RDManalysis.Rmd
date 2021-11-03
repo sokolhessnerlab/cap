@@ -338,8 +338,8 @@ ggpairs(tmpCovidRisk, title = "covid risky between phases", columnLabels = c("ph
 
 
 # difference in covid risk across phases (just plot it)
-covidriskDiff = subLevelWide$phs1_covq_PAB_q1_personalRisk_scaled - subLevelWide$phs2_covq_PAB_q1_personalRisk_scaled;
-hist(covidriskDiff, main=sprintf("covid risk difference\n mean = %.5s, range = %s - %s", mean(covidriskDiff, na.rm=T), min(covidriskDiff, na.rm = T), c(max(covidriskDiff,na.rm=T)) ), xlab = "phase 1 - phase 2", ylab="number of people", breaks=10);
+subLevelWide$covidRiskDiff = subLevelWide$phs1_covq_PAB_q1_personalRisk_scaled - subLevelWide$phs2_covq_PAB_q1_personalRisk_scaled;
+hist(subLevelWide$covidRiskDiff, main=sprintf("covid risk difference\n mean = %.5s, range = %s - %s", mean(subLevelWide$covidRiskDiff, na.rm=T), min(subLevelWide$covidRiskDiff, na.rm = T), c(max(subLevelWide$covidRiskDiff,na.rm=T)) ), xlab = "phase 1 - phase 2", ylab="number of people", breaks=10);
 # 98 people have covidriskDiff = 0 (histogram shows the 98 below zero)
 
 # how does change in covid risk relate to phase 2 (end-state affect)
@@ -365,6 +365,49 @@ hist(pssDiff, main=sprintf("pss difference\n mean = %.5s, range = %s - %s", mean
 # difference in uclal across phases (just plot it)
 uclalDiff = subLevelWide$phs1_uclal_score_scaled - subLevelWide$phs2_uclal_score_scaled
 hist(uclalDiff, main=sprintf("uclal difference\n mean = %.5s, range = %s - %s", mean(uclalDiff, na.rm=T), min(uclalDiff, na.rm = T), c(max(uclalDiff,na.rm=T)) ), xlab = "phase 1 - phase 2", ylab="number of people", breaks=10);
+
+
+
+# SES questions (there are 11 of them in both phases)
+# how does change in covid risk relate to phase 2 (end-state affect)
+sesDFphs1= subLevelWide[names(subLevelWide) %in% c("phs1_ses_childhood_freeReducedLunch_recode",
+                                               "phs1_ses_childhood_communityComp_recode",
+                                               "phs1_ses_childhood_nationalComp_recode",
+                                               "phs1_ses_motherEdLevel_recode",
+                                               "phs1_ses_fatherEdLevel_recode" ,
+                                               "phs1_ses_childhoood_homeOwnership_recode" ,
+                                               "phs1_ses_personalEdLevel_recode",
+                                               "phs1_ses_financialWorryFreq_recode",
+                                               "phs1_ses_needbasedCollegeAid_recode")];
+
+ggpairs(sesDFphs1, title = "Phase 1 correlogram with SES", columnLabels = c("reduced lunch", "communityComp", "nationalComp", "momED", "dadED", "childHomeOwn", "personalEDlev", "worryFreq", "collegeAid"));
+
+
+sesDFphs2= subLevelWide[names(subLevelWide) %in% c("phs2_ses_childhood_freeReducedLunch_recode",
+                                               "phs2_ses_childhood_communityComp_recode",
+                                               "phs2_ses_childhood_nationalComp_recode",
+                                               "phs2_ses_motherEdLevel_recode",
+                                               "phs2_ses_fatherEdLevel_recode" ,
+                                               "phs2_ses_childhoood_homeOwnership_recode" ,
+                                               "phs2_ses_personalEdLevel_recode",
+                                               "phs2_ses_financialWorryFreq_recode",
+                                               "phs2_ses_needbasedCollegeAid_recode")];
+
+ggpairs(sesDFphs2, title = "Phase 2 correlogram with SES", columnLabels = c("reduced lunch", "communityComp", "nationalComp", "momED", "dadED", "childHomeOwn", "personalEDlev", "worryFreq", "collegeAid"));
+
+
+# Removed 1) current bill help because it was very unrelated to the others which could be the result of differences in the way participants interpreted the question and 2) current responsibilities because it categorical or ordered
+# Phase 1 and phase 2 broadly similar
+
+#looking at differences in responses across phases:
+# need to plot this so we can see how many points were different:
+for (c in 1:ncol(sesDFphs1)) {
+  plot(sesDFphs1[,c],sesDFphs2[,c])
+}
+
+
+# Next: moving toward "sophisticated", data-driven way would be to move toward PCA with a "smartly-weighted" combination of the components.
+
 
 
 
