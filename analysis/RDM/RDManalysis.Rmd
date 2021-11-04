@@ -429,6 +429,33 @@ for (c in 1:ncol(sesDFphs1)) {
 
 ```
 
+```{r}
+# PCA for SES (using 9 out of 11 SES measures - see above for why we removed two)
+
+sesPhs1pca = prcomp(na.omit(sesDFphs1), center=TRUE, scale = TRUE);
+# Importance of components:
+#                           PC1    PC2    PC3     PC4     PC5     PC6     PC7     PC8     PC9
+# Standard deviation     1.7691 1.0553 0.9940 0.91984 0.90520 0.81163 0.76623 0.70331 0.60209
+# Proportion of Variance 0.3478 0.1237 0.1098 0.09401 0.09104 0.07319 0.06523 0.05496 0.04028
+# Cumulative Proportion  0.3478 0.4715 0.5813 0.67529 0.76633 0.83953 0.90476 0.95972 1.00000
+
+
+sesPhs2pca = prcomp(na.omit(sesDFphs2), center=TRUE, scale = TRUE);
+
+# Importance of components:
+#                          PC1    PC2    PC3     PC4     PC5     PC6     PC7     PC8     PC9
+# Standard deviation     1.7939 1.0824 1.0059 0.90077 0.85045 0.81266 0.74929 0.68261 0.61331
+# Proportion of Variance 0.3576 0.1302 0.1124 0.09015 0.08036 0.07338 0.06238 0.05177 0.04179
+# Cumulative Proportion  0.3576 0.4877 0.6001 0.69031 0.77067 0.84405 0.90643 0.95821 1.00000
+
+# the components in both phases are very similar
+# for example, comparing PC1 in phase 1 and 2:
+plot(as.vector(sesPhs1pca$rotation[,1]),as.vector(sesPhs2pca$rotation[,1]));
+
+
+```
+
+
 
 ```{r}
 
