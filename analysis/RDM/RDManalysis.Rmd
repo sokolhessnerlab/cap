@@ -348,8 +348,6 @@ ggpairs(tmpPhs2covidDiff, title = "Phase 2 correlogram with covid risk diff", co
 # not seeing a relationship between change covid risk and end state affect (phase 2)
 
 
-
-
 # difference in stait across phases (just plot it)
 staitDiff = subLevelWide$phs1_stai_t_score_scaled - subLevelWide$phs2_stai_t_score_scaled
 hist(staitDiff, main=sprintf("stait difference\n mean = %.5s, range = %s - %s", mean(staitDiff, na.rm=T), min(staitDiff, na.rm = T), c(max(staitDiff,na.rm=T)) ), xlab = "phase 1 - phase 2", ylab="number of people", breaks=10);
@@ -407,11 +405,6 @@ for (c in 1:ncol(sesDFphs1)) {
 
 
 # Next: moving toward "sophisticated", data-driven way would be to move toward PCA with a "smartly-weighted" combination of the components.
-
-
-
-
-
 # look at variance and do variance test of covid risk
 # is covid risk related to any of the affective measures? - answered above
 # is change in covid risk related to change in affective measures - not done yet
@@ -452,6 +445,76 @@ sesPhs2pca = prcomp(na.omit(sesDFphs2), center=TRUE, scale = TRUE);
 # for example, comparing PC1 in phase 1 and 2:
 plot(as.vector(sesPhs1pca$rotation[,1]),as.vector(sesPhs2pca$rotation[,1]));
 
+
+```
+
+
+Look at corellograms and do PCA with covid questions
+```{r}
+# COVID-19 QUESTIONS questions (there are 9 of them in both phases)
+# phase 1:
+covqDFphs1= subLevelWide[names(subLevelWide) %in% c("phs1_covq_PAB_q1_personalRisk_scaled",
+                                               "phs1_covq_PAB_q2_threat",
+                                               "phs1_covq_PAB_q3_personallyDie",
+                                               "phs1_covq_PAB_q4_otherPersonDie",
+                                               "phs1_covq_PAB_q5_currentCases_recode" ,
+                                               "phs1_covq_PAB_q6_tested_recode" ,
+                                               "phs1_covq_PAB_q7_personalCovidSuspect_recode",
+                                               "phs1_covq_PAB_q8_knowPositivePerson_recode",
+                                               "phs1_covq_PAB_q9_socialDistanceLevel_recode")];
+
+ggpairs(covqDFphs1, title = "Phase 1 correlogram COVID Qs", columnLabels = c("personal risk", "threat", "personal death", "death of other", "current cases", "tested", "suspected covid", "know positive person", "social distance"));
+
+
+# phase 2:
+covqDFphs2= subLevelWide[names(subLevelWide) %in% c("phs2_covq_PAB_q1_personalRisk_scaled",
+                                               "phs2_covq_PAB_q2_threat",
+                                               "phs2_covq_PAB_q3_personallyDie",
+                                               "phs2_covq_PAB_q4_otherPersonDie",
+                                               "phs2_covq_PAB_q5_currentCases_recode" ,
+                                               "phs2_covq_PAB_q6_tested_recode" ,
+                                               "phs2_covq_PAB_q7_personalCovidSuspect_recode",
+                                               "phs2_covq_PAB_q8_knowPositivePerson_recode",
+                                               "phs2_covq_PAB_q9_socialDistanceLevel_recode")];
+
+ggpairs(covqDFphs2, title = "Phase 2 correlogram COVID Qs", columnLabels = c("personal risk", "threat", "personal death", "death of other", "current cases", "tested", "suspected covid", "know positive person", "social distance"));
+
+
+covqDiff = covqDFphs2-covqDFphs1; # take the difference in covid qs between phase 2 and phase 1
+
+covqDifftopFive = covqDiff[names(covqDiff) %in% c("phs2_covq_PAB_q1_personalRisk_scaled",
+                                               "phs2_covq_PAB_q2_threat",
+                                               "phs2_covq_PAB_q3_personallyDie",
+                                               "phs2_covq_PAB_q4_otherPersonDie",
+                                           "phs2_covq_PAB_q8_knowPositivePerson_recode")];
+
+colnames(covqDifftopFive) = c("personalRiskDiff", "threatDiff", "personallyDieDiff", "otherPersonDieDiff", "knowPosPersonDiff");
+
+ggpairs(covqDifftopFive, title = "Diff correlogram COVID Qs", columnLabels = c("personal risk", "threat", "personal death", "death of other","know positive person"));
+
+
+
+# The top five covid qs that stand out are personal risk, threat, personal death, death of other and know any one who tested positive. However, the know anyone who tested positive is coded funky and its unclear whats happening there. The change across phases for the top four (throwing out know anyone who tested positive right now) is pretty small, but the changes in personal risk distribution are related to RDM and the distribution of changes across phases is widest (ie it has the biggest change) and may be the variable to go with. The top four variables are highly related and the degree to which they change across phases is also correlated. 
+
+
+mean(covqDifftopFive$personalRiskDiff, na.rm=T); #-0.03416399*6 = -0.2049839 (to match the scale with the following cov qs becase personal risk is on a 0-1 scale)
+mean(covqDifftopFive$threatDiff, na.rm=T); # -0.09385113
+mean(covqDifftopFive$personallyDieDiff, na.rm=T); # -0.01612903
+mean(covqDifftopFive$otherPersonDieDiff, na.rm=T); # -0.1864952
+mean(covqDifftopFive$knowPosPersonDiff, na.rm=T); # 0.0192926
+# largest difference is with personal risk, followed by other personally die
+
+var(covqDifftopFive$personalRiskDiff*6, na.rm=T); #1.726999 (multiplied score by 6 because math for variance is more complicated)
+var(covqDifftopFive$threatDiff, na.rm=T); # 1.247657
+var(covqDifftopFive$personallyDieDiff, na.rm=T); # 1.129189
+var(covqDifftopFive$otherPersonDieDiff, na.rm=T); # 1.752204
+var(covqDifftopFive$knowPosPersonDiff, na.rm=T); # 0.7609169
+
+#highest variance is other person die followed by personal risk (very similar)
+
+# moving toward rationalizing why we should use to personal risk (While also accounting for other die?)
+
+# next: looking at these measures relative to affect and cognition.
 
 ```
 
