@@ -430,7 +430,13 @@ sesPhs1pca = prcomp(na.omit(sesDFphs1), center=TRUE, scale = TRUE);
 #                           PC1    PC2    PC3     PC4     PC5     PC6     PC7     PC8     PC9
 # Standard deviation     1.7691 1.0553 0.9940 0.91984 0.90520 0.81163 0.76623 0.70331 0.60209
 # Proportion of Variance 0.3478 0.1237 0.1098 0.09401 0.09104 0.07319 0.06523 0.05496 0.04028
-# Cumulative Proportion  0.3478 0.4715 0.5813 0.67529 0.76633 0.83953 0.90476 0.95972 1.00000
+# Cumulative Proportion  0.347s8 0.4715 0.5813 0.67529 0.76633 0.83953 0.90476 0.95972 1.00000
+
+# accessing component for each person looks like:
+sesPhs1pca$x[,'PC1'] # where each row is a person
+# we want to add this for each participant in both RDM and control datasets
+# MOVE THIS ANALYSIS TO ITS OWN SCRIPT AND THEN ADD TO RDMGAINQUALTRICS/RDMLOSSQUALTRICS ALONG WITH THE AX DATASET.
+
 
 
 sesPhs2pca = prcomp(na.omit(sesDFphs2), center=TRUE, scale = TRUE);
@@ -510,14 +516,67 @@ var(covqDifftopFive$personallyDieDiff, na.rm=T); # 1.129189
 var(covqDifftopFive$otherPersonDieDiff, na.rm=T); # 1.752204
 var(covqDifftopFive$knowPosPersonDiff, na.rm=T); # 0.7609169
 
-#highest variance is other person die followed by personal risk (very similar)
-
+# highest variance is other person die followed by personal risk (very similar)
 # moving toward rationalizing why we should use to personal risk (While also accounting for other die?)
+# Change in personal risk and death of other are not as correlated as we'd think given their relationship within each phase. This could be that the change is just noise and so there is no meaningful shift that is happening. 
 
 # next: looking at these measures relative to affect and cognition.
 
 ```
 
+```{r}
+# PCA for COVID Q (using 4 out of 9 covid q measures - see above for why we are going with these)
+# personal risk, threat, personal death, death of other
+
+covqDFphs1top4 = covqDFphs1[names(covqDFphs1) %in% c("phs1_covq_PAB_q1_personalRisk_scaled",
+                                               "phs1_covq_PAB_q2_threat",
+                                               "phs1_covq_PAB_q3_personallyDie",
+                                               "phs1_covq_PAB_q4_otherPersonDie")];
+
+covqDFphs2top4 = covqDFphs2[names(covqDFphs2) %in% c("phs2_covq_PAB_q1_personalRisk_scaled",
+                                               "phs2_covq_PAB_q2_threat",
+                                               "phs2_covq_PAB_q3_personallyDie",
+                                               "phs2_covq_PAB_q4_otherPersonDie")];
+
+covqPhs1pca = prcomp(na.omit(covqDFphs1top4), center=TRUE, scale = TRUE);
+
+#                                            PC1         PC2        PC3        PC4
+# phs1_covq_PAB_q1_personalRisk_scaled 0.5401573 -0.02755631 -0.4234984  0.7267185
+# phs1_covq_PAB_q2_threat              0.4790945 -0.74859950 -0.1055662 -0.4460079
+# phs1_covq_PAB_q3_personallyDie       0.4916882  0.65374743 -0.2787753 -0.5031316
+# phs1_covq_PAB_q4_otherPersonDie      0.4867661  0.10702212  0.8554468  0.1407687
+
+# Importance of components:
+#                           PC1    PC2    PC3     PC4
+# Standard deviation     1.5507 0.8102 0.7534 0.60931
+# Proportion of Variance 0.6012 0.1641 0.1419 0.09281
+# Cumulative Proportion  0.6012 0.7653 0.9072 1.00000
+
+
+
+covqPhs2pca = prcomp(na.omit(covqDFphs2top4), center=TRUE, scale = TRUE);
+
+#                                             PC1        PC2         PC3        PC4
+# phs2_covq_PAB_q1_personalRisk_scaled -0.5410720  0.0179990  0.45667265 -0.7059513
+# phs2_covq_PAB_q2_threat              -0.4522386  0.8046309  0.02591976  0.3838977
+# phs2_covq_PAB_q3_personallyDie       -0.4996101 -0.5650718  0.31816180  0.5743316
+# phs2_covq_PAB_q4_otherPersonDie      -0.5031014 -0.1814910 -0.83039227 -0.1562006
+
+# Importance of components:
+#                           PC1    PC2    PC3     PC4
+# Standard deviation     1.5514 0.8357 0.7212 0.61199
+# Proportion of Variance 0.6017 0.1746 0.1300 0.09363
+# Cumulative Proportion  0.6017 0.7763 0.9064 1.00000
+
+# similar pattern in phase 2
+
+
+# Component one weighs each of the four components roughly equally and accounts for 60% of the variance. This could mean that picking one variable (i.e. personal risk) would be ok and the argument for would be that its more straightforward and more interpretable. The counter argument would be to use the weighted average of the four variables.
+
+# Going ahead using personal risk variable for now.
+
+
+```
 
 
 ```{r}
