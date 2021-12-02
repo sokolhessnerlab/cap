@@ -311,8 +311,7 @@ if(!exists('model_pred_covidRiskCentered_x_dayOverallSC')){
 Affective measures: 
 # How do we find what is unique across our qualtrics responses?
 # Could do a component type of analysis for all of the qualtrics responses (Gillan et al 2016 does something like this). We could do this in a variety of ways (across all responses v. across all SES responses). Gillan (2016) used a package in R to do it 
-# "Try not to get paralyzed by the world of ways to do this stuff - start simple"
-# then we move toward correllogram / run factor analysis / PCA stuff
+
 
 ```{r}
 # There are two subject-level dataframes
