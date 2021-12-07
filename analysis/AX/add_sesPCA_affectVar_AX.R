@@ -33,3 +33,6 @@ for(s in 1:nrow(subLevelLong)){
 };
 
 
+
+save(file =file.path(config$path$Rdata,config$Rdata_files$AX_qualtrics_PCA),axQualtrics); # save this as "/Volumes/CAP/Rdata/axQualtricsPCA.Rdata"
+
