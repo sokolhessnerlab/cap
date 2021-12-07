@@ -514,9 +514,10 @@ covqPhs2pca = prcomp(na.omit(covqDFphs2top4), center=TRUE, scale = TRUE);
 
 Save individual-level data frames
 ```{r}
-#rdataDir=config$path$Rdata
 
-save(file= subLevelLong.Rdata",subLevelLong);
-save(file="subLevelWide.Rdata",subLevelWide);
+subLongFilePath = file.path(config$path$Rdata, config$Rdata_files$QualtricsSubLevelLong);
+subWideFilePath = file.path(config$path$Rdata, config$Rdata_files$QualtricsSubLevelWide);
+save(file= subLongFilePath, subLevelLong);
+save(file= subWideFilePath, subLevelWide);
 ```
 
