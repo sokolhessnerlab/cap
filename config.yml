@@ -24,6 +24,8 @@ default:
     Rdata: "/Volumes/CAP/Rdata"
   Rdata_files:
     models: "model_output_rdm.Rdata"
+    QualtricsSubLevelLong: "subLevelLong.Rdata"
+    QualtricsSubLevelWide: "subLevelWide.Rdata"
   code_files:
     setup_data: "RDMsetup.R"
   RDMcsvs: 
