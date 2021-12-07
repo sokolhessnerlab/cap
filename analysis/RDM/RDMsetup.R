@@ -9,11 +9,6 @@
 # Hayley Brooks, University of Denver
 
 
-# ******12/6/21 NOTE: will need to update this now that we have the individual-level dataframes generated in a different script! I've already deleted the code where the individual level dataframes are made.
-
-
-
-
 # load packages
 library('config')
 library("lme4");
@@ -26,14 +21,17 @@ rdmGain_csv = file.path(config$path$combined, config$RDMcsvs$RDMgain_qualtrics);
 rdmLoss_csv = file.path(config$path$combined, config$RDMcsvs$RDMloss_qualtrics); # loss only task path
 exclsnPhs1_csv = file.path(config$path$combined, config$EXCLUSIONcsvs$RDM_AX_Qual_Phs1exclusion); # phase 1 exclusion path
 exclsnPhs2_csv = file.path(config$path$combined, config$EXCLUSIONcsvs$RDM_AX_Qual_Phs2exclusion); # phase 2 exclusion path
-qualtricsBothPhs = file.path(config$path$combined, config$QUALTRICScsvs$Combined_subID_scored_noDuplicates); # qualtrics responses path
+qualtricsBothPhs_csv = file.path(config$path$combined, config$QUALTRICScsvs$Combined_subID_scored_noDuplicates); # qualtrics responses path
+subLevelLong_path = file.path(config$path$Rdata, config$Rdata_files$QualtricsSubLevelLong); # subject-level long format path
+subLevelWide_path = file.path(config$path$Rdata, config$Rdata_files$QualtricsSubLevelWide); # subject-level wide format path
 
 rdmGainQualtrics = read.csv(rdmGain_csv); # loads gain only RDM + Qualtrics data both phases (takes several seconds)
 rdmLossQualtrics = read.csv(rdmLoss_csv); # loads loss only RDM + Qualtrics data both phases (takes several seconds)
 excludePhs1 = read.csv(exclsnPhs1_csv); # loads exclusion for phase 1
 excludePhs2 = read.csv(exclsnPhs2_csv); # loads exclusion for phase 2
-qualtricsBothPhs = read.csv(qualtricsBothPhs); # load qualtrics responses
-
+qualtricsBothPhs = read.csv(qualtricsBothPhs_csv); # load qualtrics responses
+load(subLevelLong_path); # load subject-level long dataframe
+load(subLevelWide_path); # load subject-level wide dataframe
 
 
 # Remove the extra "X" column present as the first column in datasets
@@ -43,10 +41,34 @@ excludePhs1 = excludePhs1[,(2:ncol(excludePhs1))];
 excludePhs2 = excludePhs2[,(2:ncol(excludePhs2))];
 qualtricsBothPhs = qualtricsBothPhs[,(4:ncol(qualtricsBothPhs))]; # qualtrics has 3 columns of X variable
 
+
+# add the PCA SES component one and scaled affective variables to RDM datasets
+for(s in 1:nrow(subLevelLong)){
+  rdmGainQualtrics$sesPCA[subLevelLong$subID[s]==rdmGainQualtrics$subID & subLevelLong$phase[s] == rdmGainQualtrics$phase] = subLevelLong$sesPCA[s];
+  rdmLossQualtrics$sesPCA[subLevelLong$subID[s]==rdmLossQualtrics$subID & subLevelLong$phase[s] == rdmLossQualtrics$phase] = subLevelLong$sesPCA[s]
+  
+  rdmGainQualtrics$stai_s_score_scaled[subLevelLong$subID[s]==rdmGainQualtrics$subID & subLevelLong$phase[s] == rdmGainQualtrics$phase] = subLevelLong$stai_s_score_scaled[s];
+  rdmGainQualtrics$stai_t_score_scaled[subLevelLong$subID[s]==rdmGainQualtrics$subID & subLevelLong$phase[s] == rdmGainQualtrics$phase] = subLevelLong$stai_t_score_scaled[s];
+  rdmGainQualtrics$uclal_score_scaled[subLevelLong$subID[s]==rdmGainQualtrics$subID & subLevelLong$phase[s] == rdmGainQualtrics$phase] = subLevelLong$uclal_score_scaled[s];
+  rdmGainQualtrics$pss_score_scaled[subLevelLong$subID[s]==rdmGainQualtrics$subID & subLevelLong$phase[s] == rdmGainQualtrics$phase] = subLevelLong$pss_score_scaled[s];
+  
+  rdmLossQualtrics$stai_s_score_scaled[subLevelLong$subID[s]==rdmLossQualtrics$subID & subLevelLong$phase[s] == rdmLossQualtrics$phase] = subLevelLong$stai_s_score_scaled[s];
+  rdmLossQualtrics$stai_t_score_scaled[subLevelLong$subID[s]==rdmLossQualtrics$subID & subLevelLong$phase[s] == rdmLossQualtrics$phase] = subLevelLong$stai_t_score_scaled[s];
+  rdmLossQualtrics$uclal_score_scaled[subLevelLong$subID[s]==rdmLossQualtrics$subID & subLevelLong$phase[s] == rdmLossQualtrics$phase] = subLevelLong$uclal_score_scaled[s];
+  rdmLossQualtrics$pss_score_scaled[subLevelLong$subID[s]==rdmLossQualtrics$subID & subLevelLong$phase[s] == rdmLossQualtrics$phase] = subLevelLong$pss_score_scaled[s];
+  
+  rdmGainQualtrics$covq_PAB_q1_personalRisk_scaled[subLevelLong$subID[s]==rdmGainQualtrics$subID & subLevelLong$phase[s] == rdmGainQualtrics$phase] = subLevelLong$covq_PAB_q1_personalRisk_scaled[s];
+  rdmGainQualtrics$covq_PAB_q1_personalRisk_scaledNoNA[subLevelLong$subID[s]==rdmGainQualtrics$subID & subLevelLong$phase[s] == rdmGainQualtrics$phase] = subLevelLong$covq_PAB_q1_personalRisk_scaledNoNA[s];
+  
+  rdmLossQualtrics$covq_PAB_q1_personalRisk_scaled[subLevelLong$subID[s]==rdmLossQualtrics$subID & subLevelLong$phase[s] == rdmLossQualtrics$phase] = subLevelLong$covq_PAB_q1_personalRisk_scaled[s];
+  rdmLossQualtrics$covq_PAB_q1_personalRisk_scaledNoNA[subLevelLong$subID[s]==rdmLossQualtrics$subID & subLevelLong$phase[s] == rdmLossQualtrics$phase] = subLevelLong$covq_PAB_q1_personalRisk_scaledNoNA[s];
+  
+}
+
+
 # we are going to exclude some people so lets save the original number of subjects
 subNumB4exclusion = unique(rdmGainQualtrics$subID);  # there are the same number of participants in gain and loss datasets
 nSubB4exclusion = length(subNumB4exclusion);
-
 
 ## Apply the exclusions to the data set by place NAs in trials for excluded participants
   # RDM exclusion applies to both gain and loss datasets
@@ -77,8 +99,8 @@ subIDqualPhs2Exclude = excludePhs2$subID[!is.na(excludePhs2$qualPhs2exclude) & e
 rdmColumns = c(1:5,7:14,17:18);
 
 
-# Qualtrics stuff starts at column 19, or "stai_s_score" until column 71 or "ses_needbasedCollegeAid_recode"
-qualColumns = c(19:71);
+# Qualtrics stuff starts at column 19, or "stai_s_score" until column 71 or "ses_needbasedCollegeAid_recode" and 73 with the sesPCA
+qualColumns = c(19:71,73);
 
 
 # Put NAs in RDM columns for excluded phase 1 and phase 2 participants in both gain and loss datasets
@@ -362,29 +384,6 @@ rdmGainQualtrics$dayOverallSC = rdmGainQualtrics$dayOverall/max(rdmGainQualtrics
 
 rdmLossQualtrics$daySC = rdmLossQualtrics$day/max(rdmLossQualtrics$day)
 rdmLossQualtrics$dayOverallSC = rdmLossQualtrics$dayOverall/max(rdmLossQualtrics$dayOverall)
-
-
-# Scale affective variables by max values for each affective measure
-rdmGainQualtrics$stai_s_score_scaled = rdmGainQualtrics$stai_s_score/max(rdmGainQualtrics$stai_s_score, na.rm = T);
-rdmGainQualtrics$stai_t_score_scaled = rdmGainQualtrics$stai_t_score/max(rdmGainQualtrics$stai_t_score, na.rm = T);
-rdmGainQualtrics$uclal_score_scaled = rdmGainQualtrics$uclal_score/max(rdmGainQualtrics$uclal_score, na.rm = T);
-rdmGainQualtrics$pss_score_scaled = rdmGainQualtrics$pss_score/max(rdmGainQualtrics$pss_score, na.rm = T);
-
-rdmGainQualtrics$covq_PAB_q1_personalRisk_scaled = (rdmGainQualtrics$covq_PAB_q1_personalRisk-1)/max(rdmGainQualtrics$covq_PAB_q1_personalRisk-1, na.rm = T)
-
- 
-rdmGainQualtrics$covq_PAB_q1_personalRisk_scaledNoNA = rdmGainQualtrics$covq_PAB_q1_personalRisk_scaled;
-rdmGainQualtrics$covq_PAB_q1_personalRisk_scaledNoNA[is.na(rdmGainQualtrics$covq_PAB_q1_personalRisk_scaledNoNA)] = 0;
-
-rdmLossQualtrics$stai_s_score_scaled = rdmLossQualtrics$stai_s_score/max(rdmLossQualtrics$stai_s_score,na.rm = T);
-rdmLossQualtrics$stai_t_score_scaled = rdmLossQualtrics$stai_t_score/max(rdmLossQualtrics$stai_t_score,na.rm = T);
-rdmLossQualtrics$uclal_score_scaled = rdmLossQualtrics$uclal_score/max(rdmLossQualtrics$uclal_score, na.rm = T);
-rdmLossQualtrics$pss_score_scaled = rdmLossQualtrics$pss_score/max(rdmLossQualtrics$pss_score, na.rm = T);
-
-rdmLossQualtrics$covq_PAB_q1_personalRisk_scaled = rdmLossQualtrics$covq_PAB_q1_personalRisk/max(rdmLossQualtrics$covq_PAB_q1_personalRisk, na.rm = T)
-
-rdmLossQualtrics$covq_PAB_q1_personalRisk_scaledNoNA = rdmLossQualtrics$covq_PAB_q1_personalRisk_scaled;
-rdmLossQualtrics$covq_PAB_q1_personalRisk_scaledNoNA[is.na(rdmLossQualtrics$covq_PAB_q1_personalRisk_scaledNoNA)] = 0;
 
 
 # For gain only task, create variables for shift analysis
