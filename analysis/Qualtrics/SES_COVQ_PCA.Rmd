@@ -5,6 +5,9 @@ date: "12/1/2021"
 output: html_document
 ---
 
+This script will 1) create the long and wide individual-level dataframes (qualtrics exclusion applied) and 2) PCA analysis for SES and COVID questions
+
+
 ```{r setup, include=FALSE}
 rm(list=ls())
 
@@ -14,11 +17,11 @@ config = config::get()
 # load qualtrics and exclusion 
 exclsnPhs1_csv = file.path(config$path$combined, config$EXCLUSIONcsvs$RDM_AX_Qual_Phs1exclusion); # phase 1 exclusion path
 exclsnPhs2_csv = file.path(config$path$combined, config$EXCLUSIONcsvs$RDM_AX_Qual_Phs2exclusion); # phase 2 exclusion path
-qualtricsBothPhs = file.path(config$path$combined, config$QUALTRICScsvs$Combined_subID_scored_noDuplicates); # qualtrics responses path
+qualtricsBothPhs_csv = file.path(config$path$combined, config$QUALTRICScsvs$Combined_subID_scored_noDuplicates); # qualtrics responses path
 
 excludePhs1 = read.csv(exclsnPhs1_csv); # loads exclusion for phase 1
 excludePhs2 = read.csv(exclsnPhs2_csv); # loads exclusion for phase 2
-qualtricsBothPhs = read.csv(qualtricsBothPhs); # load qualtrics responses
+qualtricsBothPhs = read.csv(qualtricsBothPhs_csv); # load qualtrics responses
 
 
 # Remove the extra "X" column present as the first column in datasets
@@ -27,41 +30,7 @@ excludePhs2 = excludePhs2[,(2:ncol(excludePhs2))];
 qualtricsBothPhs = qualtricsBothPhs[,(4:ncol(qualtricsBothPhs))]; # qualtrics has 3 columns of X variable
 ```
 
-Variables that we need for PCA and correllograms:
-```{r}
-# c("stai_t_score",
-# "stai_s_score",
-# "pss_score",                              
-# "uclal_score",
-# "covq_PAB_q1_personalRisk", 
-# "covq_PAB_q2_threat",                     
-# "covq_PAB_q3_personallyDie",               
-# "covq_PAB_q4_otherPersonDie",
-# "covq_PAB_q5_currentCases_recode",        
-# "covq_PAB_q6_tested_recode",              
-# "covq_PAB_q7_personalCovidSuspect_recode",
-# "covq_PAB_q8_knowPositivePerson_recode",
-# "covq_PAB_q9_socialDistanceLevel_recode", 
-# "demo_gender_recode",
-# "demo_race_recode",                       
-# "demo_ethnicity_recode",
-# "ses_childhood_freeReducedLunch_recode",  
-# "ses_childhood_communityComp_recode",
-# "ses_childhood_nationalComp_recode",
-# "ses_motherEdLevel_recode",               
-# "ses_fatherEdLevel_recode",
-# "ses_childhoood_homeOwnership_recode",
-# "ses_current_billHelp_recode",           
-# "ses_current_mainResponsibilities_recode",
-# "ses_personalEdLevel_recode",             
-# "ses_financialWorryFreq_recode",
-# "ses_needbasedCollegeAid_recode")
-```
-
-
-
-
-# deal with the qualtrics exclusions
+Apply Qualtrics Exclusions
 ```{r}
 
 # Phase 1 Qualtrics: 3 participants excluded (but the 3rd, sub 461 is missing a response so here were are just putting NAs for two participants' qualtrics responses in phase 1)
@@ -80,55 +49,240 @@ qualtricsBothPhs[qualtricsBothPhs$subID %in% subIDqualPhs2Exclude & qualtricsBot
 
 
 ```{r}
-# Scale affective variables by max values for each affective measure
-qualtricsBothPhs$stai_s_score_scaled = qualtricsBothPhs$stai_s_score/max(qualtricsBothPhs$stai_s_score, na.rm = T);
-qualtricsBothPhs$stai_t_score_scaled = qualtricsBothPhs$stai_t_score/max(qualtricsBothPhs$stai_t_score, na.rm = T);
-qualtricsBothPhs$uclal_score_scaled = qualtricsBothPhs$uclal_score/max(qualtricsBothPhs$uclal_score, na.rm = T);
-qualtricsBothPhs$pss_score_scaled = qualtricsBothPhs$pss_score/max(qualtricsBothPhs$pss_score, na.rm = T);
+# Store sub IDs of those who are in phase 1 and phase 2 (post-exclusion)
+# Note: the sub IDs in phase 1 and phase 2 is identical across gain and loss tasks because the same participants were excluded across both tasks.
 
-qualtricsBothPhs$covq_PAB_q1_personalRisk_scaled = (qualtricsBothPhs$covq_PAB_q1_personalRisk-1)/max(qualtricsBothPhs$covq_PAB_q1_personalRisk-1, na.rm = T)
+# Participant IDs included in phase 1 RDM
+Phs1subIDs = excludePhs1$subID[excludePhs1$qualPhs1exclude==0];
+Phs1nSub = length(Phs1subIDs);
 
-qualtricsBothPhs$covq_PAB_q1_personalRisk_scaledNoNA = qualtricsBothPhs$covq_PAB_q1_personalRisk_scaled;
-qualtricsBothPhs$covq_PAB_q1_personalRisk_scaledNoNA[is.na(qualtricsBothPhs$covq_PAB_q1_personalRisk_scaledNoNA)] = 0;
+# Participant IDs included in phase 2 RDM
+Phs2subIDs = excludePhs2$subID[!is.na(excludePhs2$qualPhs2exclude) & excludePhs2$qualPhs2exclude==0];
+Phs2nSub = length(Phs2subIDs);
+
+# Participant IDs included in both phases
+BothPhsSubIDs = Phs2subIDs[Phs2subIDs %in% Phs1subIDs];
+BothPhsnSub = length(BothPhsSubIDs)
+```
+
+
+There are a bunch of variables that we don't need to keep right now. Let's remove some of the columns and keep the variables that we need for PCA and correllograms:
+```{r}
+keepCols = c("subID", 
+             "phase",
+             "loc_fips",
+             "stai_t_score",
+             "stai_s_score",
+             "pss_score",
+             "pss_stressedToday",   
+             "uclal_score",
+             "covq_PAB_q1_personalRisk",
+             "covq_PAB_q2_threat",
+             "covq_PAB_q3_personallyDie",
+             "covq_PAB_q4_otherPersonDie",
+             "covq_PAB_q5_currentCases_recode",
+             "covq_PAB_q6_tested_recode",
+             "covq_PAB_q7_personalCovidSuspect_recode",
+             "covq_PAB_q8_knowPositivePerson_recode",
+             "covq_PAB_q9_socialDistanceLevel_recode",
+             "demo_age",
+             "demo_gender_recode",
+             "demo_race_recode",
+             "demo_ethnicity_recode",
+             "ses_childhood_freeReducedLunch_recode",
+             "ses_childhood_communityComp_recode",
+             "ses_childhood_nationalComp_recode",
+             "ses_motherEdLevel_recode",
+             "ses_fatherEdLevel_recode",
+             "ses_childhoood_homeOwnership_recode",
+             "ses_current_billHelp_recode",
+             "ses_current_mainResponsibilities_recode",
+             "ses_personalEdLevel_recode",
+             "ses_financialWorryFreq_recode",
+             "ses_needbasedCollegeAid_recode");
+
+# Keep the columns we need and rename to subLevelLong because this is the long format dataframe (each participant and phase gets a row)
+subLevelLong = qualtricsBothPhs[names(qualtricsBothPhs) %in% keepCols]; #keep only the columns we need.
+
+
+
+
+
+```
+
+
+Create the subLevelWide dataframe (each participant gets a row)
+```{r}
+# use subLevelLong to make subLevelWide
+
+subLevelWide = as.data.frame(matrix(data=NA, nrow = Phs1nSub, ncol = ncol(subLevelLong)*2)); # column # will be adjusted when we delete redundancy between phases below.
+
+for (s in 1:Phs1nSub) {
+  sub = subLevelLong[which(subLevelLong$subID==Phs1subIDs[s]),]; # pull out one participant (using which because its doing funky stuff with NA otherwise)
+
+
+  if(Phs1subIDs[s] %in% BothPhsSubIDs) { # if participant was in both phases
+    subLevelWide[s,] = cbind(sub[1,],sub[sub$phase==2,][1,]); # in a single row, store phase 1 and phase 2 data for participant
+
+  } else {
+    subLevelWide[s,1:ncol(sub)] = sub[1,]; # in a single row, store phase 1 data for participant (the rest will be NaN)
+  }
+
+}
+
+wideColNames = c("phs1_pss_stressedToday", 
+                 "phs1_covq_PAB_q1_personalRisk",
+                 "phs1_covq_PAB_q2_threat",
+                 "phs1_covq_PAB_q3_personallyDie",
+                 "phs1_covq_PAB_q4_otherPersonDie",
+                 "demo_age",
+                 "subID",
+                 "phs1_phase",
+                 "phs1_loc_fips",
+                 "phs1_stai_t_score",
+                 "phs1_stai_s_score",
+                 "phs1_pss_score",
+                 "phs1_uclal_score",
+                 "phs1_covq_PAB_q5_currentCases_recode",
+                 "phs1_covq_PAB_q6_tested_recode",
+                 "phs1_covq_PAB_q7_personalCovidSuspect_recode",
+                 "phs1_covq_PAB_q8_knowPositivePerson_recode",
+                 "phs1_covq_PAB_q9_socialDistanceLevel_recode",
+                 "demo_gender_recode",
+                 "demo_race_recode",
+                 "demo_ethnicity_recode",
+                 "phs1_ses_childhood_freeReducedLunch_recode",
+                 "phs1_ses_childhood_communityComp_recode",
+                 "phs1_ses_childhood_nationalComp_recode",
+                 "phs1_ses_motherEdLevel_recode",
+                 "phs1_ses_fatherEdLevel_recode",
+                 "phs1_ses_childhoood_homeOwnership_recode",
+                 "phs1_ses_current_billHelp_recode",
+                 "phs1_ses_current_mainResponsibilities_recode",
+                 "phs1_ses_personalEdLevel_recode",
+                 "phs1_ses_financialWorryFreq_recode",
+                 "phs1_ses_needbasedCollegeAid_recode",
+                 "phs2_pss_stressedToday", 
+                 "phs2_covq_PAB_q1_personalRisk",
+                 "phs2_covq_PAB_q2_threat",
+                 "phs2_covq_PAB_q3_personallyDie",
+                 "phs2_covq_PAB_q4_otherPersonDie",
+                 "phs2_demo_age",
+                 "phs2_subID",
+                 "phs2_phase",
+                 "phs2_loc_fips",
+                 "phs2_stai_t_score",
+                 "phs2_stai_s_score",
+                 "phs2_pss_score",
+                 "phs2_uclal_score",
+                 "phs2_covq_PAB_q5_currentCases_recode",
+                 "phs2_covq_PAB_q6_tested_recode",
+                 "phs2_covq_PAB_q7_personalCovidSuspect_recode",
+                 "phs2_covq_PAB_q8_knowPositivePerson_recode",
+                 "phs2_covq_PAB_q9_socialDistanceLevel_recode",
+                 "phs2_demo_gender_recode",
+                 "phs2_demo_race_recode",
+                 "phs2_demo_ethnicity_recode",
+                 "phs2_ses_childhood_freeReducedLunch_recode",
+                 "phs2_ses_childhood_communityComp_recode",
+                 "phs2_ses_childhood_nationalComp_recode",
+                 "phs2_ses_motherEdLevel_recode",
+                 "phs2_ses_fatherEdLevel_recode",
+                 "phs2_ses_childhoood_homeOwnership_recode",
+                 "phs2_ses_current_billHelp_recode",
+                 "phs2_ses_current_mainResponsibilities_recode",
+                 "phs2_ses_personalEdLevel_recode",
+                 "phs2_ses_financialWorryFreq_recode",
+                 "phs2_ses_needbasedCollegeAid_recode"); #This includes redundancies that will be removed!
+
+colnames(subLevelWide) = wideColNames; # add column names
+
+discardCols = c("phs1_phase",
+                "phs2_subID",
+                "phs2_phase",
+                "phs2_demo_race_recode",
+                "phs2_demo_ethnicity_recode",
+                "phs2_demo_gender_recode",
+                "phs2_demo_age"); # columns that will be discarded for redundancy
+
+subLevelWide = subLevelWide[!names(subLevelWide) %in% discardCols]; # discard columns
+```
+
+
+
+
+Scale affective variables by max values for each affective measure
+```{r}
+# long dataframe
+# pss, stait, uclal
+subLevelLong$pss_score_scaled = subLevelLong$pss_score/max(subLevelLong$pss_score, na.rm = T);
+subLevelLong$stai_t_score_scaled = subLevelLong$stai_t_score/max(subLevelLong$stai_t_score, na.rm = T);
+subLevelLong$stai_s_score_scaled = subLevelLong$stai_s_score/max(subLevelLong$stai_s_score, na.rm = T);
+subLevelLong$uclal_score_scaled = subLevelLong$uclal_score/max(subLevelLong$uclal_score, na.rm = T);
+
+# covid risk
+subLevelLong$covq_PAB_q1_personalRisk_scaled = (subLevelLong$covq_PAB_q1_personalRisk-1)/max(subLevelLong$covq_PAB_q1_personalRisk-1, na.rm = T)
+
+subLevelLong$covq_PAB_q1_personalRisk_scaledNoNA = subLevelLong$covq_PAB_q1_personalRisk_scaled;
+subLevelLong$covq_PAB_q1_personalRisk_scaledNoNA[is.na(subLevelLong$covq_PAB_q1_personalRisk_scaledNoNA)] = 0;
+
+# wide dataframe
+# pss, stait, uclal
+# phase 1
+subLevelWide$phs1_pss_score_scaled = subLevelWide$phs1_pss_score/max(subLevelWide$phs1_pss_score, na.rm = T);
+subLevelWide$phs1_stai_t_score_scaled = subLevelWide$phs1_stai_t_score/max(subLevelWide$phs1_stai_t_score, na.rm = T);
+subLevelWide$phs1_stai_s_score_scaled = subLevelWide$phs1_stai_s_score/max(subLevelWide$phs1_stai_s_score, na.rm = T);
+subLevelWide$phs1_uclal_score_scaled = subLevelWide$phs1_uclal_score/max(subLevelWide$phs1_uclal_score, na.rm = T);
+
+# phase 2
+subLevelWide$phs2_pss_score_scaled = subLevelWide$phs2_pss_score/max(subLevelWide$phs2_pss_score, na.rm = T);
+subLevelWide$phs2_stai_t_score_scaled = subLevelWide$phs2_stai_t_score/max(subLevelWide$phs2_stai_t_score, na.rm = T);
+subLevelWide$phs2_stai_s_score_scaled = subLevelWide$phs2_stai_s_score/max(subLevelWide$phs2_stai_s_score, na.rm = T);
+subLevelWide$phs2_uclal_score_scaled = subLevelWide$phs2_uclal_score/max(subLevelWide$phs2_uclal_score, na.rm = T);
+
+
+# covid risk
+# phase 1
+subLevelWide$phs1_covq_PAB_q1_personalRisk_scaled = (subLevelWide$phs1_covq_PAB_q1_personalRisk-1)/max(subLevelWide$phs1_covq_PAB_q1_personalRisk-1, na.rm = T);
+
+# replace NA with 0
+subLevelWide$phs1_covq_PAB_q1_personalRisk_scaledNoNA = subLevelWide$phs1_covq_PAB_q1_personalRisk_scaled;
+subLevelWide$phs1_covq_PAB_q1_personalRisk_scaledNoNA[is.na(subLevelWide$phs1_covq_PAB_q1_personalRisk_scaledNoNA)] = 0;
+
+# phase 2
+subLevelWide$phs2_covq_PAB_q1_personalRisk_scaled = (subLevelWide$phs2_covq_PAB_q1_personalRisk-1)/max(subLevelWide$phs2_covq_PAB_q1_personalRisk-1, na.rm = T);
+
+# replace NA with 0
+subLevelWide$phs2_covq_PAB_q1_personalRisk_scaledNoNA = subLevelWide$phs2_covq_PAB_q1_personalRisk_scaled;
+subLevelWide$phs2_covq_PAB_q1_personalRisk_scaledNoNA[is.na(subLevelWide$phs2_covq_PAB_q1_personalRisk_scaledNoNA)] = 0;
 
 ```
 
 
 
 #### Can we find what is unique across our qualtrics responses for SES and Covid Q?
-# PCA: 
-
+# Correlograms
 ```{r}
 # Look at relationship between affective measures (STAIT, STAIS, PSS, UCLAL <--> perceived COVID risk) (overall correlogram)
 
 library("GGally"); # load package we need for correlogram
 
 # phase one only - all affective measures
-phs1rows = which(qualtricsBothPhs$phase==1);
-
-tmpPhs1 = qualtricsBothPhs[phs1rows,names(qualtricsBothPhs) %in% c("stai_s_score_scaled", "stai_t_score_scaled", "pss_score_scaled", "pss_stressedToday", "uclal_score_scaled", "covq_PAB_q1_personalRisk_scaled")];
-
+tmpPhs1 = subLevelWide[names(subLevelWide) %in% c("phs1_stai_s_score_scaled", "phs1_stai_t_score_scaled", "phs1_pss_score_scaled", "phs1_pss_stressedToday", "phs1_uclal_score_scaled", "phs1_covq_PAB_q1_personalRisk_scaled")];
 ggpairs(tmpPhs1, title = "Phase 1 correlogram", columnLabels = c("state anxiety", "trait anxiety", "stress", "stress today", "loneliness", "covid risk"));
 
 # phase two only - all affective measures
-phs2rows = which(qualtricsBothPhs$phase==2);
-
-tmpPhs2 = qualtricsBothPhs[phs2rows,names(qualtricsBothPhs) %in% c("stai_s_score_scaled", "stai_t_score_scaled", "pss_score_scaled", "pss_stressedToday", "uclal_score_scaled", "covq_PAB_q1_personalRisk_scaled")];
-
-
+tmpPhs2 = subLevelWide[names(subLevelWide) %in% c("phs2_stai_s_score_scaled", "phs2_stai_t_score_scaled", "phs2_pss_score_scaled", "phs2_pss_stressedToday", "phs2_uclal_score_scaled", "phs2_covq_PAB_q1_personalRisk_scaled")];
 ggpairs(tmpPhs2, title = "Phase 2 correlogram", columnLabels = c("state anxiety", "trait anxiety", "stress", "stress today", "loneliness", "covid risk"));
 
-
-# LEFT OFF HERE - USING THE QUALTRICSBOTHPHS DATAFRAME WORKS FOR THE ABOVE, BUT MAY NEED TO MAKE THE SUBLEVELWIDE VERSION HERE BUT CONSIDERING REDOING IT BECAUSE IT WAS ORIGINALLY MADE FROM RDM DATAFRAME.
 # phase 1 and 2 covid risk
 tmpCovidRisk = subLevelWide[names(subLevelWide) %in% c("phs1_covq_PAB_q1_personalRisk_scaled", "phs2_covq_PAB_q1_personalRisk_scaled")];
-ggpairs(tmpCovidRisk, title = "covid risky between phases", columnLabels = c("phs 1 covid risk", "phs 2 covid risk"));
-
+ggpairs(tmpCovidRisk, title = "covid risk between phases", columnLabels = c("phs 1 covid risk", "phs 2 covid risk"));
 
 # difference in covid risk across phases (just plot it)
 subLevelWide$covidRiskDiff = subLevelWide$phs1_covq_PAB_q1_personalRisk_scaled - subLevelWide$phs2_covq_PAB_q1_personalRisk_scaled;
 hist(subLevelWide$covidRiskDiff, main=sprintf("covid risk difference\n mean = %.5s, range = %s - %s", mean(subLevelWide$covidRiskDiff, na.rm=T), min(subLevelWide$covidRiskDiff, na.rm = T), c(max(subLevelWide$covidRiskDiff,na.rm=T)) ), xlab = "phase 1 - phase 2", ylab="number of people", breaks=10);
-# 98 people have covidriskDiff = 0 (histogram shows the 98 below zero)
+# 113 people have covidriskDiff = 0 (histogram shows the 113 below zero)
 
 # how does change in covid risk relate to phase 2 (end-state affect)
 tmpPhs2covidDiff = subLevelWide[names(subLevelWide) %in% c("phs2_stai_s_score_scaled", "phs2_stai_t_score_scaled", "phs2_pss_score_scaled", "phs2_pss_stressedToday", "phs2_uclal_score_scaled", "covidRiskDiff")];
@@ -151,10 +305,11 @@ hist(pssDiff, main=sprintf("pss difference\n mean = %.5s, range = %s - %s", mean
 # difference in uclal across phases (just plot it)
 uclalDiff = subLevelWide$phs1_uclal_score_scaled - subLevelWide$phs2_uclal_score_scaled
 hist(uclalDiff, main=sprintf("uclal difference\n mean = %.5s, range = %s - %s", mean(uclalDiff, na.rm=T), min(uclalDiff, na.rm = T), c(max(uclalDiff,na.rm=T)) ), xlab = "phase 1 - phase 2", ylab="number of people", breaks=10);
-
+```
 
 
 # SES questions (there are 11 of them in both phases)
+```{r}
 # how does change in covid risk relate to phase 2 (end-state affect)
 sesDFphs1= subLevelWide[names(subLevelWide) %in% c("phs1_ses_childhood_freeReducedLunch_recode",
                                                "phs1_ses_childhood_communityComp_recode",
@@ -193,29 +348,177 @@ for (c in 1:ncol(sesDFphs1)) {
 
 
 # Next: moving toward "sophisticated", data-driven way would be to move toward PCA with a "smartly-weighted" combination of the components.
-# look at variance and do variance test of covid risk
 # is covid risk related to any of the affective measures? - answered above
 # is change in covid risk related to change in affective measures - not done yet
 
+```
 
 
-# - COVID Q analysis (multiple COVID questions - internally correlated?) [is perceived COVID risk similar or different from other COVID measures]
-#   - use PCA or similar data-driven approach? (within phase 1)
-#   - trends across days/phases
-# - Affective measures analysis
-#   - use PCA or similar data-driven approach? (within phase 1)
-#   - trends across days/phases
+PCA!
+```{r}
+# PCA for SES (using 9 out of 11 SES measures - see above for why we removed two)
 
+sesPhs1pca = prcomp(na.omit(sesDFphs1), center=TRUE, scale = TRUE);
+#Importance of components:
+#                          PC1    PC2    PC3     PC4     PC5     PC6     PC7     PC8    PC9
+#Standard deviation     1.7582 1.0707 1.0016 0.91772 0.89793 0.81304 0.77360 0.70472 0.5955
+#Proportion of Variance 0.3435 0.1274 0.1115 0.09358 0.08959 0.07345 0.06649 0.05518 0.0394
+#Cumulative Proportion  0.3435 0.4709 0.5823 0.67589 0.76548 0.83893 0.90542 0.96060 1.0000
+
+# accessing component for each person looks like:
+sesPhs1pca$x[,'PC1'] # where each row is a person
+
+
+
+
+
+
+sesPhs2pca = prcomp(na.omit(sesDFphs2), center=TRUE, scale = TRUE);
+
+# Importance of components:
+#                           PC1    PC2    PC3     PC4     PC5     PC6     PC7     PC8     PC9
+# Standard deviation     1.7882 1.0755 1.0086 0.91718 0.83718 0.82613 0.74987 0.68966 0.60498
+# Proportion of Variance 0.3553 0.1285 0.1130 0.09347 0.07787 0.07583 0.06248 0.05285 0.04067
+# Cumulative Proportion  0.3553 0.4838 0.5968 0.69030 0.76817 0.84401 0.90649 0.95933 1.00000
+
+# the components in both phases are very similar
+# for example, comparing PC1 in phase 1 and 2:
+plot(as.vector(sesPhs1pca$rotation[,1]),as.vector(sesPhs2pca$rotation[,1]));
+
+
+
+# ADD SES PCA components to individual-level dataframes
+# This will take a little thinking because there are 520 PCAs (participants who did not respond to some SES questions are skipped)
+# Then it will be a little tricky adding phase 1 and phase 2 components to the long dataframe since participants have 1-2 rows.
 
 
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
+Look at corellograms and do PCA with covid questions
+```{r}
+# COVID-19 QUESTIONS questions (there are 9 of them in both phases)
+# phase 1:
+covqDFphs1= subLevelWide[names(subLevelWide) %in% c("phs1_covq_PAB_q1_personalRisk_scaled",
+                                               "phs1_covq_PAB_q2_threat",
+                                               "phs1_covq_PAB_q3_personallyDie",
+                                               "phs1_covq_PAB_q4_otherPersonDie",
+                                               "phs1_covq_PAB_q5_currentCases_recode" ,
+                                               "phs1_covq_PAB_q6_tested_recode" ,
+                                               "phs1_covq_PAB_q7_personalCovidSuspect_recode",
+                                               "phs1_covq_PAB_q8_knowPositivePerson_recode",
+                                               "phs1_covq_PAB_q9_socialDistanceLevel_recode")];
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+ggpairs(covqDFphs1, title = "Phase 1 correlogram COVID Qs", columnLabels = c("threat", "personal death", "death of other", "current cases", "tested", "suspected covid", "know positive person", "social distance", "personal risk"));
+
+
+# phase 2:
+covqDFphs2= subLevelWide[names(subLevelWide) %in% c("phs2_covq_PAB_q1_personalRisk_scaled",
+                                               "phs2_covq_PAB_q2_threat",
+                                               "phs2_covq_PAB_q3_personallyDie",
+                                               "phs2_covq_PAB_q4_otherPersonDie",
+                                               "phs2_covq_PAB_q5_currentCases_recode" ,
+                                               "phs2_covq_PAB_q6_tested_recode" ,
+                                               "phs2_covq_PAB_q7_personalCovidSuspect_recode",
+                                               "phs2_covq_PAB_q8_knowPositivePerson_recode",
+                                               "phs2_covq_PAB_q9_socialDistanceLevel_recode")];
+
+ggpairs(covqDFphs2, title = "Phase 2 correlogram COVID Qs", columnLabels = c("threat", "personal death", "death of other", "current cases", "tested", "suspected covid", "know positive person", "social distance", "personal risk"));
+
+covqDiff = covqDFphs2-covqDFphs1; # take the difference in covid qs between phase 2 and phase 1
+
+covqDifftopFive = covqDiff[names(covqDiff) %in% c("phs2_covq_PAB_q1_personalRisk_scaled",
+                                               "phs2_covq_PAB_q2_threat",
+                                               "phs2_covq_PAB_q3_personallyDie",
+                                               "phs2_covq_PAB_q4_otherPersonDie",
+                                           "phs2_covq_PAB_q8_knowPositivePerson_recode")];
+
+colnames(covqDifftopFive) = c("threatDiff", "personallyDieDiff", "otherPersonDieDiff", "knowPosPersonDiff","personalRiskDiff");
+
+ggpairs(covqDifftopFive, title = "Diff correlogram COVID Qs", columnLabels = c("threat", "personal death", "death of other","know positive person","personal risk"));
+
+
+
+# The top five covid qs that stand out are personal risk, threat, personal death, death of other and know any one who tested positive. However, the know anyone who tested positive is coded funky and its unclear whats happening there. The change across phases for the top four (throwing out know anyone who tested positive right now) is pretty small, but the changes in personal risk distribution are related to RDM and the distribution of changes across phases is widest (ie it has the biggest change) and may be the variable to go with. The top four variables are highly related and the degree to which they change across phases is also correlated. 
+
+
+mean(covqDifftopFive$personalRiskDiff, na.rm=T); #-0.03319209*6 = -0.1991525 (to match the scale with the following cov qs becase personal risk is on a 0-1 scale)
+mean(covqDifftopFive$threatDiff, na.rm=T); # -0.07932011
+mean(covqDifftopFive$personallyDieDiff, na.rm=T); # 0.04519774
+mean(covqDifftopFive$otherPersonDieDiff, na.rm=T); # -0.115493
+mean(covqDifftopFive$knowPosPersonDiff, na.rm=T); # 0.03380282
+# largest difference is with personal risk, followed by other personally die
+
+var(covqDifftopFive$personalRiskDiff*6, na.rm=T); #1.687563 (multiplied score by 6 because math for variance is more complicated)
+var(covqDifftopFive$threatDiff, na.rm=T); # 1.249372
+var(covqDifftopFive$personallyDieDiff, na.rm=T); # 1.176422
+var(covqDifftopFive$otherPersonDieDiff, na.rm=T); #  1.899053
+var(covqDifftopFive$knowPosPersonDiff, na.rm=T); # 0.7559163
+
+# highest variance is other person die followed by personal risk ( similar)
+# moving toward rationalizing why we should use to personal risk (While also accounting for other die?)
+# Change in personal risk and death of other are not as correlated as we'd think given their relationship within each phase. This could be that the change is just noise and so there is no meaningful shift that is happening. 
+
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r}
+# PCA for COVID Q (using 4 out of 9 covid q measures - see above for why we are going with these)
+# personal risk, threat, personal death, death of other
+
+covqDFphs1top4 = covqDFphs1[names(covqDFphs1) %in% c("phs1_covq_PAB_q1_personalRisk_scaled",
+                                               "phs1_covq_PAB_q2_threat",
+                                               "phs1_covq_PAB_q3_personallyDie",
+                                               "phs1_covq_PAB_q4_otherPersonDie")];
+
+covqDFphs2top4 = covqDFphs2[names(covqDFphs2) %in% c("phs2_covq_PAB_q1_personalRisk_scaled",
+                                               "phs2_covq_PAB_q2_threat",
+                                               "phs2_covq_PAB_q3_personallyDie",
+                                               "phs2_covq_PAB_q4_otherPersonDie")];
+
+covqPhs1pca = prcomp(na.omit(covqDFphs1top4), center=TRUE, scale = TRUE);
+
+#                                             PC1        PC2         PC3        PC4
+# phs1_covq_PAB_q2_threat              -0.4836368  0.7337859 -0.02583329 -0.4764307
+# phs1_covq_PAB_q3_personallyDie       -0.4917736 -0.6281408  0.35491237 -0.4874783
+# phs1_covq_PAB_q4_otherPersonDie      -0.4851348 -0.2288239 -0.82351128  0.1846970
+# phs1_covq_PAB_q1_personalRisk_scaled -0.5374927  0.1209832  0.44181334  0.7080012
+
+# Importance of components:
+#                           PC1    PC2    PC3     PC4
+# Standard deviation     1.5437 0.8138 0.7599 0.61433
+# Proportion of Variance 0.5957 0.1656 0.1444 0.09435
+# Cumulative Proportion  0.5957 0.7613 0.9056 1.00000
+
+
+
+covqPhs2pca = prcomp(na.omit(covqDFphs2top4), center=TRUE, scale = TRUE);
+
+#                                             PC1        PC2          PC3        PC4
+# phs2_covq_PAB_q2_threat              -0.4498989  0.8084514 -0.001388992 -0.3794673
+# phs2_covq_PAB_q3_personallyDie       -0.5038844 -0.5600893 -0.280316427 -0.5948304
+# phs2_covq_PAB_q4_otherPersonDie      -0.5006275 -0.1801365  0.821079910  0.2067626
+# phs2_covq_PAB_q1_personalRisk_scaled -0.5413536  0.0160342 -0.497240941  0.6778131
+
+# Importance of components:
+#                           PC1    PC2    PC3     PC4
+# Standard deviation     1.5423 0.8440 0.7358 0.60619
+# Proportion of Variance 0.5947 0.1781 0.1353 0.09187
+# Cumulative Proportion  0.5947 0.7728 0.9081 1.00000
+
+# similar pattern in phase 2
+
+
+# Component one weighs each of the four components roughly equally and accounts for 60% of the variance. This could mean that picking one variable (i.e. personal risk) would be ok and the argument for would be that its more straightforward and more interpretable. The counter argument would be to use the weighted average of the four variables.
+
+# Going ahead using personal risk variable for now.
+
+
+```
+
+Save individual-level data frames
+```{r}
+save(file="subLevelLong.Rdata",subLevelLong);
+save(file="subLevelWide.Rdata",subLevelWide);
+```
+
