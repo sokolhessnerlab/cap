@@ -100,3 +100,6 @@ Any files added to the "documentation" folder should be included in this list al
 
 ## 21 [SES_COVQ_PCA_resultsSummary.md](./SES_COVQ_PCA_resultsSummary.md)
 - summary of the results of the SES and COVQ pca 
+
+## 22 [add_sesPCA_affectVar_AX_codeSummary.md](./add_sesPCA_affectVar_AX_codeSummary.md)
+- - sumary of the process and output of add_sesPCA_affectVar_AX_codeSummary.md
