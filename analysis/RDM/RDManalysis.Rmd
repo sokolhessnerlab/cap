@@ -13,7 +13,7 @@ library('config')
 config = config::get()
 
 
-setup_source = file.path(config$code_files$setup_data)
+setup_source = file.path(config$code_files$rdm_setup_data)
 source(setup_source) #, local = knitr::knit_global())
 
 
