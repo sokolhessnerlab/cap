@@ -19,7 +19,8 @@ default:
     combined: "/Volumes/CAP/data/combinedData"
     combined_raw: "/Volumes/CAP/data/rawData/combinedRawData"
     code:
-      r_scripts: "./analysis/RDM"
+      rdm_r_scripts: "./analysis/RDM"
+      qual_r_scripts: "./analysis/Qualtrics"
     documentation: "./documentation"
     Rdata: "/Volumes/CAP/Rdata"
   Rdata_files:
@@ -27,7 +28,9 @@ default:
     QualtricsSubLevelLong: "subLevelLong.Rdata"
     QualtricsSubLevelWide: "subLevelWide.Rdata"
   code_files:
-    setup_data: "RDMsetup.R"
+   rdm_setup_data: "RDMsetup.R"
+   rdm_analysis: "RDManalysis.Rmd"
+   qualtrics_PCA: "SES_COVQ_PCA.Rmd"
   RDMcsvs: 
     RDMbothTasks_qualtrics: "RDMallClean_Qualtrics.csv"
     RDMgain_qualtrics: "RDMallCleanGain_Qualtrics.csv"
