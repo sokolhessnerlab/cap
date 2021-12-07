@@ -9,6 +9,11 @@
 # Hayley Brooks, University of Denver
 
 
+# ******12/6/21 NOTE: will need to update this now that we have the individual-level dataframes generated in a different script! I've already deleted the code where the individual level dataframes are made.
+
+
+
+
 # load packages
 library('config')
 library("lme4");
@@ -367,6 +372,7 @@ rdmGainQualtrics$pss_score_scaled = rdmGainQualtrics$pss_score/max(rdmGainQualtr
 
 rdmGainQualtrics$covq_PAB_q1_personalRisk_scaled = (rdmGainQualtrics$covq_PAB_q1_personalRisk-1)/max(rdmGainQualtrics$covq_PAB_q1_personalRisk-1, na.rm = T)
 
+ 
 rdmGainQualtrics$covq_PAB_q1_personalRisk_scaledNoNA = rdmGainQualtrics$covq_PAB_q1_personalRisk_scaled;
 rdmGainQualtrics$covq_PAB_q1_personalRisk_scaledNoNA[is.na(rdmGainQualtrics$covq_PAB_q1_personalRisk_scaledNoNA)] = 0;
 
@@ -388,139 +394,3 @@ rdmGainQualtrics$posShift = rdmGainQualtrics$signedShift*as.numeric(rdmGainQualt
 rdmGainQualtrics$negShift = rdmGainQualtrics$signedShift*as.numeric(rdmGainQualtrics$signedShift<0);
 
 
-# Individual-level dataframes
-# 1) each row is a person and phase (some participants will have two rows - should be 828 rows)
-# 2) each row is one person and includes data from both phases (516 rows)
-
-# 1 the "long" individual-level dataframe (subLevelLong) because some participants have two rows
-# The columns we know we want from rdmGainQualtrics:
-colKeep = c("subID", "phase","rdmTrial","dayOverall", "dayOverallSC", "quartile", "loc_fips", "loc_state", "loc_county", "demo_race_recode", "demo_ethnicity_recode", "demo_gender_recode", "demo_age","stai_s_score_scaled","stai_t_score_scaled","pss_score_scaled","pss_stressedToday","uclal_score_scaled","covq_PAB_q1_personalRisk_scaled", "covq_PAB_q2_threat", "covq_PAB_q3_personallyDie","covq_PAB_q4_otherPersonDie", "covq_PAB_q5_currentCases_recode","covq_PAB_q6_tested_recode", "covq_PAB_q7_personalCovidSuspect_recode", "covq_PAB_q8_knowPositivePerson_recode", "covq_PAB_q9_socialDistanceLevel_recode", "ses_childhood_freeReducedLunch_recode", "ses_childhood_communityComp_recode", "ses_childhood_nationalComp_recode", "ses_motherEdLevel_recode","ses_fatherEdLevel_recode","ses_childhoood_homeOwnership_recode", "ses_current_billHelp_recode", "ses_current_mainResponsibilities_recode", "ses_personalEdLevel_recode", "ses_financialWorryFreq_recode","ses_needbasedCollegeAid_recode");
-
-subLevelLong = as.data.frame(matrix(data=NA, nrow=sum(Phs1nSub, BothPhsnSub), ncol = length(colKeep))); # nrow = number of subs in phase 1 (516) + those who returned (312)
-
-
-for (s in 1:Phs1nSub) {
-  sub = rdmGainQualtrics[rdmGainQualtrics$subID==Phs1subIDs[s],colKeep]; # pull out one participant and the columns we want to keep
-
-  r = min(which(is.na(subLevelLong[,1])))
-
-  if(Phs1subIDs[s] %in% BothPhsSubIDs) { # if participant was in both phases
-    subLevelLong[r,] = sub[1,]; # store first row of participant's data from phase 1
-    subLevelLong[r+1,] = sub[sub$phase==2,][1,]; # store first row of participant's data from phase 2
-  } else {
-    subLevelLong[r,] = sub[1,]; # store first row of participant's data from phase 1
-  }
-
-}
-
-colnames(subLevelLong) = colnames(sub); # add column names
-
-# 2) The wide individual-level data frame (all data for one participant is in a single row)
-# use subLevelLong to make subLevelWide
-
-subLevelWide = as.data.frame(matrix(data=NA, nrow = Phs1nSub, ncol = ncol(subLevelLong)*2)); # column # will be adjusted when we delete redundancy between phases below.
-
-for (s in 1:Phs1nSub) {
-  sub = rdmGainQualtrics[rdmGainQualtrics$subID==Phs1subIDs[s],colKeep]; # pull out one participant and the columns we want to keep
-
-  #r = min(which(is.na(subLevelLong[,1])))
-
-  if(Phs1subIDs[s] %in% BothPhsSubIDs) { # if participant was in both phases
-    subLevelWide[s,] = cbind(sub[1,],sub[sub$phase==2,][1,]); # in a single row, store phase 1 and phase 2 data for participant
-
-  } else {
-    subLevelWide[s,1:ncol(sub)] = sub[1,]; # in a single row, store phase 1 data for participant (the rest will be NaN)
-  }
-
-}
-
-wideColNames = c("subID",
-                 "phs1_phase",
-                 "phs1_rdmTrial",
-                 "phs1_dayOverall",
-                 "phs1_dayOverallSC",
-                 "phs1_quartile",
-                 "phs1_loc_fips",
-                 "phs1_loc_state",
-                 "phs1_loc_county",
-                 "demo_race_recode",
-                 "demo_ethnicity_recode",
-                 "demo_gender_recode",
-                 "demo_age",
-                 "phs1_stai_s_score_scaled",
-                 "phs1_stai_t_score_scaled",
-                 "phs1_pss_score_scaled",
-                 "phs1_pss_stressedToday",
-                 "phs1_uclal_score_scaled",
-                 "phs1_covq_PAB_q1_personalRisk_scaled",
-                 "phs1_covq_PAB_q2_threat",
-                 "phs1_covq_PAB_q3_personallyDie",
-                 "phs1_covq_PAB_q4_otherPersonDie",
-                 "phs1_covq_PAB_q5_currentCases_recode",
-                 "phs1_covq_PAB_q6_tested_recode",
-                 "phs1_covq_PAB_q7_personalCovidSuspect_recode",
-                 "phs1_covq_PAB_q8_knowPositivePerson_recode",
-                 "phs1_covq_PAB_q9_socialDistanceLevel_recode",
-                 "phs1_ses_childhood_freeReducedLunch_recode",
-                 "phs1_ses_childhood_communityComp_recode",
-                 "phs1_ses_childhood_nationalComp_recode",
-                 "phs1_ses_motherEdLevel_recode",
-                 "phs1_ses_fatherEdLevel_recode",
-                 "phs1_ses_childhoood_homeOwnership_recode",
-                 "phs1_ses_current_billHelp_recode",
-                 "phs1_ses_current_mainResponsibilities_recode",
-                 "phs1_ses_personalEdLevel_recode",
-                 "phs1_ses_financialWorryFreq_recode",
-                 "phs1_ses_needbasedCollegeAid_recode",
-                 "phs2_subID",
-                 "phs2_phase",
-                 "phs2_rdmTrial",
-                 "phs2_dayOverall",
-                 "phs2_dayOverallSC",
-                 "phs2_quartile",
-                 "phs2_loc_fips",
-                 "phs2_loc_state",
-                 "phs2_loc_county" ,
-                 "phs2_demo_race_recode",
-                 "phs2_demo_ethnicity_recode",
-                 "phs2_demo_gender_recode",
-                 "phs2_demo_age",
-                 "phs2_stai_s_score_scaled",
-                 "phs2_stai_t_score_scaled",
-                 "phs2_pss_score_scaled",
-                 "phs2_pss_stressedToday",
-                 "phs2_uclal_score_scaled",
-                 "phs2_covq_PAB_q1_personalRisk_scaled",
-                 "phs2_covq_PAB_q2_threat",
-                 "phs2_covq_PAB_q3_personallyDie",
-                 "phs2_covq_PAB_q4_otherPersonDie",
-                 "phs2_covq_PAB_q5_currentCases_recode",
-                 "phs2_covq_PAB_q6_tested_recode",
-                 "phs2_covq_PAB_q7_personalCovidSuspect_recode",
-                 "phs2_covq_PAB_q8_knowPositivePerson_recode",
-                 "phs2_covq_PAB_q9_socialDistanceLevel_recode",
-                 "phs2_ses_childhood_freeReducedLunch_recode",
-                 "phs2_ses_childhood_communityComp_recode",
-                 "phs2_ses_childhood_nationalComp_recode",
-                 "phs2_ses_motherEdLevel_recode",
-                 "phs2_ses_fatherEdLevel_recode",
-                 "phs2_ses_childhoood_homeOwnership_recode",
-                 "phs2_ses_current_billHelp_recode",
-                 "phs2_ses_current_mainResponsibilities_recode",
-                 "phs2_ses_personalEdLevel_recode",
-                 "phs2_ses_financialWorryFreq_recode",
-                 "phs2_ses_needbasedCollegeAid_recode"); #This includes redundancies that will be renamed!
-
-colnames(subLevelWide) = wideColNames; # add column names
-
-discardCols = c("phs1_phase",
-                "phs1_rdmTrial",
-                "phs2_subID",
-                "phs2_phase",
-                "phs2_rdmTrial",
-                "phs2_demo_race_recode",
-                "phs2_demo_ethnicity_recode",
-                "phs2_demo_gender_recode",
-                "phs2_demo_age"); # columns that will be discarded for redundancy
-
-subLevelWide = subLevelWide[!names(subLevelWide) %in% discardCols]; # discard columns
