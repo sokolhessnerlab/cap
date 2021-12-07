@@ -124,10 +124,10 @@ Create the subLevelWide dataframe (each participant gets a row)
 ```{r}
 # use subLevelLong to make subLevelWide
 keepColsWide =rep(keepCols, times=2)
-subLevelWide = as.data.frame(matrix(data=NA, nrow = Phs1nSub, ncol = ncol(subLevelLong)*2, dimnames=list(c(NULL),c(keepColsWide)))); # column # and names will be adjusted when we delete redundancy between phases below.
+subLevelWide = as.data.frame(matrix(data=NA, nrow = nrow(excludePhs1), ncol = ncol(subLevelLong)*2, dimnames=list(c(NULL),c(keepColsWide)))); # column # and names will be adjusted when we delete redundancy between phases below.
 
-for (s in 1:Phs1nSub) {
-  sub = subLevelLong[which(subLevelLong$subID==Phs1subIDs[s]),]; # pull out one participant (using which because its doing funky stuff with NA otherwise)
+for (s in 1:nrow(excludePhs1)) {
+  sub = subLevelLong[which(subLevelLong$subID==excludePhs1$subID[s]),]; # pull out one participant (using which because its doing funky stuff with NA otherwise)
 
 
   if(Phs1subIDs[s] %in% BothPhsSubIDs) { # if participant was in both phases
@@ -390,8 +390,6 @@ plot(as.vector(sesPhs1pca$rotation[,1]),as.vector(sesPhs2pca$rotation[,1]));
 
 
 # ADD SES PCA components to individual-level dataframes
-# This will take a little thinking because there are 520 PCAs (participants who did not respond to some SES questions are skipped)
-# Then it will be a little tricky adding phase 1 and phase 2 components to the long dataframe since participants have 1-2 rows.
 
 # accessing component for each person looks like:
 sesCompPhs1 = sesPhs1pca$x[,'PC1'] # 520 rows
@@ -499,11 +497,7 @@ covqDFphs2top4 = covqDFphs2[names(covqDFphs2) %in% c("phs2_covq_PAB_q1_personalR
 
 covqPhs1pca = prcomp(na.omit(covqDFphs1top4), center=TRUE, scale = TRUE);
 
-#                                             PC1        PC2         PC3        PC4
-# phs1_covq_PAB_q2_threat              -0.4836368  0.7337859 -0.02583329 -0.4764307
-# phs1_covq_PAB_q3_personallyDie       -0.4917736 -0.6281408  0.35491237 -0.4874783
-# phs1_covq_PAB_q4_otherPersonDie      -0.4851348 -0.2288239 -0.82351128  0.1846970
-# phs1_covq_PAB_q1_personalRisk_scaled -0.5374927  0.1209832  0.44181334  0.7080012
+
 
 # Importance of components:
 #                           PC1    PC2    PC3     PC4
@@ -511,21 +505,28 @@ covqPhs1pca = prcomp(na.omit(covqDFphs1top4), center=TRUE, scale = TRUE);
 # Proportion of Variance 0.5957 0.1656 0.1444 0.09435
 # Cumulative Proportion  0.5957 0.7613 0.9056 1.00000
 
+#                                             PC1        PC2         PC3        PC4
+# phs1_covq_PAB_q2_threat              -0.4836368  0.7337859 -0.02583329 -0.4764307
+# phs1_covq_PAB_q3_personallyDie       -0.4917736 -0.6281408  0.35491237 -0.4874783
+# phs1_covq_PAB_q4_otherPersonDie      -0.4851348 -0.2288239 -0.82351128  0.1846970
+# phs1_covq_PAB_q1_personalRisk_scaled -0.5374927  0.1209832  0.44181334  0.7080012
 
 
 covqPhs2pca = prcomp(na.omit(covqDFphs2top4), center=TRUE, scale = TRUE);
 
-#                                             PC1        PC2          PC3        PC4
-# phs2_covq_PAB_q2_threat              -0.4498989  0.8084514 -0.001388992 -0.3794673
-# phs2_covq_PAB_q3_personallyDie       -0.5038844 -0.5600893 -0.280316427 -0.5948304
-# phs2_covq_PAB_q4_otherPersonDie      -0.5006275 -0.1801365  0.821079910  0.2067626
-# phs2_covq_PAB_q1_personalRisk_scaled -0.5413536  0.0160342 -0.497240941  0.6778131
+
 
 # Importance of components:
 #                           PC1    PC2    PC3     PC4
 # Standard deviation     1.5423 0.8440 0.7358 0.60619
 # Proportion of Variance 0.5947 0.1781 0.1353 0.09187
 # Cumulative Proportion  0.5947 0.7728 0.9081 1.00000
+
+#                                             PC1        PC2          PC3        PC4
+# phs2_covq_PAB_q2_threat              -0.4498989  0.8084514 -0.001388992 -0.3794673
+# phs2_covq_PAB_q3_personallyDie       -0.5038844 -0.5600893 -0.280316427 -0.5948304
+# phs2_covq_PAB_q4_otherPersonDie      -0.5006275 -0.1801365  0.821079910  0.2067626
+# phs2_covq_PAB_q1_personalRisk_scaled -0.5413536  0.0160342 -0.497240941  0.6778131
 
 # similar pattern in phase 2
 
