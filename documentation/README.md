@@ -97,3 +97,6 @@ Any files added to the "documentation" folder should be included in this list al
 
 ## 20. [SES_COVQ_PCACodeSummary.md](./SES_COVQ_PCACodeSummary.md)
 - sumary of the process and results of SES_COVQ_PCA.Rmd
+
+## 21 [SES_COVQ_PCA_resultsSummary.md](./SES_COVQ_PCA_resultsSummary.md)
+- summary of the results of the SES and COVQ pca 
