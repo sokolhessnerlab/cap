@@ -21,16 +21,19 @@ default:
     code:
       rdm_r_scripts: "./analysis/RDM"
       qual_r_scripts: "./analysis/Qualtrics"
+      ax_r_scropts: "./analysis/AX"
     documentation: "./documentation"
     Rdata: "/Volumes/CAP/Rdata"
   Rdata_files:
     models: "model_output_rdm.Rdata"
     QualtricsSubLevelLong: "subLevelLong.Rdata"
     QualtricsSubLevelWide: "subLevelWide.Rdata"
+    AX_qualtrics_PCA: "axQualtricsPCA.Rdata"
   code_files:
    rdm_setup_data: "RDMsetup.R"
    rdm_analysis: "RDManalysis.Rmd"
    qualtrics_PCA: "SES_COVQ_PCA.Rmd"
+   ax_pca_affect: "add_sesPCA_affectVar_AX.R"
   RDMcsvs: 
     RDMbothTasks_qualtrics: "RDMallClean_Qualtrics.csv"
     RDMgain_qualtrics: "RDMallCleanGain_Qualtrics.csv"
