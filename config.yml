@@ -21,7 +21,7 @@ default:
     code:
       rdm_r_scripts: "./analysis/RDM"
       qual_r_scripts: "./analysis/Qualtrics"
-      ax_r_scropts: "./analysis/AX"
+      ax_r_scripts: "./analysis/AX"
     documentation: "./documentation"
     Rdata: "/Volumes/CAP/Rdata"
   Rdata_files:
