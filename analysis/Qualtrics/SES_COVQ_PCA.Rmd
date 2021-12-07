@@ -12,6 +12,7 @@ This script will 1) create the long and wide individual-level dataframes (qualtr
 rm(list=ls())
 
 library('config')
+library('dplyr')
 config = config::get()
 
 # load qualtrics and exclusion 
@@ -23,6 +24,7 @@ excludePhs1 = read.csv(exclsnPhs1_csv); # loads exclusion for phase 1
 excludePhs2 = read.csv(exclsnPhs2_csv); # loads exclusion for phase 2
 qualtricsBothPhs = read.csv(qualtricsBothPhs_csv); # load qualtrics responses
 
+qualtricsBothPhs=arrange(qualtricsBothPhs, qualtricsBothPhs$subID); # subject IDs are not in order, rearranging dataframe so that subIDs are in order
 
 # Remove the extra "X" column present as the first column in datasets
 excludePhs1 = excludePhs1[,(2:ncol(excludePhs1))];
@@ -39,9 +41,9 @@ subIDqualPhs1Exclude = excludePhs1$subID[!is.na(excludePhs1$qualPhs1exclude) & e
 # Phase 2 Qualtrics: 1 participant excluded based on age response in phase
 subIDqualPhs2Exclude = excludePhs2$subID[!is.na(excludePhs2$qualPhs2exclude) & excludePhs2$qualPhs2exclude==1];
 
-
-qualtricsBothPhs[qualtricsBothPhs$subID %in% subIDqualPhs1Exclude & qualtricsBothPhs$phase==1,] = NA; # phase1
-qualtricsBothPhs[qualtricsBothPhs$subID %in% subIDqualPhs2Exclude & qualtricsBothPhs$phase==2,] = NA; # phase2
+# put NAs for responses (except for in the phase and subID columns)
+qualtricsBothPhs[qualtricsBothPhs$subID %in% subIDqualPhs1Exclude & qualtricsBothPhs$phase==1,!colnames(qualtricsBothPhs) %in% c("phase","subID")] = NA; # phase1
+qualtricsBothPhs[qualtricsBothPhs$subID %in% subIDqualPhs2Exclude & qualtricsBothPhs$phase==2,!colnames(qualtricsBothPhs) %in% c("phase","subID")] = NA; # phase2
 
 # Note: if participants were excluded in phase 1, they are not automatically excluded in phase 2! Also, there are different exclusion for RDM, AX and Qualtrics.
 
@@ -50,7 +52,6 @@ qualtricsBothPhs[qualtricsBothPhs$subID %in% subIDqualPhs2Exclude & qualtricsBot
 
 ```{r}
 # Store sub IDs of those who are in phase 1 and phase 2 (post-exclusion)
-# Note: the sub IDs in phase 1 and phase 2 is identical across gain and loss tasks because the same participants were excluded across both tasks.
 
 # Participant IDs included in phase 1 RDM
 Phs1subIDs = excludePhs1$subID[excludePhs1$qualPhs1exclude==0];
@@ -101,10 +102,18 @@ keepCols = c("subID",
              "ses_financialWorryFreq_recode",
              "ses_needbasedCollegeAid_recode");
 
-# Keep the columns we need and rename to subLevelLong because this is the long format dataframe (each participant and phase gets a row)
-subLevelLong = qualtricsBothPhs[names(qualtricsBothPhs) %in% keepCols]; #keep only the columns we need.
 
+# for the long individual-level dataframe, we want a row for each participant, even if they were excluded or did not participant (i.e. phase 2) because we want to keep these placeholders for the PCA so that rows and sub IDs line up
+subLevelLong = as.data.frame(matrix(data=NA, nrow=nrow(excludePhs1)*2, ncol=length(keepCols), dimnames=list(c(NULL), c(keepCols))));
+subLevelLong$subID=rep(1:544, each=2); # fill in sub ids
+subLevelLong$phase=rep(1:2,times=2); # fill in phase
 
+# distribute participants responses in subLevelLong
+for (s in 1:nrow(subLevelLong)) {
+  if (any(qualtricsBothPhs$subID==subLevelLong$subID[s] & qualtricsBothPhs$phase==subLevelLong$phase[s])){
+      subLevelLong[s,3:length(keepCols)]= qualtricsBothPhs[qualtricsBothPhs$subID==subLevelLong$subID[s] & qualtricsBothPhs$phase==subLevelLong$phase[s],keepCols[3:length(keepCols)]]
+  }
+}
 
 
 
@@ -114,8 +123,8 @@ subLevelLong = qualtricsBothPhs[names(qualtricsBothPhs) %in% keepCols]; #keep on
 Create the subLevelWide dataframe (each participant gets a row)
 ```{r}
 # use subLevelLong to make subLevelWide
-
-subLevelWide = as.data.frame(matrix(data=NA, nrow = Phs1nSub, ncol = ncol(subLevelLong)*2)); # column # will be adjusted when we delete redundancy between phases below.
+keepColsWide =rep(keepCols, times=2)
+subLevelWide = as.data.frame(matrix(data=NA, nrow = Phs1nSub, ncol = ncol(subLevelLong)*2, dimnames=list(c(NULL),c(keepColsWide)))); # column # and names will be adjusted when we delete redundancy between phases below.
 
 for (s in 1:Phs1nSub) {
   sub = subLevelLong[which(subLevelLong$subID==Phs1subIDs[s]),]; # pull out one participant (using which because its doing funky stuff with NA otherwise)
@@ -130,24 +139,24 @@ for (s in 1:Phs1nSub) {
 
 }
 
-wideColNames = c("phs1_pss_stressedToday", 
-                 "phs1_covq_PAB_q1_personalRisk",
-                 "phs1_covq_PAB_q2_threat",
-                 "phs1_covq_PAB_q3_personallyDie",
-                 "phs1_covq_PAB_q4_otherPersonDie",
-                 "demo_age",
-                 "subID",
+wideColNames = c("subID",
                  "phs1_phase",
                  "phs1_loc_fips",
                  "phs1_stai_t_score",
                  "phs1_stai_s_score",
                  "phs1_pss_score",
+                 "phs1_pss_stressedToday", 
                  "phs1_uclal_score",
+                 "phs1_covq_PAB_q1_personalRisk",
+                 "phs1_covq_PAB_q2_threat",
+                 "phs1_covq_PAB_q3_personallyDie",
+                 "phs1_covq_PAB_q4_otherPersonDie",
                  "phs1_covq_PAB_q5_currentCases_recode",
                  "phs1_covq_PAB_q6_tested_recode",
                  "phs1_covq_PAB_q7_personalCovidSuspect_recode",
                  "phs1_covq_PAB_q8_knowPositivePerson_recode",
                  "phs1_covq_PAB_q9_socialDistanceLevel_recode",
+                 "demo_age",
                  "demo_gender_recode",
                  "demo_race_recode",
                  "demo_ethnicity_recode",
@@ -162,24 +171,24 @@ wideColNames = c("phs1_pss_stressedToday",
                  "phs1_ses_personalEdLevel_recode",
                  "phs1_ses_financialWorryFreq_recode",
                  "phs1_ses_needbasedCollegeAid_recode",
-                 "phs2_pss_stressedToday", 
-                 "phs2_covq_PAB_q1_personalRisk",
-                 "phs2_covq_PAB_q2_threat",
-                 "phs2_covq_PAB_q3_personallyDie",
-                 "phs2_covq_PAB_q4_otherPersonDie",
-                 "phs2_demo_age",
                  "phs2_subID",
                  "phs2_phase",
                  "phs2_loc_fips",
                  "phs2_stai_t_score",
                  "phs2_stai_s_score",
                  "phs2_pss_score",
+                 "phs2_pss_stressedToday", 
                  "phs2_uclal_score",
+                 "phs2_covq_PAB_q1_personalRisk",
+                 "phs2_covq_PAB_q2_threat",
+                 "phs2_covq_PAB_q3_personallyDie",
+                 "phs2_covq_PAB_q4_otherPersonDie",
                  "phs2_covq_PAB_q5_currentCases_recode",
                  "phs2_covq_PAB_q6_tested_recode",
                  "phs2_covq_PAB_q7_personalCovidSuspect_recode",
                  "phs2_covq_PAB_q8_knowPositivePerson_recode",
                  "phs2_covq_PAB_q9_socialDistanceLevel_recode",
+                 "phs2_demo_age",
                  "phs2_demo_gender_recode",
                  "phs2_demo_race_recode",
                  "phs2_demo_ethnicity_recode",
@@ -385,8 +394,24 @@ plot(as.vector(sesPhs1pca$rotation[,1]),as.vector(sesPhs2pca$rotation[,1]));
 # Then it will be a little tricky adding phase 1 and phase 2 components to the long dataframe since participants have 1-2 rows.
 
 # accessing component for each person looks like:
-sesPhs1pca$x[,'PC1'] # 520 rows
-sesPhs2pca$x[,'PC1'] # 347 rows
+sesCompPhs1 = sesPhs1pca$x[,'PC1'] # 520 rows
+sesCompPhs1Names = as.numeric(names(sesCompPhs1)); # store the names for each value (i.e. participant ID)
+sesCompPhs2 = sesPhs2pca$x[,'PC1'] # 347 rows
+sesCompPhs2Names = as.numeric(names(sesCompPhs2)); # store the names for each value (i.e. participant ID)
+
+# for phase 1, there are PC1 for 517 participants (3 excluded and 21 who did not respond to all SES questions)
+for (s in 1:length(sesCompPhs1Names)){
+  subLevelWide$phs1_sesPCA[subLevelWide$subID ==sesCompPhs1Names[s]] = sesCompPhs1[s]; # store the PC1 value 
+  subLevelLong$sesPCA[subLevelLong$subID == sesCompPhs1Names[s] & subLevelLong$phase==1] = sesCompPhs1[s]; # store the PC1 value 
+}
+
+# for phase 2, there are PC1 for 347 participants (1 participant excluded and 8 who did not respond to all SES questions)
+for (s in 1:length(sesCompPhs2Names)){
+  subLevelWide$phs2_sesPCA[subLevelWide$subID ==sesCompPhs2Names[s]] = sesCompPhs2[s]; # store the PC2 value 
+  subLevelLong$sesPCA[subLevelLong$subID == sesCompPhs2Names[s] & subLevelLong$phase==2] = sesCompPhs2[s]; # store the PC2 value
+}
+
+
 
 ```
 
