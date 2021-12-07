@@ -365,13 +365,6 @@ sesPhs1pca = prcomp(na.omit(sesDFphs1), center=TRUE, scale = TRUE);
 #Proportion of Variance 0.3435 0.1274 0.1115 0.09358 0.08959 0.07345 0.06649 0.05518 0.0394
 #Cumulative Proportion  0.3435 0.4709 0.5823 0.67589 0.76548 0.83893 0.90542 0.96060 1.0000
 
-# accessing component for each person looks like:
-sesPhs1pca$x[,'PC1'] # where each row is a person
-
-
-
-
-
 
 sesPhs2pca = prcomp(na.omit(sesDFphs2), center=TRUE, scale = TRUE);
 
@@ -391,6 +384,9 @@ plot(as.vector(sesPhs1pca$rotation[,1]),as.vector(sesPhs2pca$rotation[,1]));
 # This will take a little thinking because there are 520 PCAs (participants who did not respond to some SES questions are skipped)
 # Then it will be a little tricky adding phase 1 and phase 2 components to the long dataframe since participants have 1-2 rows.
 
+# accessing component for each person looks like:
+sesPhs1pca$x[,'PC1'] # 520 rows
+sesPhs2pca$x[,'PC1'] # 347 rows
 
 ```
 
@@ -518,7 +514,9 @@ covqPhs2pca = prcomp(na.omit(covqDFphs2top4), center=TRUE, scale = TRUE);
 
 Save individual-level data frames
 ```{r}
-save(file="subLevelLong.Rdata",subLevelLong);
+#rdataDir=config$path$Rdata
+
+save(file= subLevelLong.Rdata",subLevelLong);
 save(file="subLevelWide.Rdata",subLevelWide);
 ```
 
