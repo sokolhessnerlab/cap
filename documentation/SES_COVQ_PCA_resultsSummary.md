@@ -23,7 +23,7 @@
 - highest variance is other person die followed by personal risk ( similar)
 - Change in personal risk and death of other are not as correlated as we'd think given their relationship within each phase. This could be that the change is just noise and so there is no meaningful shift that is happening. 
 - PCA used 4 out of the 9 covid questions: personal risk, threat, personal death, and death of other (explained above)
-- We are not going ahead using personal risk variable for now because component one weighs each of the four components roughly equally and accounts for 60% of the variance. This could mean that picking one variable (i.e. personal risk) would be ok and the argument for would be that its more straightforward and more interpretable. The counter argument would be to use the weighted average of the four variables.
+- We are going ahead using personal risk variable for now because component one weighs each of the four components roughly equally and accounts for 60% of the variance. This could mean that picking one variable (i.e. personal risk) would be ok and the argument for would be that its more straightforward and more interpretable. The counter argument would be to use the weighted average of the four variables.
 - pattern is similar across phases
 
 #### COVID Q PCA Phase 1:
