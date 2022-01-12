@@ -279,7 +279,8 @@ var(covriskphs1,na.rm=T); # 0.06312781
 var(covriskphs2,na.rm=T); # 0.06240118
 
 mean(covriskphs1,na.rm=T); # 0.5322816
-mean(covriskphs2,na.rm=T); # 0.5015385
+mean(covriskphs2,na.rm=T); # 0.5015385 
+# Decrease in perceived risk is trending p = 0.08
 
 rdmGainQualtrics$covq_PAB_q1_personalRisk_centeredscaledNoNA = (rdmGainQualtrics$covq_PAB_q1_personalRisk-5)/4;
 rdmGainQualtrics$covq_PAB_q1_personalRisk_centeredscaledNoNA[is.na(rdmGainQualtrics$covq_PAB_q1_personalRisk_centeredscaledNoNA)] = 0;
@@ -311,15 +312,16 @@ if(!exists('model_pred_covidRiskCentered_x_dayOverallSC')){
 
 # TEMPORAL CONTEXT WITH COVID RISK:
 if(!exists('model_pred_3timescales_covidRisk')){
-  model_pred_3timescales_covidRisk = glm(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC + posShift +  rdmTrialSC + covq_PAB_q1_personalRisk_scaledNoNA + (1|subID), data=rdmGainQualtrics, family="binomial", offset=predmTask);
+  model_pred_3timescales_covidRisk = glmer(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC + posShift +  rdmTrialSC + covq_PAB_q1_personalRisk_scaledNoNA*dayOverallSC + (1|subID), data=rdmGainQualtrics, na.action = na.exclude, family="binomial", offset=predmTask);
 }
 
-# AIC = 67085.1
-# only covid risk not significant
-# trial and earning opposite effects (both v sig)
-# poc effect significant and has a negative interaction with earnings
-# singular
+# AIC = 67018.3 (outperforms models w/o temporal context factors)
 # nObs = 97093
+#
+# Expected effects with earnings (+), trial (-), posShift (+), COV RISK (+), Day (+), COV Risk x Day (-)
+# No effect of previous outcome
+
+
 
 # TEMPORAL CONTEXT WITHOUT COVID RISK:
 if(!exists('model_pred_3timescales')){
@@ -330,6 +332,42 @@ if(!exists('model_pred_3timescales')){
 # everything significant, positive effect of past outcome, earnings (positive) and trial (negative) have opposing effects, shift positive, interaction between past outcome and earnings negative
 # singular
 # nObs = 97093
+
+
+
+if(!exists('model_pred_3timescales_sesPCA')){
+  model_pred_3timescales_sesPCA = glmer(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC + posShift +  rdmTrialSC + sesPCA + (1|subID), data=rdmGainQualtrics, na.action = na.exclude, family="binomial", offset=predmTask);
+}
+
+# AIC = 56355.9
+# No significant effect of SES
+# 
+# nObs = 81939 (MUCH LESS DATA FOR THIS; NOT EVERYONE ANSWERED SES QUESTIONS; missing 16% of data)
+
+
+if(!exists('model_pred_3timescales_covidRisk_sesPCA')){
+  model_pred_3timescales_covidRisk_sesPCA = glmer(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC + posShift +  rdmTrialSC + covq_PAB_q1_personalRisk_scaledNoNA*dayOverallSC*sesPCA + (1|subID), data=rdmGainQualtrics, na.action = na.exclude, family="binomial", offset=predmTask);
+}
+
+# AIC = 56291.5
+# Main contextual effects & perceived COVID risk effects remain. No SES effects or interactions.
+# nObs: 81939
+
+
+# HOW TO PROCEED?
+# 
+# Many unanswered questions re: SES and our main contextual effects
+# Previous outcome effect is weak/moves around... is there a missing covariate here? 
+# 
+# Ways forward?
+# Option 1: Interact CovRisk*DayOverall terms with e.g. POC, earnings, shift, etc. (probably just do this w/ glm, not glmer)
+# Option 2: Run separate, independent regressions, e.g. on those w/ low perceived risk, moderate perceived risk, and high perceived risk. 
+
+# Next steps:
+# 1. Divide decision-making into thirds on the basis of perceived COVID risk for separate regressions.
+# 2. Run regressions with POC, cumearnings, trial, shift, and dayoverallSC separately
+# 3. Run large, interactive regression (GLM).
+
 ```
 
 
