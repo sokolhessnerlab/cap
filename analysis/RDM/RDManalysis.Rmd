@@ -368,6 +368,79 @@ if(!exists('model_pred_3timescales_covidRisk_sesPCA')){
 # 2. Run regressions with POC, cumearnings, trial, shift, and dayoverallSC separately
 # 3. Run large, interactive regression (GLM).
 
+
+# 1. Divide decision-making into thirds on the basis of perceived COVID risk for separate regressions.
+  # no risk = -1, -.75, -.5
+  # moderate-to-none risk = -.25, 0, + .25
+  # high risk = +.5, +.75, +1
+
+noRiskRDM = rdmGainQualtrics[rdmGainQualtrics$covq_PAB_q1_personalRisk_centeredscaledNoNA %in% c(-1, -.75, -.5),]; #24871 rows
+modRiskRDM = rdmGainQualtrics[rdmGainQualtrics$covq_PAB_q1_personalRisk_centeredscaledNoNA %in% c(-.25, 0, .25),]; #52836 rows
+highRiskRDM = rdmGainQualtrics[rdmGainQualtrics$covq_PAB_q1_personalRisk_centeredscaledNoNA %in% c(.5, .75, 1),];  #29512 rows
+
+# 2. Run regressions with POC, cumearnings, trial, shift, and dayoverallSC separately
+# NO PERCEIVED RISK
+if(!exists('model_pred_3timescales_covidRisk_noRiskGroup')){
+model_pred_3timescales_covidRisk_noRiskGroup= glmer(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC + posShift +  rdmTrialSC + dayOverallSC + (1|subID), data=noRiskRDM, na.action = na.exclude, family="binomial", offset=predmTask);
+};
+# AIC = 14139.1; nobs = 22913
+# a lot of trending things - earnings (+), shift (+), trial (-) and day (+) all trending between .06 and .08
+# no effect of past outcome or interaction between earnings and past outcome
+
+
+if(!exists('model_pred_3timescales_covidRisk_noRiskGroup_dayintx')){
+model_pred_3timescales_covidRisk_noRiskGroup_dayintx= glmer(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC*dayOverallSC + posShift*dayOverallSC +  rdmTrialSC*dayOverallSC + (1|subID), data=noRiskRDM, na.action = na.exclude, family="binomial", offset=predmTask);
+};
+# AIC =14129.1 ; nobs = 22913
+# significant: poc(+), day (+), poc*earnings(-), poc*day(-), poc*earnings*day(+)
+# everything else is not significant
+
+# MODERATE RISK:
+if(!exists('model_pred_3timescales_covidRisk_modRiskGroup')){
+model_pred_3timescales_covidRisk_modRiskGroup= glmer(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC + posShift +  rdmTrialSC + dayOverallSC + (1|subID), data=modRiskRDM, na.action = na.exclude, family="binomial", offset=predmTask);
+};
+# AIC = 32639.4; nobs = 47009
+# earnings (+), shift (+), trial (-) all significant
+# day not significant beta = .01, p = .78
+# no effect of past outcome or interaction between earnings and past outcome
+
+
+if(!exists('model_pred_3timescales_covidRisk_modRiskGroup_dayintx')){
+model_pred_3timescales_covidRisk_modRiskGroup_dayintx= glmer(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC*dayOverallSC + posShift*dayOverallSC +  rdmTrialSC*dayOverallSC + (1|subID), data=modRiskRDM, na.action = na.exclude, family="binomial", offset=predmTask);
+};
+# AIC = 32643.2; nobs = 47009
+# day(+) is trending (p=.064) as well as the interactio between poc, earnings and day (+, p=.07)
+# everything else is not significant
+
+# HIGH RISK:
+if(!exists('model_pred_3timescales_covidRisk_highRiskGroup')){
+model_pred_3timescales_covidRisk_highRiskGroup= glmer(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC + posShift +  rdmTrialSC + dayOverallSC + (1|subID), data=highRiskRDM, na.action = na.exclude, family="binomial", offset=predmTask);
+};
+
+# AIC = 19828.7l nobs = 27171
+# things are generally more significant for high perceived risk group
+# past outcome (+), earnings (+), shift (+), trial (-), day (-) all significant
+# interaction between outcome and earnings is negative and trending p = .09
+
+if(!exists('model_pred_3timescales_covidRisk_highRiskGroup_dayintx')){
+model_pred_3timescales_covidRisk_highRiskGroup_dayintx= glmer(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC*dayOverallSC + posShift*dayOverallSC +  rdmTrialSC*dayOverallSC + (1|subID), data=highRiskRDM, na.action = na.exclude, family="binomial", offset=predmTask);
+};
+#AIC = 19819.2; nobs = 27171
+# poc (+), poc*earning (-), poc*day(-), poc*earn*day (+) are all significant
+# day*trial (-) is trending
+# everything else is negative
+
+# Summary: temporal context effects stronger as perceived covid risk increases
+# how to deal with different amounts of data here?
+# should we consider some more complex interactions within each of these models, for example, with pcaSES?
+
+
+# 3. Run large, interactive regression (GLM).
+
+if(!exists('model_pred_3timescales_covidRisk_dayintx_BIGMODEL')){
+  model_pred_3timescales_covidRisk_dayintx_BIGMODEL = glm(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC*covq_PAB_q1_personalRisk_scaledNoNA*dayOverallSC + posShift*covq_PAB_q1_personalRisk_scaledNoNA*dayOverallSC +  rdmTrialSC*covq_PAB_q1_personalRisk_scaledNoNA*dayOverallSC, data=rdmGainQualtrics, na.action = na.exclude, family="binomial", offset=predmTask);
+}
+
 ```
 
 
