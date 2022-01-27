@@ -378,15 +378,31 @@ noRiskRDM = rdmGainQualtrics[rdmGainQualtrics$covq_PAB_q1_personalRisk_centereds
 modRiskRDM = rdmGainQualtrics[rdmGainQualtrics$covq_PAB_q1_personalRisk_centeredscaledNoNA %in% c(-.25, 0, .25),]; #52836 rows
 highRiskRDM = rdmGainQualtrics[rdmGainQualtrics$covq_PAB_q1_personalRisk_centeredscaledNoNA %in% c(.5, .75, 1),];  #29512 rows
 
+# Splitting up the data another way: By pushing the middle people to the "extremes" we may be covering up some effects but generally the pattern was similar using this dataset.
+# noRiskRDM = rdmGainQualtrics[rdmGainQualtrics$covq_PAB_q1_personalRisk_centeredscaledNoNA %in% c(-1, -.75, -.5, -.25),]; #34391 rows
+# modRiskRDM = rdmGainQualtrics[rdmGainQualtrics$covq_PAB_q1_personalRisk_centeredscaledNoNA %in% c(0),]; #30107 rows
+# highRiskRDM = rdmGainQualtrics[rdmGainQualtrics$covq_PAB_q1_personalRisk_centeredscaledNoNA %in% c(.25,.5, .75, 1),];  #42721 rows
+
+
 # 2. Run regressions with POC, cumearnings, trial, shift, and dayoverallSC separately
 # NO PERCEIVED RISK
 if(!exists('model_pred_3timescales_covidRisk_noRiskGroup')){
-model_pred_3timescales_covidRisk_noRiskGroup= glmer(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC + posShift +  rdmTrialSC + dayOverallSC + (1|subID), data=noRiskRDM, na.action = na.exclude, family="binomial", offset=predmTask);
+model_pred_3timescales_covidRisk_noRiskGroup = glmer(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC + posShift +  rdmTrialSC + dayOverallSC + (1|subID), data=noRiskRDM, na.action = na.exclude, family="binomial", offset=predmTask);
 };
 # AIC = 14139.1; nobs = 22913
 # a lot of trending things - earnings (+), shift (+), trial (-) and day (+) all trending between .06 and .08
 # no effect of past outcome or interaction between earnings and past outcome
 
+# positive outcome effect becomes negative outcome effect (within session) on day zero
+.89120 - 1.37208 = -0.48088 #(poc effect, beginning session) - (pastoutcome *earnings) at the end of day 1
+.89120 + -2.27464 = -1.38344 # (poc effect beginning session, last day) - last day effect (start of last day)
+.89120 + -2.27464 + - 1.37208 + 2.72881 = -0.02671 # (poc effect beginning session last day)- last day effect (at the start) - pastoutcome*earnings + end of last day earnings
+
+# in general, past outcome effect becomes more negative overtime.
+# overall, it seems like context effects change with whatever else is going on.
+# ^^ IN PEOPLE WITH NO PERCEIVED RISK
+
+# positive outcome effect starts negative goes positive (within session) on last day
 
 if(!exists('model_pred_3timescales_covidRisk_noRiskGroup_dayintx')){
 model_pred_3timescales_covidRisk_noRiskGroup_dayintx= glmer(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC*dayOverallSC + posShift*dayOverallSC +  rdmTrialSC*dayOverallSC + (1|subID), data=noRiskRDM, na.action = na.exclude, family="binomial", offset=predmTask);
@@ -409,7 +425,7 @@ if(!exists('model_pred_3timescales_covidRisk_modRiskGroup_dayintx')){
 model_pred_3timescales_covidRisk_modRiskGroup_dayintx= glmer(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC*dayOverallSC + posShift*dayOverallSC +  rdmTrialSC*dayOverallSC + (1|subID), data=modRiskRDM, na.action = na.exclude, family="binomial", offset=predmTask);
 };
 # AIC = 32643.2; nobs = 47009
-# day(+) is trending (p=.064) as well as the interactio between poc, earnings and day (+, p=.07)
+# day(+) is trending (p=.064) as well as the interaction between poc, earnings and day (+, p=.07)
 # everything else is not significant
 
 # HIGH RISK:
@@ -417,7 +433,7 @@ if(!exists('model_pred_3timescales_covidRisk_highRiskGroup')){
 model_pred_3timescales_covidRisk_highRiskGroup= glmer(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC + posShift +  rdmTrialSC + dayOverallSC + (1|subID), data=highRiskRDM, na.action = na.exclude, family="binomial", offset=predmTask);
 };
 
-# AIC = 19828.7l nobs = 27171
+# AIC = 19828.7; nobs = 27171
 # things are generally more significant for high perceived risk group
 # past outcome (+), earnings (+), shift (+), trial (-), day (-) all significant
 # interaction between outcome and earnings is negative and trending p = .09
@@ -428,9 +444,23 @@ model_pred_3timescales_covidRisk_highRiskGroup_dayintx= glmer(rdmChoice ~ 0 + rd
 #AIC = 19819.2; nobs = 27171
 # poc (+), poc*earning (-), poc*day(-), poc*earn*day (+) are all significant
 # day*trial (-) is trending
-# everything else is negative
+# everything else is not significant
 
-# Summary: temporal context effects stronger as perceived covid risk increases
+# positive outcome effect becomes negative outcome effect (within session) on day zero
+.57652 -1.42379 = -0.84727 #(poc effect, beginning session) - (pastoutcome *earnings) at the end of day 1
+.57652 + -1.17169  = -0.59517 # (poc effect beginning session, last day) - last day effect (start of last day)
+.57652 + -1.17169  + -1.42379 + 3.20356 =  1.1846 # (poc effect beginning session last day)- last day effect (at the start) - pastoutcome*earnings + end of last day earnings. Last day it goes negative to positive within a session.
+
+# this is a similar pattern/direction effect but its not as strong in the high risk.
+# for the high risk people, they look similar to no risk people. however, at the start of the last day, the past outcome effect in high risk people is much less negative than no risk people. And the two groups end in different places too (high risk past outcome effect is 1.18 whereas no risk past outcome effect -.03).
+
+
+
+
+
+# Summary: temporal context effects stronger as perceived covid risk increases (in the first models for the three groups)
+# these models match our previous model findings wrt to day and risk - that people with no perceived risk take more risk across days, people with moderate have no change in risk across days and people with high perceived risk take less risks across days.
+# interacting day in these groups has different results - suggesting that not only is risk-taking globally shifting as a function of day but day might also be moderating context effects in the no and high risk groups.
 # how to deal with different amounts of data here?
 # should we consider some more complex interactions within each of these models, for example, with pcaSES?
 
@@ -440,6 +470,25 @@ model_pred_3timescales_covidRisk_highRiskGroup_dayintx= glmer(rdmChoice ~ 0 + rd
 if(!exists('model_pred_3timescales_covidRisk_dayintx_BIGMODEL')){
   model_pred_3timescales_covidRisk_dayintx_BIGMODEL = glm(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC*covq_PAB_q1_personalRisk_scaledNoNA*dayOverallSC + posShift*covq_PAB_q1_personalRisk_scaledNoNA*dayOverallSC +  rdmTrialSC*covq_PAB_q1_personalRisk_scaledNoNA*dayOverallSC, data=rdmGainQualtrics, na.action = na.exclude, family="binomial", offset=predmTask);
 }
+
+
+if(!exists('model_pred_3timescales_covidRisk_dayintx_BIGMODEL_glmer')){
+  model_pred_3timescales_covidRisk_dayintx_BIGMODEL_glmer = glmer(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC*covq_PAB_q1_personalRisk_scaledNoNA*dayOverallSC + posShift*covq_PAB_q1_personalRisk_scaledNoNA*dayOverallSC +  rdmTrialSC*covq_PAB_q1_personalRisk_scaledNoNA*dayOverallSC + (1|subID), data=rdmGainQualtrics, na.action = na.exclude, family="binomial", offset=predmTask);
+}
+# AIC = 66994.3; nobs = 97093 (compared to model above with just covid risk and day but no interactions: AIC = 67018.3)
+
+# sig: poc (+), covid risk(+), day (+), poc*earn(-), poc*risk (-), poc*day(-), risk*day (-), poc*earn*risk(+), poc*earn*day(+), poc*risk*day(+)
+# a few trending things and the rest are significant
+
+# at this point, the take away is that perceived risk is important and that temporal context effects change across risk and day. 
+
+# Next steps:
+# trying to wrap our heads around the overall pattern from this massive model. Break it down by four situations:
+# low-risk day 1
+# high-risk day 1
+# low-risk day 40
+# high-risk day 40
+# with respect to temporal context effects (poc, earnings and shift)
 
 ```
 
