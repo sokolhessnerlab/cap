@@ -80,5 +80,7 @@ metis:
   # inherits: default
 
   # Kim's System User
-# user:
+ kchiew:
+    path:
+      data: "/Volumes/shlab/Projects/CAP/data"
   # inherits: default
