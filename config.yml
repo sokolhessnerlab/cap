@@ -34,6 +34,7 @@ default:
    rdm_analysis: "RDManalysis.Rmd"
    qualtrics_PCA: "SES_COVQ_PCA.Rmd"
    ax_pca_affect: "add_sesPCA_affectVar_AX.R"
+   ax_setup_data: "AXsetup.R"
   RDMcsvs: 
     RDMbothTasks_qualtrics: "RDMallClean_Qualtrics.csv"
     RDMgain_qualtrics: "RDMallCleanGain_Qualtrics.csv"
