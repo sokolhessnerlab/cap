@@ -189,7 +189,7 @@ if(!exists('model_pred_pss')){
 
 # COVID RISK: 
 
-# covid risk mean: 5.26 phase 1 and 5.04 in phase 2 - TODO: follow up on this when we make individual-level affect dataframe
+# covid risk mean: 5.26 phase 1 and 5.04 in phase 2 
 
 
 # GLMER models turning out singular warning because random effects have very small variance - use GLM instead (beta and pvalue are exactly the same in glmer and glm)
