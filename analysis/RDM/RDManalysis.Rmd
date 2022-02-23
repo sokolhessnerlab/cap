@@ -394,9 +394,9 @@ model_pred_3timescales_covidRisk_noRiskGroup = glmer(rdmChoice ~ 0 + rdmPOC1sc*r
 # no effect of past outcome or interaction between earnings and past outcome
 
 # positive outcome effect becomes negative outcome effect (within session) on day zero
-.89120 - 1.37208 = -0.48088 #(poc effect, beginning session) - (pastoutcome *earnings) at the end of day 1
-.89120 + -2.27464 = -1.38344 # (poc effect beginning session, last day) - last day effect (start of last day)
-.89120 + -2.27464 + - 1.37208 + 2.72881 = -0.02671 # (poc effect beginning session last day)- last day effect (at the start) - pastoutcome*earnings + end of last day earnings
+#.89120 - 1.37208 = -0.48088 #(poc effect, beginning session) - (pastoutcome *earnings) at the end of day 1
+#.89120 + -2.27464 = -1.38344 # (poc effect beginning session, last day) - last day effect (start of last day)
+#.89120 + -2.27464 + - 1.37208 + 2.72881 = -0.02671 # (poc effect beginning session last day)- last day effect (at the start) - pastoutcome*earnings + end of last day earnings
 
 # in general, past outcome effect becomes more negative overtime.
 # overall, it seems like context effects change with whatever else is going on.
@@ -447,9 +447,9 @@ model_pred_3timescales_covidRisk_highRiskGroup_dayintx= glmer(rdmChoice ~ 0 + rd
 # everything else is not significant
 
 # positive outcome effect becomes negative outcome effect (within session) on day zero
-.57652 -1.42379 = -0.84727 #(poc effect, beginning session) - (pastoutcome *earnings) at the end of day 1
-.57652 + -1.17169  = -0.59517 # (poc effect beginning session, last day) - last day effect (start of last day)
-.57652 + -1.17169  + -1.42379 + 3.20356 =  1.1846 # (poc effect beginning session last day)- last day effect (at the start) - pastoutcome*earnings + end of last day earnings. Last day it goes negative to positive within a session.
+# .57652 -1.42379 = -0.84727 #(poc effect, beginning session) - (pastoutcome *earnings) at the end of day 1
+# .57652 + -1.17169  = -0.59517 # (poc effect beginning session, last day) - last day effect (start of last day)
+# .57652 + -1.17169  + -1.42379 + 3.20356 =  1.1846 # (poc effect beginning session last day)- last day effect (at the start) - pastoutcome*earnings + end of last day earnings. Last day it goes negative to positive within a session.
 
 # this is a similar pattern/direction effect but its not as strong in the high risk.
 # for the high risk people, they look similar to no risk people. however, at the start of the last day, the past outcome effect in high risk people is much less negative than no risk people. And the two groups end in different places too (high risk past outcome effect is 1.18 whereas no risk past outcome effect -.03).
@@ -470,8 +470,91 @@ model_pred_3timescales_covidRisk_highRiskGroup_dayintx= glmer(rdmChoice ~ 0 + rd
 if(!exists('model_pred_3timescales_covidRisk_dayintx_BIGMODEL')){
   model_pred_3timescales_covidRisk_dayintx_BIGMODEL = glm(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC*covq_PAB_q1_personalRisk_scaledNoNA*dayOverallSC + posShift*covq_PAB_q1_personalRisk_scaledNoNA*dayOverallSC +  rdmTrialSC*covq_PAB_q1_personalRisk_scaledNoNA*dayOverallSC, data=rdmGainQualtrics, na.action = na.exclude, family="binomial", offset=predmTask);
 }
+# AIC = 66992; nobs = 97093
+# glm is a better fit than the big glmer below and the variance in random effects for the glmer is very small
+
+# SPLITTIING UP THIS MODEL TO TRY TO UNDERSTAND WHATS GOING ON:                                                                                                                                             Estimate Std. Error z value Pr(>|z|)    
+# rdmPOC1sc                                                                0.886575   0.267073   3.320 0.000901 ***
+# rdmPOC1sc:dayOverallSC                                                  -2.394947   0.597389  -4.009 6.10e-05 ***
+# rdmPOC1sc:covq_PAB_q1_personalRisk_scaledNoNA                           -1.812102   0.502617  -3.605 0.000312 ***
+# rdmPOC1sc:covq_PAB_q1_personalRisk_scaledNoNA:dayOverallSC               4.071412   1.118352   3.641 0.000272 ***
+# 
+#NO-RISK FOLKS  
+# --> on day 1, more risk-taking with higher prev.outcomes (0.9)
+# --> on day 40, less risk-taking with higher prev. outcomes (-1.5)
+  
+# HIGH RISK FOLKS
+# --> on day 1, less risk-taking with higher previous outcomes (-.93)
+# --> on day 40, more risk-taking with higher prev. outcomes (.75)
+  
+  
+# rdmPOC1sc:rdmEarningSC                                                  -1.274153   0.521985  -2.441 0.014648 *  
+# rdmPOC1sc:rdmEarningSC:covq_PAB_q1_personalRisk_scaledNoNA               2.004886   0.943795   2.124 0.033647 *  
+# rdmPOC1sc:rdmEarningSC:dayOverallSC                                      2.435094   1.095920   2.222 0.026286 *   
+# rdmPOC1sc:rdmEarningSC:covq_PAB_q1_personalRisk_scaledNoNA:dayOverallSC -2.983950   2.017514  -1.479 0.139134    
+# # negative interaction = as earnings rise, POC effect become more negative
+# positive interaction = as earnings rise, POC effect become more positive
+
+# NO RISK FOLKS
+# --> on day 1, interaction is negative (-1.27)
+# --> on day 40, interaction is positive (1.16)
+
+# HIGH RISK FOLKS
+# --> on day 1, interaction is positive (.73)
+# --> on day 40, interaction is positive (.182)
+  # (-1.274153 + 2.004886 + 2.435094 + -2.983950) = .182 (including all terms above, even n.s. 4-way intxn)
+   # (-1.274153 + 2.004886 + 2.435094) = 3.17 (not including the 4-way intxn)
+   # This implies that interaction doesn't significantly change for this group
+
+# ****
+# combining effects of previous outcome and interaction between previous outcome and earnings...
+# NO RISK
+    # whether day 1 or 40, wherever your POC starts, it approaches 0 by the end of the session/as earnings rise (bc note that earnings =1 is the end of the session)
+# HIGH RISK
+    # day 1, POC effect is eliminated as w/no-risk but on day 40 it remains positive (and may get slightly stronger?)
+# ****
 
 
+# covq_PAB_q1_personalRisk_scaledNoNA                                      0.476208   0.094491   5.040 4.66e-07 ***
+# covq_PAB_q1_personalRisk_scaledNoNA:dayOverallSC                        -1.212165   0.288630  -4.200 2.67e-05 ***
+#--> on day 1, more risk-taking with higher perceived covid risk(0.48)
+#--> on day 40, less risk-taking with higher perceived covid risk (-.74)  
+
+# dayOverallSC                                                             0.451463   0.131595   3.431 0.000602 ***
+# dayOverallSC:rdmTrialSC                                                  1.751172   1.518736   1.153 0.248892    
+# --> net more risk taking as day increases
+
+# ****
+# NO RISK (these people are dominated by effect of day because their lack of covid risk cancels out those betas)
+      # --> day 1->40: more risk-taking (baseline --> baseline + .45) - so they are generally taking more risks
+# HIGH RISK
+      # --> day 1->40: less risk-taking (.48 --> -.28) - these people are taking less risks
+# ^THIS IS THE BIFURCATION OVER DAYS IN BASELINE RISK-TAKING.
+
+# ****
+
+# OTHER VARIABLES IN THE MODEL THAT WERE NOT SIGNIFICANT
+# rdmEarningSC                                                             0.878797   0.781248   1.125 0.260648 
+# rdmEarningSC:covq_PAB_q1_personalRisk_scaledNoNA                         0.125776   1.323436   0.095 0.924285    
+# rdmEarningSC:dayOverallSC                                               -1.615672   1.509727  -1.070 0.284541    
+# rdmEarningSC:covq_PAB_q1_personalRisk_scaledNoNA:dayOverallSC            3.935011   2.672583   1.472 0.140923    
+# 
+# posShift                                                                 0.016554   0.019200   0.862 0.388580    
+# covq_PAB_q1_personalRisk_scaledNoNA:posShift                            -0.003184   0.032677  -0.097 0.922372    
+# covq_PAB_q1_personalRisk_scaledNoNA:dayOverallSC:posShift                0.043608   0.062153   0.702 0.482919    
+# dayOverallSC:posShift                                                   -0.017190   0.035041  -0.491 0.623735    
+# 
+# rdmTrialSC                                                              -1.054150   0.779598  -1.352 0.176321    
+# covq_PAB_q1_personalRisk_scaledNoNA:rdmTrialSC                          -0.410726   1.320155  -0.311 0.755710    
+# covq_PAB_q1_personalRisk_scaledNoNA:dayOverallSC:rdmTrialSC             -4.119924   2.691063  -1.531 0.125778    
+
+
+# BIG TAKEAWAY SO FAR:
+# People start on day 1 with some context dependence at the immediate timescale and there are some individual differences in WHERE they start (positive outcome effect for no-risk; negative outcome effect for high-risk). Over time, these effects generally weaken/approach zero. The odd group here is the high-risk group who remain context sensitive to past outcomes from the start to then end of the session (as earnings increase), taking more risks following large previous outcomes. This is all stacked on top of the bifurcation over days in baselines risk-taking where those with no-risk are taking more risks and those with high-risk are taking less risks from day 1-40.
+
+
+
+# SAME MODEL ABOVE BUT WITH GLMER
 if(!exists('model_pred_3timescales_covidRisk_dayintx_BIGMODEL_glmer')){
   model_pred_3timescales_covidRisk_dayintx_BIGMODEL_glmer = glmer(rdmChoice ~ 0 + rdmPOC1sc*rdmEarningSC*covq_PAB_q1_personalRisk_scaledNoNA*dayOverallSC + posShift*covq_PAB_q1_personalRisk_scaledNoNA*dayOverallSC +  rdmTrialSC*covq_PAB_q1_personalRisk_scaledNoNA*dayOverallSC + (1|subID), data=rdmGainQualtrics, na.action = na.exclude, family="binomial", offset=predmTask);
 }
@@ -480,15 +563,6 @@ if(!exists('model_pred_3timescales_covidRisk_dayintx_BIGMODEL_glmer')){
 # sig: poc (+), covid risk(+), day (+), poc*earn(-), poc*risk (-), poc*day(-), risk*day (-), poc*earn*risk(+), poc*earn*day(+), poc*risk*day(+)
 # a few trending things and the rest are significant
 
-# at this point, the take away is that perceived risk is important and that temporal context effects change across risk and day. 
-
-# Next steps:
-# trying to wrap our heads around the overall pattern from this massive model. Break it down by four situations:
-# low-risk day 1
-# high-risk day 1
-# low-risk day 40
-# high-risk day 40
-# with respect to temporal context effects (poc, earnings and shift)
 
 ```
 
@@ -496,6 +570,6 @@ if(!exists('model_pred_3timescales_covidRisk_dayintx_BIGMODEL_glmer')){
 
 ```{r}
 # save our models
-save(file=outputfile, list=ls(pattern=glob2rx("model*"))); 
+save(file=outputfile, list=ls(pattern=glob2rx("model*")));
 ```
 
