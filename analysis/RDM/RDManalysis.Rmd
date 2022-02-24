@@ -324,7 +324,7 @@ pGamNoRisk = 1/(1+ exp(-1*(dayBeta*days)))
 
 colorOptions = c("tomato4","salmon3","lightpink")
 
-plot(pGamHighRiskDay, type="l", lwd = 7, ylim=c(.4,.6), col=colorOptions[1])
+plot(pGamHighRiskDay, type="l", lwd = 7, ylim=c(.4,.6), col=colorOptions[1], xlab="day", ylab="probability of choosing gamble")
 lines(pGamModRisk, lwd=7, col=colorOptions[2])
 lines(pGamNoRisk, lwd=7, col=colorOptions[3])
 
