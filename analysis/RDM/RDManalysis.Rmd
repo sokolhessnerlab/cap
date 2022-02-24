@@ -318,15 +318,65 @@ dayBeta = modelsummmary$coefficients[2]
 riskDayBeta = modelsummmary$coefficients[3]
 days = c(0,1)
 
-pGamHighRiskDay = 1/(1+ exp(-1*(covRiskBeta*1 +  dayBeta*days + riskDayBeta*1*days)))
+pGamHighRisk = 1/(1+ exp(-1*(covRiskBeta*1 +  dayBeta*days + riskDayBeta*1*days)))
 pGamModRisk = 1/(1+ exp(-1*(covRiskBeta*.5 +  dayBeta*days + riskDayBeta*.5*days)))
 pGamNoRisk = 1/(1+ exp(-1*(dayBeta*days)))
 
 colorOptions = c("tomato4","salmon3","lightpink")
 
-plot(pGamHighRiskDay, type="l", lwd = 7, ylim=c(.4,.6), col=colorOptions[1], xlab="day", ylab="probability of choosing gamble")
+pdf('./gamblingPerceivedRiskDay.pdf')
+par(mar = c(5.1, 5.1, 4.1, 2.1))
+# just plot points for day one for each group
+plot(pGamHighRisk[1], pch=16, cex =3,lwd = 10, ylim=c(.4,.6),xlim=c(1,2), col=colorOptions[1], xlab="day", ylab="p(gamble)", cex.lab = 2, axes=F, main="Risk-taking as a function of perceived covid risk"); # high-risk
+axis(1, at=c(1,2), labels=c("1", "40"), lwd=7, cex.axis = 1.5); # x axis
+axis(2, at=c(.4,.5, .6), labels=c(.4,.5, .6), lwd=7, cex.axis = 1.5); # y axis
+points(pGamModRisk[1], pch=16, cex=3, col=colorOptions[2])
+points(pGamNoRisk[1], pch=16, cex=3, col=colorOptions[3])
+
+legend(1.5, .6, legend=c("HIGH", "MODERATE", "NONE"),
+       col=colorOptions, pch=16, pt.cex=2.5, cex=1,  title="PERCEIVED COVID RISK", bty="n")
+
+# same plot above with the second point and line for high risk
+plot(pGamHighRisk[1], pch=16, cex =3,lwd = 10, ylim=c(.4,.6),xlim=c(1,2), col=colorOptions[1], xlab="day", ylab="p(gamble)", cex.lab = 2, axes=F, main="Risk-taking as a function of perceived covid risk"); # high-risk
+axis(1, at=c(1,2), labels=c("1", "40"), lwd=7, cex.axis = 1.5); # x axis
+axis(2, at=c(.4,.5, .6), labels=c(.4,.5, .6), lwd=7, cex.axis =1.5); # y axis
+points(pGamModRisk[1], pch=16, cex=3, col=colorOptions[2])
+points(pGamNoRisk[1], pch=16, cex=3, col=colorOptions[3])
 lines(pGamModRisk, lwd=7, col=colorOptions[2])
+points(pGamModRisk, pch=16, cex=3, col=colorOptions[2])
+legend(1.5, .6, legend=c("HIGH", "MODERATE", "NONE"),
+       col=colorOptions, pch=16, pt.cex=2.5, cex=1,  title="PERCEIVED COVID RISK", bty="n")
+
+# same plot above with the second point and line for no risk
+plot(pGamHighRisk[1], pch=16, cex =3,lwd = 10, ylim=c(.4,.6),xlim=c(1,2), col=colorOptions[1], xlab="day", ylab="p(gamble)", cex.lab = 2, axes=F, main="Risk-taking as a function of perceived covid risk"); # high-risk
+axis(1, at=c(1,2), labels=c("1", "40"), lwd=7, cex.axis = 1.5); # x axis
+axis(2, at=c(.4,.5, .6), labels=c(.4,.5, .6), lwd=7, cex.axis = 1.5); # y axis
+points(pGamModRisk[1], pch=16, cex=3, col=colorOptions[2])
+points(pGamNoRisk[1], pch=16, cex=3, col=colorOptions[3])
+lines(pGamModRisk, lwd=7, col=colorOptions[2])
+points(pGamModRisk, pch=16, cex=3, col=colorOptions[2])
 lines(pGamNoRisk, lwd=7, col=colorOptions[3])
+points(pGamNoRisk, pch=16, cex=3, col=colorOptions[3])
+legend(1.5, .6, legend=c("HIGH", "MODERATE", "NONE"),
+       col=colorOptions, pch=16, pt.cex=2.5, cex=1,  title="PERCEIVED COVID RISK", bty="n")
+
+# same plot above with the second point and line for moderate risk
+plot(pGamHighRisk[1], pch=16, cex =3,lwd = 10, ylim=c(.4,.6),xlim=c(1,2), col=colorOptions[1], xlab="day", ylab="p(gamble)", cex.lab = 2, axes=F, main="Risk-taking as a function of perceived covid risk"); # high-risk
+axis(1, at=c(1,2), labels=c("1", "40"), lwd=7, cex.axis = 1.5); # x axis
+axis(2, at=c(.4,.5, .6), labels=c(.4,.5, .6), lwd=7, cex.axis = 1.5); # y axis
+points(pGamModRisk[1], pch=16, cex=3, col=colorOptions[2])
+points(pGamNoRisk[1], pch=16, cex=3, col=colorOptions[3])
+lines(pGamModRisk, lwd=7, col=colorOptions[2])
+points(pGamModRisk, pch=16, cex=3, col=colorOptions[2])
+lines(pGamNoRisk, lwd=7, col=colorOptions[3])
+points(pGamNoRisk, pch=16, cex=3, col=colorOptions[3])
+lines(pGamHighRisk, lwd=7, col=colorOptions[1])
+points(pGamHighRisk, pch=16, cex=3, col=colorOptions[1])
+legend(1.5, .6, legend=c("HIGH", "MODERATE", "NONE"),
+       col=colorOptions, pch=16, pt.cex=2.5, cex=1,  title="PERCEIVED COVID RISK", bty="n")
+
+dev.off();
+
 
 
 
