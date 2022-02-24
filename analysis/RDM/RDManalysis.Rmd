@@ -298,6 +298,38 @@ if(!exists('model_pred_covidRiskCentered_x_dayOverallSC')){
 # AIC: 68686.4 <-- worse
 
 
+
+
+# Plot for DCN research night using the results from model_pred_covidRisk_x_dayOverallSC above:
+# pasting results here again for convenience
+# covq_PAB_q1_personalRisk_scaledNoNA               0.08415    0.03001   2.805  0.00504 ** 
+# dayOverallSC                                      0.19198    0.04150   4.626 3.73e-06 ***
+# covq_PAB_q1_personalRisk_scaledNoNA:dayOverallSC -0.56599    0.09012  -6.281 3.37e-10 ***
+
+modelsummmary = summary(model_pred_covidRisk_x_dayOverallSC); # save summary to access coefficients
+
+# high risk = 1
+# mod risk = .5
+# no risk  = 0
+riskLevs = sort(unique(rdmGainQualtrics$covq_PAB_q1_personalRisk_scaledNoNA))
+
+covRiskBeta = modelsummmary$coefficients[1]
+dayBeta = modelsummmary$coefficients[2]
+riskDayBeta = modelsummmary$coefficients[3]
+days = c(0,1)
+
+pGamHighRiskDay = 1/(1+ exp(-1*(covRiskBeta*1 +  dayBeta*days + riskDayBeta*1*days)))
+pGamModRisk = 1/(1+ exp(-1*(covRiskBeta*.5 +  dayBeta*days + riskDayBeta*.5*days)))
+pGamNoRisk = 1/(1+ exp(-1*(dayBeta*days)))
+
+colorOptions = c("tomato4","salmon3","lightpink")
+
+plot(pGamHighRiskDay, type="l", lwd = 7, ylim=c(.4,.6), col=colorOptions[1])
+lines(pGamModRisk, lwd=7, col=colorOptions[2])
+lines(pGamNoRisk, lwd=7, col=colorOptions[3])
+
+
+
 # 2) relate changes in risk taking to changes in perceived risk (using a variable that captures the difference in covid risk across phase 1)
 
 # Affective measures... 
