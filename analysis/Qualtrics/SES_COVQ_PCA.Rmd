@@ -278,7 +278,8 @@ library("GGally"); # load package we need for correlogram
 
 # phase one only - all affective measures
 tmpPhs1 = subLevelWide[names(subLevelWide) %in% c("phs1_stai_s_score_scaled", "phs1_stai_t_score_scaled", "phs1_pss_score_scaled", "phs1_pss_stressedToday", "phs1_uclal_score_scaled", "phs1_covq_PAB_q1_personalRisk_scaled")];
-ggpairs(tmpPhs1, title = "Phase 1 correlogram", columnLabels = c("state anxiety", "trait anxiety", "stress", "stress today", "loneliness", "covid risk"));
+
+ggpairs(tmpPhs1, title = "Phase 1 correlogram")#, columnLabels = c("state anxiety", "trait anxiety", "stress", "stress today", "loneliness", "covid risk"));
 
 # phase two only - all affective measures
 tmpPhs2 = subLevelWide[names(subLevelWide) %in% c("phs2_stai_s_score_scaled", "phs2_stai_t_score_scaled", "phs2_pss_score_scaled", "phs2_pss_stressedToday", "phs2_uclal_score_scaled", "phs2_covq_PAB_q1_personalRisk_scaled")];
