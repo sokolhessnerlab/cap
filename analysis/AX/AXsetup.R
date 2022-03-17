@@ -6,7 +6,10 @@
 # 1) AX_subID_missTri_totTri.csv (total and missed trials for each participant in phase)
 
 # Kimberly Chiew, University of Denver
-# last modified: 2/2/22
+# last modified: 3/16/22
+
+# clear out contents of R
+rm(list=ls());
 
 # load packages
 library('config')
@@ -54,26 +57,57 @@ nSubB4exclusion = length(subNumB4exclusion);
 
 ## Apply the exclusions to the data set by place NAs in trials for excluded participants
 
-# Phase 1: not sure how many AX participants excluded
-subIDAXPhs1Exclude = excludePhs1$subID[!is.na(excludePhs1$AXPhs1exclude) & excludePhs1$AXPhs1exclude==1]
+# Phase 1: 24 participants excluded
+subIDAXPhs1Exclude = excludePhs1$subID[!is.na(excludePhs1$axPhs1exclude) & excludePhs1$axPhs1exclude==1]
 # note that this code worked but that subIDAXPhs1Exclude was a NULL object afterwards
+# 3/16/22: got this to work and produce a string of numbers that are the subjects to exclude
 
 
 # Qualtrics: 3 participants excluded
 subIDqualPhs1Exclude = excludePhs1$subID[!is.na(excludePhs1$qualPhs1exclude) & excludePhs1$qualPhs1exclude==1]
 # this was directly copied from Hayley's RDM script and also worked and produced a NULL object
 
-# Phase 2: not sure how many AX participants excluded
-subIDAXPhs2Exclude = excludePhs2$subID[!is.na(excludePhs2$AXPhs2exclude) & excludePhs2$AXPhs2exclude==1]
+# Phase 2: an additional 4 participants excluded (7 excluded but 3 of these were already excluded in Phase 1)
+subIDAXPhs2Exclude = excludePhs2$subID[!is.na(excludePhs2$axPhs2exclude) & excludePhs2$axPhs2exclude==1]
 
 # Qualtrics: 1 participant excluded based on age response in phase
 subIDqualPhs2Exclude = excludePhs2$subID[!is.na(excludePhs2$qualPhs2exclude) & excludePhs2$qualPhs2exclude==1]
 
 
+# column order is funky. RDM stuff is in columns 1-5, 7-14, 17-18, and day, phase, and subID are dispersed throughout.
+AXColumns = c(1:4,8,9);
+
+
+# Qualtrics stuff starts at column 19, or "stai_s_score" until column 71 or "ses_needbasedCollegeAid_recode" and 73 with the sesPCA
+# checked and corrected to the same columns as in the RDM data
+
+qualColumns = c(10:62,64);
+
 ########################################################
 
-# it is not yet clear to me from this how task-specific exclusion criteria are applied
-# e.g., the information in rdmExclusion.csv for Hayley (RDMsetup.R did not mention this csv) or
-# axExclusion for my data (which is participants with < 60% accurate performance)
-# will need to go back to this and include task-specific exclusions
+# Put NAs in AX columns for excluded phase 1 and phase 2 participants
+AXQualtrics[AXQualtrics$subID %in% subIDAXPhs1Exclude & AXQualtrics$phase==1,AXColumns] = NA; # phase 1
+AXQualtrics[AXQualtrics$subID %in% subIDAXPhs2Exclude & AXQualtrics$phase==2,AXColumns] = NA; # phase 2
 
+# Put NAs in Qualtrics columns for excluded phase 1 and phase 2 participants in both gain and loss datasets
+# gain task
+AXQualtrics[AXQualtrics$subID %in% subIDqualPhs1Exclude & AXQualtrics$phase==1,qualColumns] = NA; # phase 1
+AXQualtrics[AXQualtrics$subID %in% subIDqualPhs2Exclude & AXQualtrics$phase==2,qualColumns] = NA; # phase 2
+
+# Participant IDs included in phase 1 AX
+Phs1subIDs = excludePhs1$subID[excludePhs1$axPhs1exclud==0];
+Phs1nSub = length(Phs1subIDs);
+
+# Participant IDs included in phase 2 AX
+Phs2subIDs = excludePhs2$subID[!is.na(excludePhs2$axPhs2exclude) & excludePhs2$axPhs2exclude==0];
+Phs2nSub = length(Phs2subIDs);
+
+# Participant IDs included in both phases
+BothPhsSubIDs = Phs2subIDs[Phs2subIDs %in% Phs1subIDs];
+BothPhsnSub = length(BothPhsSubIDs)
+
+# Prior to exclusion, there were 544 participants. After exclusion, we have AX-CPT data for 520 participants in phase 1 and 350 participants in phase 2, and 333 participants that are included in both phases.
+
+# Missed trials:
+# Where participants did not respond, an NA is in place for choice and outcome. We are not removing these trials but will make a note of the number of trials per phase that were missed by each participants.
+# At this point in the script, we have NAs for people who are excluded.
