@@ -111,3 +111,23 @@ BothPhsnSub = length(BothPhsSubIDs)
 # Missed trials:
 # Where participants did not respond, an NA is in place for choice and outcome. We are not removing these trials but will make a note of the number of trials per phase that were missed by each participants.
 # At this point in the script, we have NAs for people who are excluded.
+
+### Which trials were missed?
+
+nanAXPhs1 = which(is.na(AXQualtrics$axResponse) & AXQualtrics$subID %in% Phs1subIDs & AXQualtrics$phase ==1) # 1225 missed trials indices phase 1
+
+nanAXPhs2 = which(is.na(AXQualtrics$axResponse) & AXQualtrics$subID %in% Phs2subIDs & AXQualtrics$phase ==2)  # 683 missed trials indices phase 2
+
+nanAX = c(nanAXPhs1, nanAXPhs2);
+
+nanAXPhs1tot = length(nanAXPhs1); #1225 missed trials phase 1
+nanAXPhs2tot = length(nanAXPhs2); #683 missed trials phase 2
+
+### Which participants missed trials and how many did each participant miss?
+
+subAXPhs1 = unique(AXQualtrics$subID[nanAXPhs1]); # 268 participants missed at least one trial
+subAXPhs2 = unique(AXQualtrics$subID[nanAXPhs2]); # 160 participants missed at least one trial
+
+# Create a dataframe that stores subject IDs, missed AX trials phase 1, missed AX trials phase 2, total AX trials phase 1, total AX trials phase 2.
+subID_missTri_totTri = as.data.frame(matrix(data=NA, nrow = nSubB4exclusion, ncol=5, dimnames = list(c(NULL), c("subID", "missAXTriPhs1", "missAXTriPhs2","totalAXTriPhs1", "totalAXTriPhs2"))));
+
