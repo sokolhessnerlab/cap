@@ -74,7 +74,7 @@ subIDAXPhs2Exclude = excludePhs2$subID[!is.na(excludePhs2$axPhs2exclude) & exclu
 subIDqualPhs2Exclude = excludePhs2$subID[!is.na(excludePhs2$qualPhs2exclude) & excludePhs2$qualPhs2exclude==1]
 
 
-# column order is funky. RDM stuff is in columns 1-5, 7-14, 17-18, and day, phase, and subID are dispersed throughout.
+# column order is funky. AX stuff is in columns 1-4, 8, 9, and day, phase, and subID are dispersed throughout.
 AXColumns = c(1:4,8,9);
 
 
@@ -131,3 +131,48 @@ subAXPhs2 = unique(AXQualtrics$subID[nanAXPhs2]); # 160 participants missed at l
 # Create a dataframe that stores subject IDs, missed AX trials phase 1, missed AX trials phase 2, total AX trials phase 1, total AX trials phase 2.
 subID_missTri_totTri = as.data.frame(matrix(data=NA, nrow = nSubB4exclusion, ncol=5, dimnames = list(c(NULL), c("subID", "missAXTriPhs1", "missAXTriPhs2","totalAXTriPhs1", "totalAXTriPhs2"))));
 
+# this created a dataframe that was 544 rows and 5 columns
+
+########################################################
+
+
+
+  for (s in 1:nSubB4exclusion){
+
+    subID_missTri_totTri$subID[s] = subNumB4exclusion[s]; # store sub IDs
+
+
+    # Phase 1:
+    if(subID_missTri_totTri$subID[s] %in% subIDAXPhs1Exclude){ # if participant s was excluded, then put NaN for their rows in phase 1
+
+      subID_missTri_totTri$missAXTriPhs1[s] = NaN; # missed AX trials
+      subID_missTri_totTri$totalAXTriPhs1[s] = NaN; # total AX trials
+
+    }else{ # otherwise, do the following:
+
+      subID_missTri_totTri$missAXTriPhs1[s] = sum(AXQualtrics$subID[nanAXPhs1] == subNumB4exclusion[s]); # missed AX trials
+      subID_missTri_totTri$totalAXTriPhs1[s] = sum(!is.na(AXQualtrics$axResponse) & AXQualtrics$phase==1 & AXQualtrics$subID==subNumB4exclusion[s]); # total AX trials
+
+    }
+
+
+    # Phase 2:
+    if(subID_missTri_totTri$subID[s] %in%  subIDAXPhs2Exclude | !subID_missTri_totTri$subID[s] %in% Phs2subIDs){ # if participant s was excluded or they didn't participate in phase 2, then put NaN for their rows in phase 2
+      subID_missTri_totTri$missAXTriPhs2[s] = NaN; # missed AX trials
+      subID_missTri_totTri$totalAXTriPhs2[s] = NaN; # total AX trials
+
+
+    }else { # otherwise, do the following:
+      subID_missTri_totTri$missAXTriPhs2[s] = sum(AXQualtrics$subID[nanAXPhs2] == subNumB4exclusion[s]);
+      subID_missTri_totTri$totalAXTriPhs2[s] = sum(!is.na(AXQualtrics$axResponse) & AXQualtrics$phase==2 & AXQualtrics$subID==subNumB4exclusion[s])
+    }
+
+  };
+
+  # save this dataframe
+  subID_missTri_totTri_OutputPath = file.path(config$path$combined, config$AXcsvs$AX_missed_total_trials)
+  write.csv(file=subID_missTri_totTri_OutputPath, subID_missTri_totTri, row.names = F)
+
+  # saves the dataframe in /Volumes/CAP/combinedData/AX_subID_missTri_totTri.csv
+
+########################################################

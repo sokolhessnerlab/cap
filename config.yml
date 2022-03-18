@@ -47,6 +47,7 @@ default:
     AX_allClean: "AXallClean.csv"
     AX_rawCombined: "AXall.csv"
     AX_qa: "AXqa.csv"
+    AX_missed_total_trials: "AX_subID_missTri_totTri.csv"
   EXCLUSIONcsvs:
     RDM_AX_Qual_Phs1exclusion: "allExclusionPhase1.csv"
     RDM_AX_Qual_Phs2exclusion: "allExclusionPhase2.csv"
