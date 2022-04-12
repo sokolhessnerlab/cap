@@ -6,7 +6,7 @@
 # 1) AX_subID_missTri_totTri.csv (total and missed trials for each participant in phase)
 
 # Kimberly Chiew, University of Denver
-# last modified: 3/16/22
+# last modified: 4/11/22
 
 # clear out contents of R
 rm(list=ls());
@@ -66,6 +66,7 @@ subIDAXPhs1Exclude = excludePhs1$subID[!is.na(excludePhs1$axPhs1exclude) & exclu
 # Qualtrics: 3 participants excluded
 subIDqualPhs1Exclude = excludePhs1$subID[!is.na(excludePhs1$qualPhs1exclude) & excludePhs1$qualPhs1exclude==1]
 # this was directly copied from Hayley's RDM script and also worked and produced a NULL object
+# 3/16/22: got this to work and produce a string of numbers that are the subjects to exclude
 
 # Phase 2: an additional 4 participants excluded (7 excluded but 3 of these were already excluded in Phase 1)
 subIDAXPhs2Exclude = excludePhs2$subID[!is.na(excludePhs2$axPhs2exclude) & excludePhs2$axPhs2exclude==1]
@@ -125,8 +126,8 @@ nanAXPhs2tot = length(nanAXPhs2); #683 missed trials phase 2
 
 ### Which participants missed trials and how many did each participant miss?
 
-subAXPhs1 = unique(AXQualtrics$subID[nanAXPhs1]); # 268 participants missed at least one trial
-subAXPhs2 = unique(AXQualtrics$subID[nanAXPhs2]); # 160 participants missed at least one trial
+subAXPhs1 = unique(AXQualtrics$subID[nanAXPhs1]); # 268 Phase 1 participants missed at least one trial
+subAXPhs2 = unique(AXQualtrics$subID[nanAXPhs2]); # 160 Phase 2 participants missed at least one trial
 
 # Create a dataframe that stores subject IDs, missed AX trials phase 1, missed AX trials phase 2, total AX trials phase 1, total AX trials phase 2.
 subID_missTri_totTri = as.data.frame(matrix(data=NA, nrow = nSubB4exclusion, ncol=5, dimnames = list(c(NULL), c("subID", "missAXTriPhs1", "missAXTriPhs2","totalAXTriPhs1", "totalAXTriPhs2"))));
@@ -176,3 +177,10 @@ subID_missTri_totTri = as.data.frame(matrix(data=NA, nrow = nSubB4exclusion, nco
   # saves the dataframe in /Volumes/CAP/combinedData/AX_subID_missTri_totTri.csv
 
 ########################################################
+
+  ## CREATING NEW VARIABLES FOR ANALYSES!
+
+  # add a new variable for phase where phase 1 is now 0 and phase 2 is now 1
+  AXQualtrics$phaseRecode = AXQualtrics$phase;
+  AXQualtrics$phaseRecode[AXQualtrics$phaseRecode==1] = 0;
+  AXQualtrics$phaseRecode[AXQualtrics$phaseRecode==2] = 1
