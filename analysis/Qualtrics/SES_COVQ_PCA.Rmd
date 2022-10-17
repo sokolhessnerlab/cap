@@ -234,6 +234,8 @@ subLevelLong$covq_PAB_q1_personalRisk_scaled = (subLevelLong$covq_PAB_q1_persona
 
 subLevelLong$covq_PAB_q1_personalRisk_scaledNoNA = subLevelLong$covq_PAB_q1_personalRisk_scaled;
 subLevelLong$covq_PAB_q1_personalRisk_scaledNoNA[is.na(subLevelLong$covq_PAB_q1_personalRisk_scaledNoNA)] = 0;
+# rationale for doing this was so that everyone can contribute to the estimates (otherwise, using NA drops those people from the analysis)
+# scaled version is on a scale from 0 to 1
 
 # wide dataframe
 # pss, stait, uclal
