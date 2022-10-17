@@ -6,7 +6,10 @@
 # 1) AX_subID_missTri_totTri.csv (total and missed trials for each participant in phase)
 
 # Kimberly Chiew, University of Denver
-# last modified: 2/2/22
+# last modified: 4/11/22
+
+# clear out contents of R
+rm(list=ls());
 
 # load packages
 library('config')
@@ -54,26 +57,130 @@ nSubB4exclusion = length(subNumB4exclusion);
 
 ## Apply the exclusions to the data set by place NAs in trials for excluded participants
 
-# Phase 1: not sure how many AX participants excluded
-subIDAXPhs1Exclude = excludePhs1$subID[!is.na(excludePhs1$AXPhs1exclude) & excludePhs1$AXPhs1exclude==1]
+# Phase 1: 24 participants excluded
+subIDAXPhs1Exclude = excludePhs1$subID[!is.na(excludePhs1$axPhs1exclude) & excludePhs1$axPhs1exclude==1]
 # note that this code worked but that subIDAXPhs1Exclude was a NULL object afterwards
+# 3/16/22: got this to work and produce a string of numbers that are the subjects to exclude
 
 
 # Qualtrics: 3 participants excluded
 subIDqualPhs1Exclude = excludePhs1$subID[!is.na(excludePhs1$qualPhs1exclude) & excludePhs1$qualPhs1exclude==1]
 # this was directly copied from Hayley's RDM script and also worked and produced a NULL object
+# 3/16/22: got this to work and produce a string of numbers that are the subjects to exclude
 
-# Phase 2: not sure how many AX participants excluded
-subIDAXPhs2Exclude = excludePhs2$subID[!is.na(excludePhs2$AXPhs2exclude) & excludePhs2$AXPhs2exclude==1]
+# Phase 2: an additional 4 participants excluded (7 excluded but 3 of these were already excluded in Phase 1)
+subIDAXPhs2Exclude = excludePhs2$subID[!is.na(excludePhs2$axPhs2exclude) & excludePhs2$axPhs2exclude==1]
 
 # Qualtrics: 1 participant excluded based on age response in phase
 subIDqualPhs2Exclude = excludePhs2$subID[!is.na(excludePhs2$qualPhs2exclude) & excludePhs2$qualPhs2exclude==1]
 
 
+# column order is funky. AX stuff is in columns 1-4, 8, 9, and day, phase, and subID are dispersed throughout.
+AXColumns = c(1:4,8,9);
+
+
+# Qualtrics stuff starts at column 19, or "stai_s_score" until column 71 or "ses_needbasedCollegeAid_recode" and 73 with the sesPCA
+# checked and corrected to the same columns as in the RDM data
+
+qualColumns = c(10:62,64);
+
 ########################################################
 
-# it is not yet clear to me from this how task-specific exclusion criteria are applied
-# e.g., the information in rdmExclusion.csv for Hayley (RDMsetup.R did not mention this csv) or
-# axExclusion for my data (which is participants with < 60% accurate performance)
-# will need to go back to this and include task-specific exclusions
+# Put NAs in AX columns for excluded phase 1 and phase 2 participants
+AXQualtrics[AXQualtrics$subID %in% subIDAXPhs1Exclude & AXQualtrics$phase==1,AXColumns] = NA; # phase 1
+AXQualtrics[AXQualtrics$subID %in% subIDAXPhs2Exclude & AXQualtrics$phase==2,AXColumns] = NA; # phase 2
 
+# Put NAs in Qualtrics columns for excluded phase 1 and phase 2 participants in both gain and loss datasets
+# gain task
+AXQualtrics[AXQualtrics$subID %in% subIDqualPhs1Exclude & AXQualtrics$phase==1,qualColumns] = NA; # phase 1
+AXQualtrics[AXQualtrics$subID %in% subIDqualPhs2Exclude & AXQualtrics$phase==2,qualColumns] = NA; # phase 2
+
+# Participant IDs included in phase 1 AX
+Phs1subIDs = excludePhs1$subID[excludePhs1$axPhs1exclud==0];
+Phs1nSub = length(Phs1subIDs);
+
+# Participant IDs included in phase 2 AX
+Phs2subIDs = excludePhs2$subID[!is.na(excludePhs2$axPhs2exclude) & excludePhs2$axPhs2exclude==0];
+Phs2nSub = length(Phs2subIDs);
+
+# Participant IDs included in both phases
+BothPhsSubIDs = Phs2subIDs[Phs2subIDs %in% Phs1subIDs];
+BothPhsnSub = length(BothPhsSubIDs)
+
+# Prior to exclusion, there were 544 participants. After exclusion, we have AX-CPT data for 520 participants in phase 1 and 350 participants in phase 2, and 333 participants that are included in both phases.
+
+# Missed trials:
+# Where participants did not respond, an NA is in place for choice and outcome. We are not removing these trials but will make a note of the number of trials per phase that were missed by each participants.
+# At this point in the script, we have NAs for people who are excluded.
+
+### Which trials were missed?
+
+nanAXPhs1 = which(is.na(AXQualtrics$axResponse) & AXQualtrics$subID %in% Phs1subIDs & AXQualtrics$phase ==1) # 1225 missed trials indices phase 1
+
+nanAXPhs2 = which(is.na(AXQualtrics$axResponse) & AXQualtrics$subID %in% Phs2subIDs & AXQualtrics$phase ==2)  # 683 missed trials indices phase 2
+
+nanAX = c(nanAXPhs1, nanAXPhs2);
+
+nanAXPhs1tot = length(nanAXPhs1); #1225 missed trials phase 1
+nanAXPhs2tot = length(nanAXPhs2); #683 missed trials phase 2
+
+### Which participants missed trials and how many did each participant miss?
+
+subAXPhs1 = unique(AXQualtrics$subID[nanAXPhs1]); # 268 Phase 1 participants missed at least one trial
+subAXPhs2 = unique(AXQualtrics$subID[nanAXPhs2]); # 160 Phase 2 participants missed at least one trial
+
+# Create a dataframe that stores subject IDs, missed AX trials phase 1, missed AX trials phase 2, total AX trials phase 1, total AX trials phase 2.
+subID_missTri_totTri = as.data.frame(matrix(data=NA, nrow = nSubB4exclusion, ncol=5, dimnames = list(c(NULL), c("subID", "missAXTriPhs1", "missAXTriPhs2","totalAXTriPhs1", "totalAXTriPhs2"))));
+
+# this created a dataframe that was 544 rows and 5 columns
+
+########################################################
+
+
+
+  for (s in 1:nSubB4exclusion){
+
+    subID_missTri_totTri$subID[s] = subNumB4exclusion[s]; # store sub IDs
+
+
+    # Phase 1:
+    if(subID_missTri_totTri$subID[s] %in% subIDAXPhs1Exclude){ # if participant s was excluded, then put NaN for their rows in phase 1
+
+      subID_missTri_totTri$missAXTriPhs1[s] = NaN; # missed AX trials
+      subID_missTri_totTri$totalAXTriPhs1[s] = NaN; # total AX trials
+
+    }else{ # otherwise, do the following:
+
+      subID_missTri_totTri$missAXTriPhs1[s] = sum(AXQualtrics$subID[nanAXPhs1] == subNumB4exclusion[s]); # missed AX trials
+      subID_missTri_totTri$totalAXTriPhs1[s] = sum(!is.na(AXQualtrics$axResponse) & AXQualtrics$phase==1 & AXQualtrics$subID==subNumB4exclusion[s]); # total AX trials
+
+    }
+
+
+    # Phase 2:
+    if(subID_missTri_totTri$subID[s] %in%  subIDAXPhs2Exclude | !subID_missTri_totTri$subID[s] %in% Phs2subIDs){ # if participant s was excluded or they didn't participate in phase 2, then put NaN for their rows in phase 2
+      subID_missTri_totTri$missAXTriPhs2[s] = NaN; # missed AX trials
+      subID_missTri_totTri$totalAXTriPhs2[s] = NaN; # total AX trials
+
+
+    }else { # otherwise, do the following:
+      subID_missTri_totTri$missAXTriPhs2[s] = sum(AXQualtrics$subID[nanAXPhs2] == subNumB4exclusion[s]);
+      subID_missTri_totTri$totalAXTriPhs2[s] = sum(!is.na(AXQualtrics$axResponse) & AXQualtrics$phase==2 & AXQualtrics$subID==subNumB4exclusion[s])
+    }
+
+  };
+
+  # save this dataframe
+  subID_missTri_totTri_OutputPath = file.path(config$path$combined, config$AXcsvs$AX_missed_total_trials)
+  write.csv(file=subID_missTri_totTri_OutputPath, subID_missTri_totTri, row.names = F)
+
+  # saves the dataframe in /Volumes/CAP/combinedData/AX_subID_missTri_totTri.csv
+
+########################################################
+
+  ## CREATING NEW VARIABLES FOR ANALYSES!
+
+  # add a new variable for phase where phase 1 is now 0 and phase 2 is now 1
+  AXQualtrics$phaseRecode = AXQualtrics$phase;
+  AXQualtrics$phaseRecode[AXQualtrics$phaseRecode==1] = 0;
+  AXQualtrics$phaseRecode[AXQualtrics$phaseRecode==2] = 1

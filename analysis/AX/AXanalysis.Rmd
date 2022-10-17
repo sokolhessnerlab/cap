@@ -1,22 +1,33 @@
 ---
 title: "CAP: AX-CPT analysis"
 author: "Kimberly Chiew"
-date: "2/2/2022"
+date: "4/11/2022"
 output: html_document
 ---
 
 Data set up is taken care of by AXsetup.R script. 
+
+
+
+
 ```{r setup, include=FALSE}
+
+# This chunk below does not work properly, run AXsetup.R
+# After AXsetup.R is run, AXQualtrics object should include empty cells for excluded sessions and there should be csv output with total number of missed trials per participant. 
+
 rm(list=ls())
 
 library('config')
 config = config::get()
 
 setup_source = file.path(config$code_files$ax_setup_data)
-source(setup_source) #, local = knitr::knit_global())
+source(setup_source) #, local = knitr::knit_global()) # this command hung -- could be because AXsetup.R takes a long time? 
 
+
+###### THIS IS CURRENTLY RUNNING AN RDM MODEL FILE -- NEEDS MODIFICATION TO AX
 # Looks for existing model file and if its found, then load it and we will now have our previous models in the environment
 outputfile = file.path(config$path$Rdata, config$Rdata_files$models)
+# this runs /Volumes/CAP/Rdata/model_output_rdm.Rdata which is not what I want 
 
 if(file.exists(outputfile)){
   load(outputfile)
@@ -24,22 +35,3 @@ if(file.exists(outputfile)){
 
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
