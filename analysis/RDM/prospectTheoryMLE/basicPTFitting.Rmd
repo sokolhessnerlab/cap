@@ -1,0 +1,138 @@
+---
+title: "basicPTfitting"
+author: "Hayley Brooks"
+date: '2022-10-06'
+output: html_document
+---
+
+THIS SCRIPT HAS NOT BEEN FULLY UPDATED FOR CAP YET
+ONE THING TBD IS WHICH DATA WE WILL USE (GAINONLY AND MIXED VALENCE OR JUST GAIN ONLY?)
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# load the functions
+ptFX_source = file.path(config$pt_modeling$ptFunction)
+ptWrap_source = file.path(config$pt_modeling$ptParallelWrap)
+source(ptFX_source)
+source(ptWrap_source)
+
+# load packages
+library('parallel') # Need to load this so mclapply is an option.
+library('tictoc'); # to keep track of time
+
+# load data for players with at least 5 plays
+
+#subData = # will we load both gain and loss or just gain?
+
+```
+
+```{r define-things-for-estimation}
+
+subjectIDs = unique(subData$subID)
+nSub = length(subjectIDs)
+eps = .Machine$double.eps;
+
+
+ncores = 4; # cores that we will use for estimation (all of them)
+niter = 250; #iterations per core
+
+
+PT_ColumnNames = c("lambda", "rhoGain", "mu","lambda SE","rhoGain SE","mu SE","log likelihood");
+
+
+# Set up data to store maximum likelihood results
+PT_ColumnNames = c("lambda","rhoGain", "Mu","lambda SE", "rhoGain SE", "Mu SE","nLL", "failed optims"); #name of columns
+PT_singleSub_results = array(data=NA, dim= c(ncores,length(PT_ColumnNames), niter), dimnames = list(c(NULL), PT_ColumnNames, (NULL))); #storing data for one person for all the iterations
+PT_allSubs_bestResult = as.data.frame(matrix(nrow=nSub, ncol = length(PT_ColumnNames), dimnames = list(c(NULL), PT_ColumnNames))); #best pars each subject, multiple times, ev of gamble
+
+```
+
+
+```{r, echo=FALSE}
+# try one subject/optimize once
+
+    singleSub= subData[subData$id==unique(subData$id)[100],]; #pull out data for subject of choice
+    initparval = c(.1,.1,.1,.5); #setting initial values for lambda, rho, mu when optim runs once.
+    output <- optim(initparval,ptLL,data=singleSub,method= "L-BFGS-B", lower=c(.5,.3,.3,.1), upper=c(5,1.3,1.3,20),hessian=TRUE);
+    se = sqrt(diag(solve(output$hessian))); # Calculate the standard error of the parameter we estimate
+    cat("\nBest-fitting parameter=",output$par," with SE=",se); #show paramters and standard errors
+```
+
+
+
+
+
+```{r}
+
+# Do the fitting for one person a bunch of times for one participant
+tic()
+outputlist <- mclapply(1:ncores, mc.cores = ncores, function(i) parallel_ptLL(niter,singleSub)); 
+toc()
+
+countfailoptims = 0;
+for(i in 1:ncores){
+  for(j in 1:niter){
+    if (typeof(outputlist[[i]][[j]]) == 'list'){ # if outputlist is a list then optim did not fail
+      PT_singleSub_results[i,1:4,j] <- outputlist[[i]][[j]]$par
+      PT_singleSub_results[i,9,j] <- outputlist[[i]][[j]]$value; # pull out the function values
+    } else {
+      countfailoptims = countfailoptims + 1}
+  }
+};
+
+indBest <- which(min(PT_singleSub_results[,9,], na.rm = TRUE)==PT_singleSub_results,arr.ind = T); # get the indices of the single best optimization across the cores & iterations
+bestoutput <- outputlist[[indBest[1]]][[indBest[3]]];
+if(!any(bestoutput$hessian==0)){
+  se = sqrt(diag(solve(bestoutput$hessian))); 
+}
+cat("\nBest-fitting PT parameter=",bestoutput$par," with SE=",se,"ll = ", bestoutput$value); #show paramters and standard errors
+
+```
+
+```{r}
+#Fit each participant, store best iteration for each 
+tic(); 
+for (s in 1:nSub){
+  countfailoptims = 0;
+  print(c("Subject Number", s), quote=FALSE); #status update: show subject number for current iteration
+  singleSub = subData[subData$id==subjectIDs[s],]
+  
+  outputlist <- mclapply(1:ncores, mc.cores = ncores, 
+                         function(i) parallel_ptLL(niter,singleSub)) # do iiitttt
+  
+  allvals = array(data=NA,dim=c(ncores,5,niter),dimnames = list(c(NULL),c("lambda", "rhoGain", "rhoLoss", "mu", "ll"), (NULL))); #place holder for all function values
+  
+  for(i in 1:ncores){
+    for(j in 1:niter){
+      if (typeof(outputlist[[i]][[j]]) == 'list'){ # if outputlist is a list, then optim did not fail
+        allvals[i,1:4,j] <- outputlist[[i]][[j]]$par
+        allvals[i,5,j] <- outputlist[[i]][[j]]$value; # pull out the function value
+      } else {
+        countfailoptims = countfailoptims + 1;}
+    }
+  };
+  
+  PT_allSubs_bestResult$`failed optims`[s] = countfailoptims
+  indBest <- which(min(allvals[,5,], na.rm = TRUE)==allvals ,arr.ind = T); # get the indices of the single best optimization across the cores & iterations
+  bestoutput <- outputlist[[indBest[1]]][[indBest[3]]];
+  
+  PT_allSubs_bestResult[s,1:4] <-bestoutput$par; #pull out output structures for best optim
+  
+  if(!any(bestoutput$hessian==0)){
+    se = sqrt(diag(solve(bestoutput$hessian))); #calculate standard errors for each parameter
+    PT_allSubs_bestResult[s,5:8] <- se;}
+  
+  
+  PT_allSubs_bestResult[s,9] <-bestoutput$value;
+  
+  cat("\nBest-fitting PT parameter=",bestoutput$par," with SE=",se,"ll = ", bestoutput$value); #show paramters and standard errors
+};
+toc();
+
+PT_allSubs_bestResult$id = subjectIDs # add subIDs to dataframe
+
+save(PT_allSubs_bestResult, file = "/Users/shlab/Desktop/GBEdata/Rutledge_risk_and_happiness_task_2020/prospectTheory_analysis/simplePT_allSubs_FivePlaysMore.Rdata"); # save results
+
+```
+
