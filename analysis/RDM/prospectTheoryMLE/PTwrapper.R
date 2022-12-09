@@ -6,7 +6,9 @@ library('config')
 config = config::get()
 
 # load Prospect Theory Functions
-setup_source = file.path(config$pt_modeling$ptFunction)
+#need to fix configuration file
+#setup_source = file.path(config$pt_modeling$ptFunction)
+setup_source = file.path("capPT.R")
 source(setup_source) #, local = knitr::knit_global())
 
 
@@ -14,7 +16,7 @@ source(setup_source) #, local = knitr::knit_global())
 eps = .Machine$double.eps;
 #estimation_lowerbound = c(eps,eps,eps,eps);
 estimation_lowerbound = c(.5,.3,.1); # lower bound of parameter values is machine precision above zero
-estimation_upperbound = c(5,1.3,,20); # sensible upper bounds on parameter values: lambda, rhogain, mu
+estimation_upperbound = c(5,1.3,20); # sensible upper bounds on parameter values: lambda, rhogain, mu
 
 # Wrap the our PT likelihood and probability functions into one that can be individual sent to each core via mclapply
 parallel_ptLL <- function(n,subjdata){
@@ -27,6 +29,6 @@ parallel_ptLL <- function(n,subjdata){
     try({output = optim(init_parval, ptLL, data=subjdata, method= "L-BFGS-B", lower=estimation_lowerbound, upper=estimation_upperbound, hessian=TRUE);
     alloutput[[i]] <- output}); # Save the output into a bigass list
   };
-  return(alloutput) # return that bigass list
+  return(alloutput) # return the big list
 };
 

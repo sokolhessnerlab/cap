@@ -1,0 +1,37 @@
+---
+title: "Comparing gain & mixed gamble chioces"
+author: "Hayley Brooks"
+date: "2022-12-09"
+output: html_document
+---
+We will be fitting a PT model to the CAP data. We have a gain-only choice set and a gain-loss choiceset. Participants were compensated from the gain-only adn the gain-loss choices were made after the gain-only choices. To determine whether we should fit BOTH of these choices at once, we will do some comparisons between the data.
+
+1. Reaction Time
+2. Missed trials
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library('config')
+config = config::get()
+
+
+# load csv file with both tasks
+capdata = read.csv(file.path(config$path$combined, config$RDMcsvs$RDMbothTasks_qualtrics))
+
+```
+
+
+```{r}
+
+# missed trials
+sum(is.na(capdata$rdmChoice[capdata$rdmTask==1])); # 1.4% of trials missed (1495/107219) in gain-only task
+sum(is.na(capdata$rdmChoice[capdata$rdmTask==2])); # 2.2% of trials missed (381/17353) in gain-loss task
+
+# reaction time (even though we have a 2s forced viewing period)
+summary(capdata$rdmRT[capdata$rdmTask==1]); # mean = .41, Median = .35
+summary(capdata$rdmRT[capdata$rdmTask==1]); # mean = .41, Median = .33
+
+```
+
