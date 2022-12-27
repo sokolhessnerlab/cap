@@ -19,11 +19,16 @@ config = config::get()
 
 # load csv file with both tasks
 capdata = read.csv(file.path(config$path$combined, config$RDMcsvs$RDMbothTasks_qualtrics))
+# load PT model fitting results
+load(file.path(config$path$Rdata, "PT_allSubs_fullModelPhase1.Rdata"))
+load(file.path(config$path$Rdata, "PT_allSubs_fullModelPhase2.Rdata"))
+load(file.path(config$path$Rdata, "PT_allSubs_gainOnlyPhase1.Rdata"))
+load(file.path(config$path$Rdata, "PT_allSubs_gainOnlyPhase1.Rdata"))
 
 ```
 
 
-```{r}
+```{r missedT-RT}
 
 # missed trials
 sum(is.na(capdata$rdmChoice[capdata$rdmTask==1])); # 1.4% of trials missed (1495/107219) in gain-only task
@@ -31,7 +36,64 @@ sum(is.na(capdata$rdmChoice[capdata$rdmTask==2])); # 2.2% of trials missed (381/
 
 # reaction time (even though we have a 2s forced viewing period)
 summary(capdata$rdmRT[capdata$rdmTask==1]); # mean = .41, Median = .35
-summary(capdata$rdmRT[capdata$rdmTask==1]); # mean = .41, Median = .33
+summary(capdata$rdmRT[capdata$rdmTask==2]); # mean = .41, Median = .33
+
+```
+
+
+```{r model-comparison}
+
+# AIC
+AIC = function(nll,npar){
+  -2*(-nll) + 2*npar
+};
+
+sum(PT_allSubs_fullPhase1_bestResult$nLL); # npar = nSub*3
+sum(PT_allSubs_fullPhase2_bestResult$nLL); # npar = nSub*3
+sum(PT_allSubs_gainPhase1_bestResult$nLL); # npar = nSub*2
+sum(PT_allSubs_gainPhase2_bestResult$nLL); # npar = nSub*2
+
+
+AIC(sum(PT_allSubs_fullPhase1_bestResult$nLL), nSubPhase1*3) # 52079.05
+AIC(sum(PT_allSubs_fullPhase2_bestResult$nLL), nSubPhase2*3) # 31080.04
+AIC(sum(PT_allSubs_gainPhase1_bestResult$nLL), nSubPhase1*2) # 44294.27
+AIC(sum(PT_allSubs_gainPhase2_bestResult$nLL), nSubPhase2*2) # 25794.07
+  
+# compare rho estimates
+# phase 1:
+par(pty="s")
+plot(PT_allSubs_fullPhase1_bestResult$rhoGain, PT_allSubs_gainPhase1_bestResult$rho, xlab="full model", ylab="gain only model", main = "Risk aversion estimates\nPhase 1 n=544")
+abline(a=0, b=1)
+
+par(pty="s")
+plot(PT_allSubs_fullPhase1_bestResult$mu, PT_allSubs_gainPhase1_bestResult$mu, xlab="full model", ylab="gain only model", main = "Choice consistency estimates\nPhase 1 n=544")
+abline(a=0, b=1)
+
+phase1rhodiff = PT_allSubs_fullPhase1_bestResult$rhoGain - PT_allSubs_gainPhase1_bestResult$rho
+hist(phase1rhodiff)
+
+par(pty="s")
+plot(PT_allSubs_fullPhase1_bestResult$`rho SE`, PT_allSubs_gainPhase1_bestResult$`rho SE`, xlab="full model", ylab="gain only model", main = "rho estimate error\nPhase 1 n=544", xlim=c(0,3), ylim=c(0,3), asp=1)
+abline(a=0, b=1)
+
+# phase 2
+par(pty="s")
+plot(PT_allSubs_fullPhase2_bestResult$rhoGain, PT_allSubs_gainPhase2_bestResult$rho, xlab="full model", ylab="gain only model", main = "Risk aversion estimates\nPhase 2 n=357")
+abline(a=0, b=1)
+
+plot(PT_allSubs_fullPhase2_bestResult$mu, PT_allSubs_gainPhase2_bestResult$mu, xlab="full model", ylab="gain only model", main = "Choice consistency estimates\nPhase 2 n=357")
+abline(a=0, b=1)
+
+
+phase2rhodiff = PT_allSubs_fullPhase2_bestResult$rhoGain - PT_allSubs_gainPhase2_bestResult$rho
+hist(phase2rhodiff)
+
+par(pty="s")
+plot(PT_allSubs_fullPhase2_bestResult$`rho SE`, PT_allSubs_gainPhase2_bestResult$`rho SE`, xlab="full model", ylab="gain only model", main = "rho estimate error\nPhase 2 n=357", xlim=c(0,3), ylim=c(0,3), asp=1)
+abline(a=0, b=1)
+
+
+# people at the bottom in rho estimates across models where there is more variability, perhaps their estimates are more unstable because they are rejecting a lot of trials
 
 ```
 
