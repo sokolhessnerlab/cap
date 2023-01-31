@@ -1,0 +1,121 @@
+---
+title: "cap_runStan"
+author: "Hayley Brooks"
+date: "2023-01-31"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+rm(list = ls())
+
+library('config')
+config = config::get()
+
+# load packages
+library(rstan)
+library(parallel)
+
+# load data file
+capData = read.csv(file.path(config$path$combined, config$RDMcsvs$RDMbothTasks_qualtrics))
+
+```
+
+```{r data-setup}
+
+# Data needs to be in a list, e.g stanData = list(subID = rdmDFall_clean$subID, etc)
+#   USE EXACT SAME VARIABLE NAMES FROM STAN FILE
+#    data cannot have any nans, replace with zeroes
+
+capDataStan = capData[is.finite(capData$rdmChoice),]; # remove trials where choice is NA (stan can't handle NAs)
+
+
+# CAP data IDs are sequential
+subIDs = as.numeric(unique(capDataStan$subID))
+nSub= length(subIDs)
+
+
+capDataList = list(
+  choices = capDataStan$rdmChoice,
+  gain = capDataStan$rdmRiskyGain,
+  loss = capDataStan$rdmRiskyLoss,
+  safe = capDataStan$rdmAlternative,
+  ind = capDataStan$subID,
+  nsubj = nSub,
+  N = length(capDataStan$rdmChoice)
+)
+
+```
+
+
+```{r call-stan-program}
+#stanModel = "/Users/shlab/Documents/GitHub/rcs/analysis/stan/rcs_practiceStan.stan"
+stanModel = "/Users/hayley/Documents/GitHub/cap/analysis/RDM/stan/cap_practiceStan.stan"
+#stanModel = "/Users/shlab/Documents/GitHub/rcs/analysis/stan/rcs_stanCBMcopy.stan"
+
+```
+
+```{r configure-the-model}
+
+# define some things
+nChains = 2 # number of chains (1 chain per core)
+fitSteps = 200 # stan will save half of this many x nChains per parameter
+
+pars = c('meanRho', 'meanMu', 'meanLambda',
+         'sdRho', 'sdMu', 'sdLambda',
+         'r', 'm', 'l');
+
+starttime = proc.time()[3];
+
+seed = runif(1,1,1e6); # stan needs random integer from 1 to max supportable
+
+# compile the model
+fit0 = stan(file = stanModel, data =capDataList, iter = 1, chains = 1, pars=pars); # this initializes or sets up the model
+
+fit0time = proc.time()[3];
+print(noquote(sprintf('Complication time = %.1f seconds',(fit0time-starttime))));
+
+# fit with paralellization
+seed <- runif(1,1,1e6); # Stan wants a random integer from 1 to max supportable
+
+sflist1 <-
+  mclapply(1:nChains, mc.cores = nChains,
+           function(i) stan(fit = fit0, seed=seed, data = capDataList,
+                            iter = fitSteps, chains = 1, chain_id = i,
+                            pars = pars))
+
+fittime = proc.time()[3];
+print(noquote(sprintf('Sampling time = %.1f minutes.',(fittime-fit0time)/60)))
+
+
+
+sflistFinal = list();
+k = 1;
+for (i in 1:nChains){
+  if (any(dim(sflist1[[i]]) > 0)) {
+    sflistFinal[[k]] <- sflist1[[i]]
+    k = k + 1;
+  }
+  else {print(noquote(sprintf('WARNING: Chain %d did not include any samples.',i)))}
+}
+
+save(stanModel,sflistFinal, file = sprintf('cap_basicRhoMuLambda_%s.Rdata',format(Sys.Date(), format="%Y%m%d")))
+
+```
+
+
+
+```{r assess-model-fit}
+
+```
+
+
+
+
+```{r resources}
+# https://ourcodingclub.github.io/tutorials/stan-intro/
+
+# https://www.r-bloggers.com/2019/01/an-introduction-to-stan-with-r/
+
+# https://github.com/sokolhessnerlab/cbm_Brooks2020
+```
+
