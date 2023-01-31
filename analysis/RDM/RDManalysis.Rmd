@@ -650,8 +650,19 @@ if(!exists('model_pred_3timescales_covidRisk_dayintx_BIGMODEL_glmer')){
 
 
 
-```{r}
+```{r save-lme4-models}
 # save our models
 save(file=outputfile, list=ls(pattern=glob2rx("model*")));
+```
+
+
+
+```{r AXCPT-RDM}
+
+# Going to look at stan stuff with PSH
+
+# For accounting for phase or day, we could incorporate it as a dummy variable for each participant and for the AXCPT, we'd also add it into the model. 
+
+# need to add AXCPT to the rdm data
 ```
 
