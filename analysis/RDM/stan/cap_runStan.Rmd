@@ -48,9 +48,8 @@ capDataList = list(
 
 
 ```{r call-stan-program}
-#stanModel = "/Users/shlab/Documents/GitHub/rcs/analysis/stan/rcs_practiceStan.stan"
-stanModel = "/Users/hayley/Documents/GitHub/cap/analysis/RDM/stan/cap_practiceStan.stan"
-#stanModel = "/Users/shlab/Documents/GitHub/rcs/analysis/stan/rcs_stanCBMcopy.stan"
+stanModel = "/Users/shlab/Documents/GitHub/cap/analysis/RDM/stan/cap_model0basic.stan"
+#stanModel = "/Users/hayley/Documents/GitHub/cap/analysis/RDM/stan/cap_model0basic.stan"
 
 ```
 
