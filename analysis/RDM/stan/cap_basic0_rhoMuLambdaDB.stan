@@ -38,10 +38,13 @@ parameters {
   real<lower=0> sdMu;
   real meanLambda;
   real<lower=0> sdLambda;
+  real meanDB;
+  real<lower=0> sdDB;
 
   real r[nsubj]; // random effects for rho
   real m[nsubj]; // random effects for mu
   real l[nsubj]; // random effects for lambda
+  real db[nsubj]; // random effects for decision bias
 }
 
 // transformed parameters - where a lot of the work actually happens, esp as we modify the model.
@@ -78,33 +81,26 @@ model {
   sdMu ~ cauchy(0,2.5);
   meanLambda ~ normal(0,30);
   sdLambda ~ cauchy(0,2.5);
+  meanDB ~ normal(0,30);
+  sdDB ~ cauchy(0,2.5);
 
   //Hierarchy
   r ~ normal(meanRho, sdRho);
   m ~ normal(meanMu, sdMu);
   l ~ normal(meanLambda, sdLambda);
-
-  //using matrix indexing: note - we tried this and ran into issues and decided to stick with loop below.
-  //div = fmax(gain)^rtmp; // dont have access to regular r functions, use fmax, fmin for max and min inside stan
-  //div = 61^rtmp
-  //div = pow(61,rtmp)
-  // div = 61^2; // this works suggesting that rstan doesn't like something about rtmp
-  //
-  //gambleUtil = .5 * gain^rtmp;
-  // safeUtil = safe^rtmp;
-  // p = inv_logit(mtmp / div * (gambleUtil - safeUtil));
-
+  db ~ normal(meanDB,sdDB);
+  
 
   for (t in 1:N) {
     div = 61^rtmp[t];
-    // Model with M, L, R
+    // Model with M, L, R, DB
 
     gainUtil = 0.5 * gain[t]^rtmp[t];
     lossUtil = -0.5 * ltmp[t] * fabs(loss[t])^rtmp[t];
 
     safeUtil = safe[t]^rtmp[t];
 
-    p[t] = inv_logit(mtmp[t] / div * (gainUtil + lossUtil - safeUtil));
+    p[t] = inv_logit(mtmp[t] / div * (gainUtil + lossUtil - safeUtil - db[ind[t]]));
   }
   choices ~ bernoulli(p);
 }
