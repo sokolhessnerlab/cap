@@ -1,0 +1,60 @@
+---
+title: "CAP stan model assessment"
+author: "Hayley Brooks"
+date: "2023-02-06"
+output: html_document
+---
+
+Load and assess model fit for stan models for CAP study
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+
+library(config)
+library(rstan)
+config = config::get()
+
+
+load(file.path(config$path$Rdata, 'stanModelOutput/cap_basicRhoMuLambda_20230201.Rdata')); # load basic model with rho, mu and lambda
+
+```
+
+```{r}
+
+fit1 <- sflist2stanfit(sflistFinal)
+
+sSamples <- extract(fit1)
+q95 <- c(0.025,0.975);q90 <- c(0.05,0.95);q85 <- c(0.075,0.925);q80 <- c(0.1,0.9);q75 <- c(0.125,0.875);q70 <- c(0.15,0.85)
+ 
+print(fit1)
+
+fit1summ = summary(fit1);
+
+neffs = fit1summ$summary[,'n_eff'];
+rhats = fit1summ$summary[,'Rhat'];
+
+
+meanparams = c('meanRho','meanMu', 'meanLambda')
+
+sdparams = c('sdRho','sdMu', 'sdLambda')
+
+neffs[meanparams]
+rhats[meanparams]
+
+neffs[sdparams]
+rhats[sdparams]
+
+
+# Means and 95% CIs for main parameters
+exp(mean(sSamples$meanRho))
+exp(quantile(probs=q95,sSamples$meanRho))
+
+exp(mean(sSamples$meanMu))
+exp(quantile(probs=q95,sSamples$meanMu))
+
+exp(mean(sSamples$meanLambda))
+exp(quantile(probs=q95,sSamples$meanLambda))
+
+
+```
