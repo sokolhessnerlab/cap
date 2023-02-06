@@ -58,8 +58,8 @@ stanModel = "/Users/shlab/Documents/GitHub/cap/analysis/RDM/stan/cap_basic0_rhoM
 ```{r configure-the-model}
 
 # define some things
-nChains = 2 # number of chains (1 chain per core)
-fitSteps = 200 # stan will save half of this many x nChains per parameter
+nChains = 6 # number of chains (1 chain per core)
+fitSteps = 10000 # stan will save half of this many x nChains per parameter
 
 pars = c('meanRho', 'meanMu', 'meanLambda', 'meanDB',
          'sdRho', 'sdMu', 'sdLambda', 'sdDB',
@@ -99,8 +99,8 @@ for (i in 1:nChains){
   else {print(noquote(sprintf('WARNING: Chain %d did not include any samples.',i)))}
 }
 
-save(stanModel,sflistFinal, file = sprintf('cap_basicRhoMuLambdaBD_%s.Rdata',format(Sys.Date(), format="%Y%m%d")))
-#save(stanMode, sflistFinal, file = file.path(config$path$Rdata, 'stanModelOutput/cap_basicRhoMuLambda_%s.Rdata',format(Sys.Date(), format="%Y%m%d")))
+
+save(stanModel, sflistFinal, file = file.path(config$path$Rdata, 'stanModelOutput/cap_basicRhoMuLambdaDB_%s.Rdata',format(Sys.Date(), format="%Y%m%d")))
 
 
 ```
