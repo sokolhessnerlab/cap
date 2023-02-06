@@ -29,15 +29,21 @@ q95 <- c(0.025,0.975);q90 <- c(0.05,0.95);q85 <- c(0.075,0.925);q80 <- c(0.1,0.9
  
 print(fit1)
 
+# check trace plots for parameters
+plot(sSamples$meanRho, type="l")
+plot(sSamples$meanLambda, type="l")
+plot(sSamples$meanMu, type="l")
+plot(sSamples$meanDB, type="l")
+
 fit1summ = summary(fit1);
 
 neffs = fit1summ$summary[,'n_eff'];
 rhats = fit1summ$summary[,'Rhat'];
 
 
-meanparams = c('meanRho','meanMu', 'meanLambda')
+meanparams = c('meanRho','meanMu', 'meanLambda', 'meanDB')
 
-sdparams = c('sdRho','sdMu', 'sdLambda')
+sdparams = c('sdRho','sdMu', 'sdLambda', 'sdDB')
 
 neffs[meanparams]
 rhats[meanparams]
@@ -56,5 +62,7 @@ exp(quantile(probs=q95,sSamples$meanMu))
 exp(mean(sSamples$meanLambda))
 exp(quantile(probs=q95,sSamples$meanLambda))
 
+exp(mean(sSamples$meanDB))
+exp(quantile(probs=q95,sSamples$meanDB))
 
 ```
