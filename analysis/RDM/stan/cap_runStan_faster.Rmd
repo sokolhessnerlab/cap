@@ -1,0 +1,143 @@
+---
+title: "cap_runStan"
+author: "Hayley Brooks"
+date: "2023-01-31"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+rm(list = ls())
+
+library('config')
+config = config::get()
+
+# load packages
+library(rstan)
+library(parallel)
+
+setup_source = file.path(config$path$code$rdm_r_scripts,config$code_files$rdm_setup_data)
+source(setup_source) #, local = knitr::knit_global())
+
+# # load data file (DEPRECATED)
+# capData = read.csv(file.path(config$path$combined, config$RDMcsvs$RDMbothTasks_qualtrics))
+
+```
+
+```{r data-setup}
+
+# Data needs to be in a list, e.g stanData = list(subID = rdmDFall_clean$subID, etc)
+#   USE EXACT SAME VARIABLE NAMES FROM STAN FILE
+#    data cannot have any nans, replace with zeroes
+
+rdmBothQualtricsStan = rdmBothQualtrics[is.finite(rdmBothQualtrics$rdmChoice),]; # remove trials where choice is NA (stan can't handle NAs)
+
+
+# Data IDs are NOT sequential b/c of exclusions: create sequential subject ID variable
+tmp_subID = 0;
+rdmBothQualtricsStan$subIDseq = rdmBothQualtricsStan$subID;
+orig_subIDs = unique(rdmBothQualtricsStan$subID); # non-sequential
+
+for (s in orig_subIDs){
+  tmp_subID = tmp_subID + 1;
+  ind = rdmBothQualtricsStan$subID == s;
+  rdmBothQualtricsStan$subIDseq[ind] = tmp_subID;
+}
+
+seq_subIDs = unique(rdmBothQualtricsStan$subIDseq); # sequential
+nSub = length(seq_subIDs);
+
+
+capDataList = list(
+  choices = rdmBothQualtricsStan$rdmChoice,
+  gain = rdmBothQualtricsStan$rdmRiskyGain,
+  loss = abs(rdmBothQualtricsStan$rdmRiskyLoss),
+  safe = rdmBothQualtricsStan$rdmAlternative,
+  day = rdmBothQualtricsStan$dayOverallSC,
+  covRisk = rdmBothQualtricsStan$covq_PAB_q1_personalRisk_centeredscaledNoNA,
+  ind = rdmBothQualtricsStan$subIDseq,
+  nsubj = nSub,
+  N = length(rdmBothQualtricsStan$rdmChoice)
+)
+
+```
+
+
+```{r call-stan-program}
+
+#stanModel = "/Users/shlab/Documents/GitHub/cap/analysis/RDM/stan/cap_basic0_rhoMuLambda.stan"
+#stanModel = "/Users/hayley/Documents/GitHub/cap/analysis/RDM/stan/cap_model0basic.stan"
+#stanModel = "/Users/shlab/Documents/GitHub/cap/analysis/RDM/stan/cap_basic0_rhoMuLambdaDB.stan"
+# stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_daycovRisk1_rhoMuLambdaDB_rhoChange.stan"
+
+stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_basic0_rhoMuLambdaDB_faster.stan"
+# stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_basic0_rhoMuLambdaDB.stan"
+
+```
+
+```{r configure-the-model}
+
+# define some things
+nChains = 2 # number of chains (1 chain per core)
+fitSteps = 100 # stan will save half of this many x nChains per parameter
+
+pars = c('meanRho', 'meanMu', 'meanLambda', 'meanDB',
+         'sdRho', 'sdMu', 'sdLambda', 'sdDB',
+         'r', 'm', 'l', 'db');
+
+starttime = proc.time()[3];
+
+seed = runif(1,1,1e6); # stan needs random integer from 1 to max supportable
+
+# compile the model
+fit0 = stan(file = stanModel, data =capDataList, iter = 1, chains = 1, pars=pars); # this initializes or sets up the model
+
+fit0time = proc.time()[3];
+print(noquote(sprintf('Compilation time = %.1f seconds',(fit0time-starttime))));
+
+# fit with paralellization
+seed <- runif(1,1,1e6); # Stan wants a random integer from 1 to max supportable
+
+sflist1 <-
+  mclapply(1:nChains, mc.cores = nChains,
+           function(i) stan(fit = fit0, seed=seed, data = capDataList,
+                            iter = fitSteps, chains = 1, chain_id = i,
+                            pars = pars))
+
+fittime = proc.time()[3];
+print(noquote(sprintf('Sampling time = %.1f minutes.',(fittime-fit0time)/60)))
+
+
+
+sflistFinal = list();
+k = 1;
+for (i in 1:nChains){
+  if (any(dim(sflist1[[i]]) > 0)) {
+    sflistFinal[[k]] <- sflist1[[i]]
+    k = k + 1;
+  }
+  else {print(noquote(sprintf('WARNING: Chain %d did not include any samples.',i)))}
+}
+
+
+save(stanModel, sflistFinal, file = file.path(config$path$Rdata, 'stanModelOutput/cap_RhoMuLambdaDB_day+covRisk+Rho_%s.Rdata',format(Sys.Date(), format="%Y%m%d")))
+
+
+```
+
+
+
+```{r assess-model-fit}
+
+```
+
+
+
+
+```{r resources}
+# https://ourcodingclub.github.io/tutorials/stan-intro/
+
+# https://www.r-bloggers.com/2019/01/an-introduction-to-stan-with-r/
+
+# https://github.com/sokolhessnerlab/cbm_Brooks2020
+```
+
