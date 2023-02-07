@@ -35,7 +35,7 @@ excludePhs2 = read.csv(exclsnPhs2_csv); # loads exclusion for phase 2
 qualtricsBothPhs = read.csv(qualtricsBothPhs_csv); # load qualtrics responses
 load(subLevelLong_path); # load subject-level long dataframe
 load(subLevelWide_path); # load subject-level wide dataframe
-print('Behavioral data files loaded.')
+print('Behavioral data files loaded. Now preparing additional variables.')
 
 # Remove the extra "X" column present as the first column in datasets
 rdmGainQualtrics = rdmGainQualtrics[,(2:ncol(rdmGainQualtrics))];
@@ -433,4 +433,4 @@ rdmGainQualtrics$signedShift[rdmGainQualtrics$rdmTrial==1] = 0; # first trial is
 rdmGainQualtrics$posShift = rdmGainQualtrics$signedShift*as.numeric(rdmGainQualtrics$signedShift>0);
 rdmGainQualtrics$negShift = rdmGainQualtrics$signedShift*as.numeric(rdmGainQualtrics$signedShift<0);
 
-
+print('RDM data setup complete.')
