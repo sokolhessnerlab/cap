@@ -282,9 +282,6 @@ mean(covriskphs1,na.rm=T); # 0.5322816
 mean(covriskphs2,na.rm=T); # 0.5015385 
 # Decrease in perceived risk is trending p = 0.08
 
-rdmGainQualtrics$covq_PAB_q1_personalRisk_centeredscaledNoNA = (rdmGainQualtrics$covq_PAB_q1_personalRisk-5)/4;
-rdmGainQualtrics$covq_PAB_q1_personalRisk_centeredscaledNoNA[is.na(rdmGainQualtrics$covq_PAB_q1_personalRisk_centeredscaledNoNA)] = 0;
-
 if(!exists('model_pred_covidRiskCentered_x_dayOverallSC')){
   model_pred_covidRiskCentered_x_dayOverallSC = glmer(rdmChoice ~  1 + covq_PAB_q1_personalRisk_centeredscaledNoNA*dayOverallSC + (1|subID), data=rdmGainQualtrics, family="binomial", na.action=na.exclude, control=glmerControl(optimizer = "bobyqa",optCtrl = list(maxfun=1000000)), offset=predmTask );
 }

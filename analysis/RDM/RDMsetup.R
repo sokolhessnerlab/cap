@@ -433,4 +433,11 @@ rdmGainQualtrics$signedShift[rdmGainQualtrics$rdmTrial==1] = 0; # first trial is
 rdmGainQualtrics$posShift = rdmGainQualtrics$signedShift*as.numeric(rdmGainQualtrics$signedShift>0);
 rdmGainQualtrics$negShift = rdmGainQualtrics$signedShift*as.numeric(rdmGainQualtrics$signedShift<0);
 
+# Edit perceived COVID risk variables
+rdmGainQualtrics$covq_PAB_q1_personalRisk_centeredscaledNoNA = (rdmGainQualtrics$covq_PAB_q1_personalRisk-5)/4;
+rdmGainQualtrics$covq_PAB_q1_personalRisk_centeredscaledNoNA[is.na(rdmGainQualtrics$covq_PAB_q1_personalRisk_centeredscaledNoNA)] = 0;
+
+rdmBothQualtrics$covq_PAB_q1_personalRisk_centeredscaledNoNA = (rdmBothQualtrics$covq_PAB_q1_personalRisk-5)/4;
+rdmBothQualtrics$covq_PAB_q1_personalRisk_centeredscaledNoNA[is.na(rdmBothQualtrics$covq_PAB_q1_personalRisk_centeredscaledNoNA)] = 0;
+
 print('RDM data setup complete.')
