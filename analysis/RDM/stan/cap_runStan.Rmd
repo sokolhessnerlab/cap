@@ -15,7 +15,7 @@ config = config::get()
 library(rstan)
 library(parallel)
 
-setup_source = file.path(config$code_files$rdm_setup_data)
+setup_source = file.path(config$path$code$rdm_r_scripts,config$code_files$rdm_setup_data)
 source(setup_source) #, local = knitr::knit_global())
 
 # # load data file (DEPRECATED)
@@ -29,22 +29,22 @@ source(setup_source) #, local = knitr::knit_global())
 #   USE EXACT SAME VARIABLE NAMES FROM STAN FILE
 #    data cannot have any nans, replace with zeroes
 
-capDataStan = capData[is.finite(capData$rdmChoice),]; # remove trials where choice is NA (stan can't handle NAs)
+rdmBothQualtricsStan = rdmBothQualtrics[is.finite(rdmBothQualtrics$rdmChoice),]; # remove trials where choice is NA (stan can't handle NAs)
 
 
 # CAP data IDs are sequential
-subIDs = as.numeric(unique(capDataStan$subID))
+subIDs = as.numeric(unique(rdmBothQualtricsStan$subID))
 nSub= length(subIDs)
 
 
 capDataList = list(
-  choices = capDataStan$rdmChoice,
-  gain = capDataStan$rdmRiskyGain,
-  loss = capDataStan$rdmRiskyLoss,
-  safe = capDataStan$rdmAlternative,
-  ind = capDataStan$subID,
+  choices = rdmBothQualtricsStan$rdmChoice,
+  gain = rdmBothQualtricsStan$rdmRiskyGain,
+  loss = rdmBothQualtricsStan$rdmRiskyLoss,
+  safe = rdmBothQualtricsStan$rdmAlternative,
+  ind = rdmBothQualtricsStan$subID,
   nsubj = nSub,
-  N = length(capDataStan$rdmChoice)
+  N = length(rdmBothQualtricsStan$rdmChoice)
 )
 
 ```
