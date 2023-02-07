@@ -26,7 +26,7 @@ qualtricsBothPhs_csv = file.path(config$path$combined, config$QUALTRICScsvs$Comb
 subLevelLong_path = file.path(config$path$Rdata, config$Rdata_files$QualtricsSubLevelLong); # subject-level long format path
 subLevelWide_path = file.path(config$path$Rdata, config$Rdata_files$QualtricsSubLevelWide); # subject-level wide format path
 
-print('Loading behavioral data files.')
+cat('Loading decision-making data files...\n')
 rdmGainQualtrics = read.csv(rdmGain_csv); # loads gain only RDM + Qualtrics data both phases (takes several seconds)
 rdmLossQualtrics = read.csv(rdmLoss_csv); # loads loss only RDM + Qualtrics data both phases (takes several seconds)
 rdmBothQualtrics = read.csv(rdmBoth_csv); # loads both tasks + Qualtrics data both phases (takes several seconds)
@@ -35,7 +35,8 @@ excludePhs2 = read.csv(exclsnPhs2_csv); # loads exclusion for phase 2
 qualtricsBothPhs = read.csv(qualtricsBothPhs_csv); # load qualtrics responses
 load(subLevelLong_path); # load subject-level long dataframe
 load(subLevelWide_path); # load subject-level wide dataframe
-print('Behavioral data files loaded. Now preparing additional variables.')
+cat('Data files loaded.\n')
+cat('Preparing additional variables...\n')
 
 # Remove the extra "X" column present as the first column in datasets
 rdmGainQualtrics = rdmGainQualtrics[,(2:ncol(rdmGainQualtrics))];
@@ -440,4 +441,4 @@ rdmGainQualtrics$covq_PAB_q1_personalRisk_centeredscaledNoNA[is.na(rdmGainQualtr
 rdmBothQualtrics$covq_PAB_q1_personalRisk_centeredscaledNoNA = (rdmBothQualtrics$covq_PAB_q1_personalRisk-5)/4;
 rdmBothQualtrics$covq_PAB_q1_personalRisk_centeredscaledNoNA[is.na(rdmBothQualtrics$covq_PAB_q1_personalRisk_centeredscaledNoNA)] = 0;
 
-print('RDM data setup complete.')
+cat('Decision-making data setup complete.\n\n')
