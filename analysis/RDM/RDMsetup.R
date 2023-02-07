@@ -19,24 +19,28 @@ config = config::get()
 # load data
 rdmGain_csv = file.path(config$path$combined, config$RDMcsvs$RDMgain_qualtrics); # gain only task path
 rdmLoss_csv = file.path(config$path$combined, config$RDMcsvs$RDMloss_qualtrics); # loss only task path
+rdmBoth_csv = file.path(config$path$combined, config$RDMcsvs$RDMbothTasks_qualtrics); # Both tasks path
 exclsnPhs1_csv = file.path(config$path$combined, config$EXCLUSIONcsvs$RDM_AX_Qual_Phs1exclusion); # phase 1 exclusion path
 exclsnPhs2_csv = file.path(config$path$combined, config$EXCLUSIONcsvs$RDM_AX_Qual_Phs2exclusion); # phase 2 exclusion path
 qualtricsBothPhs_csv = file.path(config$path$combined, config$QUALTRICScsvs$Combined_subID_scored_noDuplicates); # qualtrics responses path
 subLevelLong_path = file.path(config$path$Rdata, config$Rdata_files$QualtricsSubLevelLong); # subject-level long format path
 subLevelWide_path = file.path(config$path$Rdata, config$Rdata_files$QualtricsSubLevelWide); # subject-level wide format path
 
+print('Loading behavioral data files.')
 rdmGainQualtrics = read.csv(rdmGain_csv); # loads gain only RDM + Qualtrics data both phases (takes several seconds)
 rdmLossQualtrics = read.csv(rdmLoss_csv); # loads loss only RDM + Qualtrics data both phases (takes several seconds)
+rdmBothQualtrics = read.csv(rdmBoth_csv); # loads both tasks + Qualtrics data both phases (takes several seconds)
 excludePhs1 = read.csv(exclsnPhs1_csv); # loads exclusion for phase 1
 excludePhs2 = read.csv(exclsnPhs2_csv); # loads exclusion for phase 2
 qualtricsBothPhs = read.csv(qualtricsBothPhs_csv); # load qualtrics responses
 load(subLevelLong_path); # load subject-level long dataframe
 load(subLevelWide_path); # load subject-level wide dataframe
-
+print('Behavioral data files loaded.')
 
 # Remove the extra "X" column present as the first column in datasets
 rdmGainQualtrics = rdmGainQualtrics[,(2:ncol(rdmGainQualtrics))];
 rdmLossQualtrics = rdmLossQualtrics[,(2:ncol(rdmLossQualtrics))];
+rdmBothQualtrics = rdmBothQualtrics[,(2:ncol(rdmBothQualtrics))];
 excludePhs1 = excludePhs1[,(2:ncol(excludePhs1))];
 excludePhs2 = excludePhs2[,(2:ncol(excludePhs2))];
 qualtricsBothPhs = qualtricsBothPhs[,(4:ncol(qualtricsBothPhs))]; # qualtrics has 3 columns of X variable
@@ -45,8 +49,9 @@ qualtricsBothPhs = qualtricsBothPhs[,(4:ncol(qualtricsBothPhs))]; # qualtrics ha
 # add the PCA SES component one and scaled affective variables to RDM datasets
 for(s in 1:nrow(subLevelLong)){
   rdmGainQualtrics$sesPCA[subLevelLong$subID[s]==rdmGainQualtrics$subID & subLevelLong$phase[s] == rdmGainQualtrics$phase] = subLevelLong$sesPCA[s];
-  rdmLossQualtrics$sesPCA[subLevelLong$subID[s]==rdmLossQualtrics$subID & subLevelLong$phase[s] == rdmLossQualtrics$phase] = subLevelLong$sesPCA[s]
-  
+  rdmLossQualtrics$sesPCA[subLevelLong$subID[s]==rdmLossQualtrics$subID & subLevelLong$phase[s] == rdmLossQualtrics$phase] = subLevelLong$sesPCA[s];
+  rdmBothQualtrics$sesPCA[subLevelLong$subID[s]==rdmBothQualtrics$subID & subLevelLong$phase[s] == rdmBothQualtrics$phase] = subLevelLong$sesPCA[s];
+
   rdmGainQualtrics$stai_s_score_scaled[subLevelLong$subID[s]==rdmGainQualtrics$subID & subLevelLong$phase[s] == rdmGainQualtrics$phase] = subLevelLong$stai_s_score_scaled[s];
   rdmGainQualtrics$stai_t_score_scaled[subLevelLong$subID[s]==rdmGainQualtrics$subID & subLevelLong$phase[s] == rdmGainQualtrics$phase] = subLevelLong$stai_t_score_scaled[s];
   rdmGainQualtrics$uclal_score_scaled[subLevelLong$subID[s]==rdmGainQualtrics$subID & subLevelLong$phase[s] == rdmGainQualtrics$phase] = subLevelLong$uclal_score_scaled[s];
@@ -57,12 +62,19 @@ for(s in 1:nrow(subLevelLong)){
   rdmLossQualtrics$uclal_score_scaled[subLevelLong$subID[s]==rdmLossQualtrics$subID & subLevelLong$phase[s] == rdmLossQualtrics$phase] = subLevelLong$uclal_score_scaled[s];
   rdmLossQualtrics$pss_score_scaled[subLevelLong$subID[s]==rdmLossQualtrics$subID & subLevelLong$phase[s] == rdmLossQualtrics$phase] = subLevelLong$pss_score_scaled[s];
   
+  rdmBothQualtrics$stai_s_score_scaled[subLevelLong$subID[s]==rdmBothQualtrics$subID & subLevelLong$phase[s] == rdmBothQualtrics$phase] = subLevelLong$stai_s_score_scaled[s];
+  rdmBothQualtrics$stai_t_score_scaled[subLevelLong$subID[s]==rdmBothQualtrics$subID & subLevelLong$phase[s] == rdmBothQualtrics$phase] = subLevelLong$stai_t_score_scaled[s];
+  rdmBothQualtrics$uclal_score_scaled[subLevelLong$subID[s]==rdmBothQualtrics$subID & subLevelLong$phase[s] == rdmBothQualtrics$phase] = subLevelLong$uclal_score_scaled[s];
+  rdmBothQualtrics$pss_score_scaled[subLevelLong$subID[s]==rdmBothQualtrics$subID & subLevelLong$phase[s] == rdmBothQualtrics$phase] = subLevelLong$pss_score_scaled[s];
+  
   rdmGainQualtrics$covq_PAB_q1_personalRisk_scaled[subLevelLong$subID[s]==rdmGainQualtrics$subID & subLevelLong$phase[s] == rdmGainQualtrics$phase] = subLevelLong$covq_PAB_q1_personalRisk_scaled[s];
   rdmGainQualtrics$covq_PAB_q1_personalRisk_scaledNoNA[subLevelLong$subID[s]==rdmGainQualtrics$subID & subLevelLong$phase[s] == rdmGainQualtrics$phase] = subLevelLong$covq_PAB_q1_personalRisk_scaledNoNA[s];
   
   rdmLossQualtrics$covq_PAB_q1_personalRisk_scaled[subLevelLong$subID[s]==rdmLossQualtrics$subID & subLevelLong$phase[s] == rdmLossQualtrics$phase] = subLevelLong$covq_PAB_q1_personalRisk_scaled[s];
   rdmLossQualtrics$covq_PAB_q1_personalRisk_scaledNoNA[subLevelLong$subID[s]==rdmLossQualtrics$subID & subLevelLong$phase[s] == rdmLossQualtrics$phase] = subLevelLong$covq_PAB_q1_personalRisk_scaledNoNA[s];
   
+  rdmBothQualtrics$covq_PAB_q1_personalRisk_scaled[subLevelLong$subID[s]==rdmBothQualtrics$subID & subLevelLong$phase[s] == rdmBothQualtrics$phase] = subLevelLong$covq_PAB_q1_personalRisk_scaled[s];
+  rdmBothQualtrics$covq_PAB_q1_personalRisk_scaledNoNA[subLevelLong$subID[s]==rdmBothQualtrics$subID & subLevelLong$phase[s] == rdmBothQualtrics$phase] = subLevelLong$covq_PAB_q1_personalRisk_scaledNoNA[s];
 }
 
 
@@ -112,6 +124,10 @@ rdmGainQualtrics[rdmGainQualtrics$subID %in% subIDrdmPhs2Exclude & rdmGainQualtr
 rdmLossQualtrics[rdmLossQualtrics$subID %in% subIDrdmPhs1Exclude & rdmLossQualtrics$phase==1,rdmColumns] = NA; # phase 1
 rdmLossQualtrics[rdmLossQualtrics$subID %in% subIDrdmPhs2Exclude & rdmLossQualtrics$phase==2,rdmColumns] = NA; # phase 2
 
+# BOTH tasks
+rdmBothQualtrics[rdmBothQualtrics$subID %in% subIDrdmPhs1Exclude & rdmBothQualtrics$phase==1,rdmColumns] = NA; # phase 1
+rdmBothQualtrics[rdmBothQualtrics$subID %in% subIDrdmPhs2Exclude & rdmBothQualtrics$phase==2,rdmColumns] = NA; # phase 2
+
 # Put NAs in Qualtrics columns for excluded phase 1 and phase 2 participants in both gain and loss datasets
 # gain task
 rdmGainQualtrics[rdmGainQualtrics$subID %in% subIDqualPhs1Exclude & rdmGainQualtrics$phase==1,qualColumns] = NA; # phase 1
@@ -120,6 +136,10 @@ rdmGainQualtrics[rdmGainQualtrics$subID %in% subIDqualPhs2Exclude & rdmGainQualt
 # loss task
 rdmLossQualtrics[rdmLossQualtrics$subID %in% subIDqualPhs1Exclude & rdmLossQualtrics$phase==1,qualColumns] = NA; # phase 1
 rdmLossQualtrics[rdmLossQualtrics$subID %in% subIDqualPhs2Exclude & rdmLossQualtrics$phase==2,qualColumns] = NA; # phase 2
+
+# BOTH tasks
+rdmBothQualtrics[rdmBothQualtrics$subID %in% subIDqualPhs1Exclude & rdmBothQualtrics$phase==1,qualColumns] = NA; # phase 1
+rdmBothQualtrics[rdmBothQualtrics$subID %in% subIDqualPhs2Exclude & rdmBothQualtrics$phase==2,qualColumns] = NA; # phase 2
 
 
 # Note: if participants were excluded in phase 1, they are not automatically excluded in phase 2!
@@ -150,10 +170,7 @@ BothPhsnSub = length(BothPhsSubIDs)
 ### Which trials were missed?
 # GAIN TASK
 nanIndGainPhs1 = which(is.na(rdmGainQualtrics$rdmChoice) & rdmGainQualtrics$subID %in% Phs1subIDs & rdmGainQualtrics$phase ==1) # 756 missed trials indices phase 1
-
 nanIndGainPhs2 = which(is.na(rdmGainQualtrics$rdmChoice) & rdmGainQualtrics$subID %in% Phs2subIDs & rdmGainQualtrics$phase ==2)  # missed trials indices phase 2
-
-
 nanIndGain = c(nanIndGainPhs1, nanIndGainPhs2);
 
 nanGainPhs1tot = length(nanIndGainPhs1); #756 missed trials phase 1
@@ -167,6 +184,11 @@ nanIndLoss = c(nanIndLossPhs1, nanIndLossPhs2);
 
 nanLossPhs1tot = length(nanIndLossPhs1); #245 missed trials phase 1
 nanLossPhs2tot = length(nanIndLossPhs2); #88 missed trials phase 2
+
+
+# NOTE re: "Both": We do not do this for the BOTH tasks 
+# dataset b/c it's just the compiled 
+# version of Gain & Loss.
 
 
 ### Which participants missed trials and how many did each participant miss?
@@ -242,6 +264,10 @@ rdmLossQualtrics$phaseRecode = rdmLossQualtrics$phase;
 rdmLossQualtrics$phaseRecode[rdmLossQualtrics$phaseRecode==1] = 0;
 rdmLossQualtrics$phaseRecode[rdmLossQualtrics$phaseRecode==2] = 1;
 
+# Both tasks
+rdmBothQualtrics$phaseRecode = rdmBothQualtrics$phase;
+rdmBothQualtrics$phaseRecode[rdmBothQualtrics$phaseRecode==1] = 0;
+rdmBothQualtrics$phaseRecode[rdmBothQualtrics$phaseRecode==2] = 1;
 
 
 ## Create a function that creates recent event variables for CAP dataset:
@@ -290,6 +316,9 @@ rdmGainQualtrics$rdmPOC2 = cap_past_event_variable(rdmGainQualtrics,rdmGainQualt
 rdmLossQualtrics$rdmPOC1 = cap_past_event_variable(rdmLossQualtrics,rdmLossQualtrics$rdmOutcome, 1, rdmLossQualtrics$subID,rdmLossQualtrics$phase); # outcome t-1
 rdmLossQualtrics$rdmPOC2 = cap_past_event_variable(rdmLossQualtrics,rdmLossQualtrics$rdmOutcome, 2, rdmLossQualtrics$subID,rdmLossQualtrics$phase); # outcome t-2
 
+# Both tasks:
+rdmBothQualtrics$rdmPOC1 = cap_past_event_variable(rdmBothQualtrics,rdmBothQualtrics$rdmOutcome, 1, rdmBothQualtrics$subID,rdmBothQualtrics$phase); # outcome t-1
+rdmBothQualtrics$rdmPOC2 = cap_past_event_variable(rdmBothQualtrics,rdmBothQualtrics$rdmOutcome, 2, rdmBothQualtrics$subID,rdmBothQualtrics$phase); # outcome t-2
 
 # Scale variables:
 scaleby = max(rdmGainQualtrics$rdmRiskyGain, na.rm = T);
@@ -299,10 +328,19 @@ rdmGainQualtrics$rdmPOC1sc = rdmGainQualtrics$rdmPOC1/scaleby;
 rdmGainQualtrics$rdmPOC2sc = rdmGainQualtrics$rdmPOC2/scaleby;
 
 
+scaleby = max(rdmBothQualtrics$rdmRiskyGain, na.rm = T);
+rdmBothQualtrics$rdmGainSC = rdmBothQualtrics$rdmRiskyGain/scaleby;
+rdmBothQualtrics$rdmLossSC = rdmBothQualtrics$rdmRiskyLoss/scaleby;
+rdmBothQualtrics$rdmSafeSC = rdmBothQualtrics$rdmAlternative/scaleby;
+rdmBothQualtrics$rdmPOC1sc = rdmBothQualtrics$rdmPOC1/scaleby;
+rdmBothQualtrics$rdmPOC2sc = rdmBothQualtrics$rdmPOC2/scaleby;
 
 # Calculate cumulative earnings (within each phase) for each participant and scale trial so that it is 0-1 for each participant
 # earnings will be 0 to 1, normalized by each participant's max earnings
 # save the max cumulative earnings for each person in a vector
+
+# NOTE re: "Both": We do not do this for the Both dataset, as it's not clear
+# how to handle earnings across the gain and loss tasks at this time. 
 
 earningsByPhase = vector(); # to store all earnings for each participant
 earningsByPhaseScaled = vector(); # to store earnings scaled by each participants' max earnings within each phase
@@ -374,9 +412,10 @@ rdmGainQualtrics$rdmTrialSC[rdmGainQualtrics$subID %in% subIDrdmPhs2Exclude & rd
 
 
 
-# Make a day overall variable (1:40 instead of 1:20) because even though 1:20 os true within-phase, its 1:40 across phases (or across the entire experiment)
+# Make a day overall variable (1:40 instead of 1:20) because even though 1:20 is true within-phase, its 1:40 across phases (or across the entire experiment)
 rdmGainQualtrics$dayOverall = rdmGainQualtrics$day + rdmGainQualtrics$phaseRecode*20;
 rdmLossQualtrics$dayOverall = rdmLossQualtrics$day + rdmLossQualtrics$phaseRecode*20;
+rdmBothQualtrics$dayOverall = rdmBothQualtrics$day + rdmBothQualtrics$phaseRecode*20;
 
 # Rescale day to be 0-1
 rdmGainQualtrics$daySC = rdmGainQualtrics$day/max(rdmGainQualtrics$day)
@@ -385,6 +424,8 @@ rdmGainQualtrics$dayOverallSC = rdmGainQualtrics$dayOverall/max(rdmGainQualtrics
 rdmLossQualtrics$daySC = rdmLossQualtrics$day/max(rdmLossQualtrics$day)
 rdmLossQualtrics$dayOverallSC = rdmLossQualtrics$dayOverall/max(rdmLossQualtrics$dayOverall)
 
+rdmBothQualtrics$daySC = rdmBothQualtrics$day/max(rdmBothQualtrics$day)
+rdmBothQualtrics$dayOverallSC = rdmBothQualtrics$dayOverall/max(rdmBothQualtrics$dayOverall)
 
 # For gain only task, create variables for shift analysis
 rdmGainQualtrics$signedShift = c(0, diff(rdmGainQualtrics$rdmGroundEV));
