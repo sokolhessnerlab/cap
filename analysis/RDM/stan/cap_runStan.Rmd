@@ -32,9 +32,19 @@ source(setup_source) #, local = knitr::knit_global())
 rdmBothQualtricsStan = rdmBothQualtrics[is.finite(rdmBothQualtrics$rdmChoice),]; # remove trials where choice is NA (stan can't handle NAs)
 
 
-# CAP data IDs are sequential
-subIDs = as.numeric(unique(rdmBothQualtricsStan$subID))
-nSub= length(subIDs)
+# Data IDs are NOT sequential b/c of exclusions: create sequential subject ID variable
+tmp_subID = 0;
+rdmBothQualtricsStan$subIDseq = rdmBothQualtricsStan$subID;
+orig_subIDs = unique(rdmBothQualtricsStan$subID); # non-sequential
+
+for (s in orig_subIDs){
+  tmp_subID = tmp_subID + 1;
+  ind = rdmBothQualtricsStan$subID == s;
+  rdmBothQualtricsStan$subIDseq[ind] = tmp_subID;
+}
+
+seq_subIDs = unique(rdmBothQualtricsStan$subIDseq); # sequential
+nSub = length(seq_subIDs);
 
 
 capDataList = list(
@@ -42,7 +52,7 @@ capDataList = list(
   gain = rdmBothQualtricsStan$rdmRiskyGain,
   loss = rdmBothQualtricsStan$rdmRiskyLoss,
   safe = rdmBothQualtricsStan$rdmAlternative,
-  ind = rdmBothQualtricsStan$subID,
+  ind = rdmBothQualtricsStan$subIDseq,
   nsubj = nSub,
   N = length(rdmBothQualtricsStan$rdmChoice)
 )
