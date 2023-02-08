@@ -46,11 +46,13 @@ for (s in orig_subIDs){
 seq_subIDs = unique(rdmBothQualtricsStan$subIDseq); # sequential
 nSub = length(seq_subIDs);
 
+# rdmBothQualtricsStan = rdmBothQualtricsStan[rdmBothQualtricsStan$subIDseq < 265,]; # For testing if the NUMBER of datapoints matters here [IT DOES].
+
 
 capDataList = list(
   choices = rdmBothQualtricsStan$rdmChoice,
   gain = rdmBothQualtricsStan$rdmRiskyGain,
-  loss = abs(rdmBothQualtricsStan$rdmRiskyLoss),
+  loss = abs(rdmBothQualtricsStan$rdmRiskyLoss), # do the abs() on loss values outside of Stan
   safe = rdmBothQualtricsStan$rdmAlternative,
   day = rdmBothQualtricsStan$dayOverallSC,
   covRisk = rdmBothQualtricsStan$covq_PAB_q1_personalRisk_centeredscaledNoNA,
@@ -69,20 +71,22 @@ capDataList = list(
 #stanModel = "/Users/shlab/Documents/GitHub/cap/analysis/RDM/stan/cap_basic0_rhoMuLambdaDB.stan"
 # stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_daycovRisk1_rhoMuLambdaDB_rhoChange.stan"
 
-stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_basic0_rhoMuLambdaDB_faster.stan"
-# stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_basic0_rhoMuLambdaDB.stan"
+# stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_basic0_rhoMuLambdaDB_allFFX.stan"
+# stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_basic0_rhoMuLambdaDB_dbRFX.stan"
+stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_basic0_rhoMuLambdaDB_allRFX.stan"
 
 ```
 
 ```{r configure-the-model}
 
 # define some things
-nChains = 2 # number of chains (1 chain per core)
-fitSteps = 100 # stan will save half of this many x nChains per parameter
+nChains = 4 # number of chains (1 chain per core)
+fitSteps = 10000 # stan will save half of this many x nChains per parameter
 
-pars = c('meanRho', 'meanMu', 'meanLambda', 'meanDB',
-         'sdRho', 'sdMu', 'sdLambda', 'sdDB',
-         'r', 'm', 'l', 'db');
+pars = c('meanRho', 'meanMu', 'meanLambda', 'meanDB'
+         # 'sdRho','sdMu','sdLambda','sdDB',
+         # 'r','l','m','db'
+         );
 
 starttime = proc.time()[3];
 
@@ -119,7 +123,7 @@ for (i in 1:nChains){
 }
 
 
-save(stanModel, sflistFinal, file = file.path(config$path$Rdata, 'stanModelOutput/cap_RhoMuLambdaDB_day+covRisk+Rho_%s.Rdata',format(Sys.Date(), format="%Y%m%d")))
+save(stanModel, sflistFinal, file = file.path(config$path$Rdata, sprintf('stanModelOutput/cap_RhoMuLambdaDB_allRFX_%s.Rdata',format(Sys.Date(), format="%Y%m%d"))))
 
 
 ```
