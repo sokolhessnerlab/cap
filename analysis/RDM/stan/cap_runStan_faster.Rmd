@@ -83,9 +83,9 @@ stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_ba
 nChains = 4 # number of chains (1 chain per core)
 fitSteps = 10000 # stan will save half of this many x nChains per parameter
 
-pars = c('meanRho', 'meanMu', 'meanLambda', 'meanDB'
-         # 'sdRho','sdMu','sdLambda','sdDB',
-         # 'r','l','m','db'
+pars = c('meanRho', 'meanMu', 'meanLambda', 'meanDB',
+         'sdRho','sdMu','sdLambda','sdDB',
+         'r','l','m','db'
          );
 
 starttime = proc.time()[3];
