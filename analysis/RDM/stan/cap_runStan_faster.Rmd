@@ -131,7 +131,17 @@ save(stanModel, sflistFinal, file = file.path(config$path$Rdata, sprintf('stanMo
 
 
 ```{r assess-model-fit}
+model_fit_obj = sflist2stanfit(sflistFinal);
+print(model_fit_obj)
 
+sampled_values = extract(model_fit_obj);
+q95 = c(0.025, 0.975);
+
+traceplot(model_fit_obj,'meanLambda')
+
+quantile(exp(sampled_values$meanLambda), probs = q95)
+
+hist(exp(sampled_values$meanLambda), xlim = c(0,2))
 ```
 
 
