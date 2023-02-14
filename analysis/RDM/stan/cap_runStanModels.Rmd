@@ -22,11 +22,10 @@ source(setup_source) #, local = knitr::knit_global())
 ```{r data-setup}
 
 # Data needs to be in a list, e.g stanData = list(subID = rdmDFall_clean$subID, etc)
-#   USE EXACT SAME VARIABLE NAMES FROM STAN FILE
-#    data cannot have any nans, replace with zeroes
+#   - USE EXACT SAME VARIABLE NAMES FROM STAN FILE
+#   - data cannot have any nans, replace with zeroes
 
 rdmBothQualtricsStan = rdmBothQualtrics[is.finite(rdmBothQualtrics$rdmChoice),]; # remove trials where choice is NA (stan can't handle NAs)
-
 
 # Data IDs are NOT sequential b/c of exclusions: create sequential subject ID variable
 tmp_subID = 0;
@@ -42,9 +41,8 @@ for (s in orig_subIDs){
 seq_subIDs = unique(rdmBothQualtricsStan$subIDseq); # sequential
 nSub = length(seq_subIDs);
 
-# OPTIONAL: fit on less than all the data, esp. if things are going slow. 
-# rdmBothQualtricsStan = rdmBothQualtricsStan[rdmBothQualtricsStan$subIDseq < 265,]; # For testing if the NUMBER of datapoints matters here [IT DOES].
-
+# OPTIONAL: fit on less than all the data to speed things up.
+# rdmBothQualtricsStan = rdmBothQualtricsStan[rdmBothQualtricsStan$subIDseq < 265,]; # the NUMBER of datapoints matters!
 
 capDataList = list(
   choices = rdmBothQualtricsStan$rdmChoice,
@@ -63,14 +61,15 @@ capDataList = list(
 
 ```{r call-stan-program}
 
-#stanModel = "/Users/shlab/Documents/GitHub/cap/analysis/RDM/stan/cap_basic0_rhoMuLambda.stan"
-#stanModel = "/Users/hayley/Documents/GitHub/cap/analysis/RDM/stan/cap_model0basic.stan"
-#stanModel = "/Users/shlab/Documents/GitHub/cap/analysis/RDM/stan/cap_basic0_rhoMuLambdaDB.stan"
+# stanModel = "/Users/shlab/Documents/GitHub/cap/analysis/RDM/stan/cap_basic0_rhoMuLambda.stan"
+# stanModel = "/Users/hayley/Documents/GitHub/cap/analysis/RDM/stan/cap_model0basic.stan"
+# stanModel = "/Users/shlab/Documents/GitHub/cap/analysis/RDM/stan/cap_basic0_rhoMuLambdaDB.stan"
 # stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_daycovRisk1_rhoMuLambdaDB_rhoChange.stan"
 
 # stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_basic0_rhoMuLambdaDB_allFFX.stan"
-stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_basic0_rhoMuLambdaDB_allRFX.stan"
+# stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_basic0_rhoMuLambdaDB_allRFX.stan"
 # stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_daycovRisk1_rhoMuLambdaDB_rhoChange.stan"
+stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_daycovRisk1_rhoMuLambdaDB_DBChange.stan"
 
 ```
 
@@ -83,7 +82,7 @@ fitSteps = 10000 # stan will save half of this many x nChains per parameter
 pars = c('meanRho', 'meanMu', 'meanLambda', 'meanDB',
          'sdRho','sdMu','sdLambda','sdDB',
          'r','l','m','db',
-         'dayRho', 'covRiskRho','dayxcovRiskRho'
+         'dayDB', 'covRiskDB','dayxcovRiskDB'
          );
 
 starttime = proc.time()[3];
@@ -121,7 +120,7 @@ for (i in 1:nChains){
 }
 
 
-save(stanModel, sflistFinal, file = file.path(config$path$Rdata, sprintf('stanModelOutput/cap_RhoMuLambdaDB_allRFX_%s.Rdata',format(Sys.Date(), format="%Y%m%d"))))
+save(stanModel, sflistFinal, file = file.path(config$path$Rdata, sprintf('stanModelOutput/cap_RhoMuLambdaDB_day+covRisk+DB_%s.Rdata',format(Sys.Date(), format="%Y%m%d"))))
 
 
 ```
