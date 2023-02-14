@@ -46,6 +46,7 @@ for (s in orig_subIDs){
 seq_subIDs = unique(rdmBothQualtricsStan$subIDseq); # sequential
 nSub = length(seq_subIDs);
 
+# OPTIONAL: fit on less than all the data, esp. if things are going slow. 
 # rdmBothQualtricsStan = rdmBothQualtricsStan[rdmBothQualtricsStan$subIDseq < 265,]; # For testing if the NUMBER of datapoints matters here [IT DOES].
 
 
@@ -72,8 +73,8 @@ capDataList = list(
 # stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_daycovRisk1_rhoMuLambdaDB_rhoChange.stan"
 
 # stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_basic0_rhoMuLambdaDB_allFFX.stan"
-# stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_basic0_rhoMuLambdaDB_dbRFX.stan"
 stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_basic0_rhoMuLambdaDB_allRFX.stan"
+# stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_daycovRisk1_rhoMuLambdaDB_rhoChange.stan"
 
 ```
 
@@ -85,7 +86,8 @@ fitSteps = 10000 # stan will save half of this many x nChains per parameter
 
 pars = c('meanRho', 'meanMu', 'meanLambda', 'meanDB',
          'sdRho','sdMu','sdLambda','sdDB',
-         'r','l','m','db'
+         'r','l','m','db',
+         'dayRho', 'covRiskRho','dayxcovRiskRho'
          );
 
 starttime = proc.time()[3];

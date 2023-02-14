@@ -25,20 +25,11 @@ parameters {
 }
 
 transformed parameters {
-  // real rtmp[N];
-  // real mtmp[N];
-  // real ltmp[N];
-  //
-  // for(t in 1:N) { // for each trial
-  //   rtmp[t] = exp(r[ind[t]]); // take individual-level rho sample (that was sampled in unbounded space) and put it in the exponential to make it >0
-  //   mtmp[t] = exp(m[ind[t]]); // same as above for mu
-  //   ltmp[t] = exp(l[ind[t]]); //same for lambda
-  // }
   real rtmp[nsubj];
   real ltmp[nsubj];
   real mtmp[nsubj];
 
-  rtmp = exp(r);
+  rtmp = exp(r); // makes "rtmp" values strictly positive
   ltmp = exp(l);
   mtmp = exp(m);
 }
@@ -46,11 +37,6 @@ transformed parameters {
 model {
   real div;
   real p[N];
-  //real gambleUtil; will try vector based stuff below but just in case there is an issue, not defining with N might work better.
-  //real safeUtil;
-  // real gainUtil[N]; // utility for gain
-  // real lossUtil[N]; // utility for loss
-  // real safeUtil[N]; // utility for safe option
   real total_sum[N];
 
   //Priors
@@ -69,22 +55,14 @@ model {
   l ~ normal(meanLambda, sdLambda);
   db ~ normal(meanDB,sdDB);
 
-
   for (t in 1:N) {
     div = 61^rtmp[ind[t]];
     // Model with M, L, R, DB
 
-    // gainUtil[t] = 0.5 * gain[t]^rtmp;
-    // lossUtil[t] = -0.5 * ltmp * loss[t]^rtmp;
-    //
-    // safeUtil[t] = safe[t]^rtmp;
-    //
-    // total_sum[t] = mtmp / div[t] * (gainUtil[t] + lossUtil[t] - safeUtil[t] - dbtmp);
-
     total_sum[t] = mtmp[ind[t]] / div * (0.5 * gain[t]^rtmp[ind[t]] +
-                                  -0.5 * ltmp[ind[t]] * loss[t]^rtmp[ind[t]] -
-                                  safe[t]^rtmp[ind[t]] -
-                                  db[ind[t]]);
+                                        -0.5 * ltmp[ind[t]] * loss[t]^rtmp[ind[t]] -
+                                        safe[t]^rtmp[ind[t]] -
+                                        db[ind[t]]);
   }
 
   p = inv_logit(total_sum);

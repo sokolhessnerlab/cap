@@ -1,22 +1,15 @@
-//DONT FORGET SEMI COLONS!!
-
-// real = has decimals - also has to do with math that will happen during fitting
-//int = 0 or 1, or single number - int can be used in loops
-
-// The input data is a vector 'y' of length 'N'.
 data {
   int N; // number of trials (across participants)
   int nsubj; // number of participants
   int choices[N]; // choice vector
   real gain[N]; // risky gain vector
-  real loss[N]; // risky loss vector
+  real loss[N]; // risky loss vector (loss MAGNITUDE! values should be strictly positive)
   real safe[N]; // safe vector
   int ind[N]; // subject index
   real day[N]; // day (overall, scaled 0-1)
   real covRisk[N]; // perceived Covid risk (scaled -1:+1, no NAs)
 }
 
- // parameters is just for defining the parameters and what they are (e.g. real) and setting limits if necessary (esp for sd)
 parameters {
   real meanRho;
   real<lower=0> sdRho;
@@ -37,8 +30,6 @@ parameters {
   real dayxcovRiskRho;
 }
 
-// transformed parameters - where a lot of the work actually happens, esp as we modify the model.
-
 transformed parameters {
   real rtmp[N];
   real mtmp[N];
@@ -48,21 +39,13 @@ transformed parameters {
     rtmp[t] = exp(r[ind[t]] + day[t] * dayRho + covRisk[t] * covRiskRho + day[t] * covRisk[t] * dayxcovRiskRho); // take individual-level rho sample (that was sampled in unbounded space) and put it in the exponential to make it >0
     mtmp[t] = exp(m[ind[t]]); // same as above for mu
     ltmp[t] = exp(l[ind[t]]); //same for lambda
-  }
+  } // IF this loop is super slow, could maybe be re-factored?
 }
 
-// The model to be estimated. We model the output
-// 'y' to be normally distributed with mean 'mu'
-// and standard deviation 'sigma'.
-// priors- need to set this up for everything defined in the parameters section EXCEPT the random effects
 model {
   real div;
   real p[N];
-  //real gambleUtil; will try vector based stuff below but just in case there is an issue, not defining with N might work better.
-  //real safeUtil;
-  real gainUtil; // utility for gain
-  real lossUtil; // utility for loss
-  real safeUtil; // utility for safe option
+  real total_sum[N];
 
   //Priors
   meanRho ~ normal(0,30);
@@ -84,17 +67,17 @@ model {
   l ~ normal(meanLambda, sdLambda);
   db ~ normal(meanDB,sdDB);
 
-
   for (t in 1:N) {
     div = 61^rtmp[t];
     // Model with M, L, R, DB
 
-    gainUtil = 0.5 * gain[t]^rtmp[t];
-    lossUtil = -0.5 * ltmp[t] * fabs(loss[t])^rtmp[t];
-
-    safeUtil = safe[t]^rtmp[t];
-
-    p[t] = inv_logit(mtmp[t] / div * (gainUtil + lossUtil - safeUtil - db[ind[t]]));
+    total_sum[t] = mtmp[t] / div * (0.5 * gain[t]^rtmp[t] +
+                                   -0.5 * ltmp[t] * loss[t]^rtmp[t] -
+                                   safe[t]^rtmp[t] -
+                                   db[ind[t]]);
   }
+
+  p = inv_logit(total_sum);
+
   choices ~ bernoulli(p);
 }
