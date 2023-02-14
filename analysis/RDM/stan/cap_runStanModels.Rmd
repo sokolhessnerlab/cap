@@ -70,6 +70,8 @@ capDataList = list(
 # stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_basic0_rhoMuLambdaDB_allRFX.stan"
 # stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_daycovRisk1_rhoMuLambdaDB_rhoChange.stan"
 stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_daycovRisk1_rhoMuLambdaDB_DBChange.stan"
+# stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_daycovRisk1_rhoMuLambdaDB_rho+DBChange.stan"
+# stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_daycovRisk1_rhoMuLambdaDB_allChange.stan"
 
 ```
 
