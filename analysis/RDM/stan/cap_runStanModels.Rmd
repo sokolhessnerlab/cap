@@ -17,10 +17,6 @@ library(parallel)
 
 setup_source = file.path(config$path$code$rdm_r_scripts,config$code_files$rdm_setup_data)
 source(setup_source) #, local = knitr::knit_global())
-
-# # load data file (DEPRECATED)
-# capData = read.csv(file.path(config$path$combined, config$RDMcsvs$RDMbothTasks_qualtrics))
-
 ```
 
 ```{r data-setup}
