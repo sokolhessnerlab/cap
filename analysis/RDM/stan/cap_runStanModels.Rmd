@@ -69,9 +69,9 @@ capDataList = list(
 # stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_basic0_rhoMuLambdaDB_allFFX.stan"
 # stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_basic0_rhoMuLambdaDB_allRFX.stan"
 # stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_daycovRisk1_rhoMuLambdaDB_rhoChange.stan"
-stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_daycovRisk1_rhoMuLambdaDB_DBChange.stan"
+# stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_daycovRisk1_rhoMuLambdaDB_DBChange.stan"
 # stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_daycovRisk1_rhoMuLambdaDB_rho+DBChange.stan"
-# stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_daycovRisk1_rhoMuLambdaDB_allChange.stan"
+stanModel = "/Users/sokolhessner/Documents/gitrepos/cap/analysis/RDM/stan/cap_daycovRisk1_rhoMuLambdaDB_allChange.stan"
 
 ```
 
@@ -83,8 +83,11 @@ fitSteps = 10000 # stan will save half of this many x nChains per parameter
 
 pars = c('meanRho', 'meanMu', 'meanLambda', 'meanDB',
          'sdRho','sdMu','sdLambda','sdDB',
-         'r','l','m','db',
-         'dayDB', 'covRiskDB','dayxcovRiskDB'
+         'dayRho', 'covRiskRho','dayxcovRiskRho',
+         'dayLambda', 'covRiskLambda','dayxcovRiskLambda',
+         'dayMu', 'covRiskMu','dayxcovRiskMu',
+         'dayDB', 'covRiskDB','dayxcovRiskDB',
+         'r','l','m','db'
          );
 
 starttime = proc.time()[3];
@@ -122,7 +125,7 @@ for (i in 1:nChains){
 }
 
 
-save(stanModel, sflistFinal, file = file.path(config$path$Rdata, sprintf('stanModelOutput/cap_RhoMuLambdaDB_day+covRisk+DB_%s.Rdata',format(Sys.Date(), format="%Y%m%d"))))
+save(stanModel, sflistFinal, file = file.path(config$path$Rdata, sprintf('stanModelOutput/cap_RhoMuLambdaDB_day+covRisk+ALL_%s.Rdata',format(Sys.Date(), format="%Y%m%d"))))
 
 
 ```
