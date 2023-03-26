@@ -86,19 +86,6 @@ for(n in 1:nrow(pbi_data)){
   }
 }
 
-# Add DAY information to subLevelLong. 
-subLevelLong$dayOverall = NA; # initialize
-for(n in 1:nrow(subLevelLong)){
-  # Pull out the unique day corresponding to a given subject & phase
-  whichday = unique(rdmGainQualtrics$dayOverall[(rdmGainQualtrics$subID == subLevelLong$subID[n]) & # correct subject
-                                                  (rdmGainQualtrics$phase == subLevelLong$phase[n])]) # correct phase
-  if(length(whichday) == 0){ 
-    next # if they didn't participate (no rdmGainQualtrics entry), then skip it
-  } else {
-    subLevelLong$dayOverall[n] = whichday;
-  }
-}
-
 # add the PCA SES component one and scaled affective variables to RDM datasets
 for(s in 1:nrow(subLevelLong)){
   rdmGainQualtrics$sesPCA[subLevelLong$subID[s]==rdmGainQualtrics$subID & subLevelLong$phase[s] == rdmGainQualtrics$phase] = subLevelLong$sesPCA[s];
@@ -496,5 +483,21 @@ rdmGainQualtrics$covq_PAB_q1_personalRisk_centeredscaledNoNA[is.na(rdmGainQualtr
 
 rdmBothQualtrics$covq_PAB_q1_personalRisk_centeredscaledNoNA = (rdmBothQualtrics$covq_PAB_q1_personalRisk-5)/4;
 rdmBothQualtrics$covq_PAB_q1_personalRisk_centeredscaledNoNA[is.na(rdmBothQualtrics$covq_PAB_q1_personalRisk_centeredscaledNoNA)] = 0;
+
+
+# Add DAY information to subLevelLong. 
+subLevelLong$dayOverall = NA; # initialize
+for(n in 1:nrow(subLevelLong)){
+  # Pull out the unique day corresponding to a given subject & phase
+  whichday = unique(rdmGainQualtrics$dayOverall[(rdmGainQualtrics$subID == subLevelLong$subID[n]) & # correct subject
+                                                  (rdmGainQualtrics$phase == subLevelLong$phase[n])]) # correct phase
+  if(length(whichday) == 0){ 
+    next # if they didn't participate (no rdmGainQualtrics entry), then skip it
+  } else {
+    subLevelLong$dayOverall[n] = whichday;
+  }
+}
+
+
 
 cat('Decision-making data setup complete.\n\n')
