@@ -56,16 +56,46 @@ subLevelWide$PBI_phase2_ERROR = NA;
 subLevelWide$PBI_phase1_RT = NA;
 subLevelWide$PBI_phase2_RT = NA;
 
+subLevelLong$PBI_ERROR = NA;
+subLevelLong$PBI_RT = NA;
+
 # Check for subject matches and input data where appropriate
 for(s in 1:length(subLevelWide$subID)){
   index = which(pbi_data$subID == subLevelWide$subID[s]);
   if (length(index) == 0){
     next # if no match (i.e. missing AX data), proceed to next person
-  } else {
+  } else { # if match, include the data
     subLevelWide$PBI_phase1_ERROR[s] = pbi_data$PBI_phase1_ERROR[index];
     subLevelWide$PBI_phase2_ERROR[s] = pbi_data$PBI_phase2_ERROR[index];
     subLevelWide$PBI_phase1_RT[s] = pbi_data$PBI_phase1_RT[index];
     subLevelWide$PBI_phase2_RT[s] = pbi_data$PBI_phase2_RT[index];
+  }
+}
+
+# Put the PBI data into the Long format too
+for(n in 1:nrow(pbi_data)){
+  for(nphase in 1:2){
+    index = which((pbi_data$subID[n] == subLevelLong$subID) & (subLevelLong$phase == nphase));
+    if (nphase == 1){
+      subLevelLong$PBI_ERROR[index] = pbi_data$PBI_phase1_ERROR[n]
+      subLevelLong$PBI_RT[index] = pbi_data$PBI_phase1_RT[n]
+    } else{
+      subLevelLong$PBI_ERROR[index] = pbi_data$PBI_phase2_ERROR[n]
+      subLevelLong$PBI_RT[index] = pbi_data$PBI_phase2_RT[n]
+    }
+  }
+}
+
+# Add DAY information to subLevelLong. 
+subLevelLong$dayOverall = NA; # initialize
+for(n in 1:nrow(subLevelLong)){
+  # Pull out the unique day corresponding to a given subject & phase
+  whichday = unique(rdmGainQualtrics$dayOverall[(rdmGainQualtrics$subID == subLevelLong$subID[n]) & # correct subject
+                                                  (rdmGainQualtrics$phase == subLevelLong$phase[n])]) # correct phase
+  if(length(whichday) == 0){ 
+    next # if they didn't participate (no rdmGainQualtrics entry), then skip it
+  } else {
+    subLevelLong$dayOverall[n] = whichday;
   }
 }
 
