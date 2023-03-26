@@ -388,6 +388,97 @@ dev.off();
 
 
 ```{r}
+# Graphing for SAS 2023
+
+# Basic Affective plots
+pdf(file="sas2023_stais.pdf", width = 7, height = 2)
+
+lwd = 10;
+layout(matrix(c(1,1,1,2),1,4,byrow = T))
+
+par(mar = c(3, 2.5, 1, 1))
+par(bty = 'n') 
+# # par(mar = c(bottom, left, top, right))
+plot(density(subLevelWide$phs1_stai_s_score, na.rm = T),
+     col = rgb(43,170, 226, maxColorValue = 255), lwd = lwd)
+axis(side = 1, lwd = 3)
+axis(side = 2, lwd = 3)
+lines(density(subLevelWide$phs2_stai_s_score, na.rm = T),
+      col = rgb(185, 53, 189, maxColorValue = 255), lwd = lwd)
+
+paired_diff = subLevelWide$phs2_stai_s_score - subLevelWide$phs1_stai_s_score;
+ttest_output = t.test(paired_diff)
+
+plot(mean(paired_diff, na.rm = T), pch = 21, cex = 3,
+              col = 'black', bg = rgb(114,127,193, maxColorValue = 255), 
+              lwd = lwd/4, ylim = c(-4, 4), xaxt = 'n')
+axis(side = 2, lwd = 3)
+arrows(x0 = 1,
+       y0 = ttest_output$conf.int[1],
+       y1 = ttest_output$conf.int[2],
+       length = 0, lwd = lwd/4)
+lines(c(0,2), c(0,0), lty = 'dashed', lwd = 3)
+
+
+dev.off()
+
+
+pdf(file="stait.pdf", width = 5, height = 2)
+
+par(mar = c(3, 2.5, 1, 1))
+# # par(mar = c(bottom, left, top, right))
+plot(density(subLevelWide$phs1_stai_t_score, na.rm = T),
+     col = rgb(43,170, 226, maxColorValue = 255), lwd = lwd, ylim = c(0,.03))
+lines(density(subLevelWide$phs2_stai_t_score, na.rm = T),
+      col = rgb(185, 53, 189, maxColorValue = 255), lwd = lwd)
+
+dev.off()
+
+
+pdf(file="pss.pdf", width = 5, height = 2)
+
+par(mar = c(3, 2.5, 1, 1))
+# # par(mar = c(bottom, left, top, right))
+plot(density(subLevelWide$phs1_pss_score, na.rm = T),
+     col = rgb(43,170, 226, maxColorValue = 255), lwd = lwd, ylim = c(0,.05))
+lines(density(subLevelWide$phs2_pss_score, na.rm = T),
+      col = rgb(185, 53, 189, maxColorValue = 255), lwd = lwd)
+
+dev.off()
+
+
+pdf(file="uclal.pdf", width = 5, height = 2)
+
+par(mar = c(3, 2.5, 1, 1))
+# # par(mar = c(bottom, left, top, right))
+plot(density(subLevelWide$phs1_uclal_score, na.rm = T),
+     col = rgb(43,170, 226, maxColorValue = 255), lwd = lwd)
+lines(density(subLevelWide$phs2_uclal_score, na.rm = T),
+      col = rgb(185, 53, 189, maxColorValue = 255), lwd = lwd)
+
+dev.off()
+# par(mar = c(3, 1, 1, 1))
+# # par(mar = c(bottom, left, top, right))
+# 
+# layout(matrix(c(1,1,2),1,3,byrow = T))
+#
+# paired_diff_stais = subLevelWide$phs2_stai_s_score - subLevelWide$phs1_stai_s_score;
+# 
+# barplot_stais <- barplot(mean(paired_diff_stais, na.rm = T), 
+#               col = rgb(114,127,193, maxColorValue = 255), ylim = c(-5, 5))
+# # axis(side = 2, at = c(-1,10))
+# arrows(x0 = barplot_stais,
+#        y0 = mean(paired_diff_stais, na.rm = T) - sd(paired_diff_stais, na.rm = T),
+#        y1 = mean(paired_diff_stais, na.rm = T) + sd(paired_diff_stais, na.rm = T),
+#        length = 0)
+# axis(side = 2, at = c(-1,10))
+# lines(x = c(1,1), y = c(0,10), lty = 'dashed')
+# points(x = mean(estimated_parameters[keepsubj,'lambda']), y = 0, pch = 24, cex = 2, bg = rgb(1,.45,.2))
+
+
+```
+
+```{r}
 
 # TEMPORAL CONTEXT WITH COVID RISK:
 if(!exists('model_pred_3timescales_covidRisk')){
