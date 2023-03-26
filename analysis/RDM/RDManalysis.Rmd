@@ -391,13 +391,14 @@ dev.off();
 # Graphing for SAS 2023
 
 # Basic Affective plots
+lwd = 10;
+
+
 pdf(file="sas2023_stais.pdf", width = 7, height = 2)
 
-lwd = 10;
-layout(matrix(c(1,1,1,2),1,4,byrow = T))
+layout(matrix(c(1,1,1,1,1,2),1,6,byrow = T))
 
-par(mar = c(3, 2.5, 1, 1))
-par(bty = 'n') 
+par(mar = c(3, 3.5, 1, 1), las = 1, bty = 'n')
 # # par(mar = c(bottom, left, top, right))
 plot(density(subLevelWide$phs1_stai_s_score, na.rm = T),
      col = rgb(43,170, 226, maxColorValue = 255), lwd = lwd)
@@ -407,56 +408,148 @@ lines(density(subLevelWide$phs2_stai_s_score, na.rm = T),
       col = rgb(185, 53, 189, maxColorValue = 255), lwd = lwd)
 
 paired_diff = subLevelWide$phs2_stai_s_score - subLevelWide$phs1_stai_s_score;
-ttest_output = t.test(paired_diff)
+m_paired_diff = mean(paired_diff, na.rm = T);
+sem_paired_diff = sd(paired_diff, na.rm = T)/sqrt(sum(is.finite(paired_diff)));
 
 plot(mean(paired_diff, na.rm = T), pch = 21, cex = 3,
               col = 'black', bg = rgb(114,127,193, maxColorValue = 255), 
               lwd = lwd/4, ylim = c(-4, 4), xaxt = 'n')
 axis(side = 2, lwd = 3)
 arrows(x0 = 1,
-       y0 = ttest_output$conf.int[1],
-       y1 = ttest_output$conf.int[2],
+       y0 = m_paired_diff - sem_paired_diff,
+       y1 = m_paired_diff + sem_paired_diff,
        length = 0, lwd = lwd/4)
-lines(c(0,2), c(0,0), lty = 'dashed', lwd = 3)
+lines(c(0,2), c(0,0), lwd = 3)
 
 
 dev.off()
 
 
-pdf(file="stait.pdf", width = 5, height = 2)
+pdf(file="sas2023_stait.pdf", width = 7, height = 2)
 
-par(mar = c(3, 2.5, 1, 1))
+layout(matrix(c(1,1,1,1,1,2),1,6,byrow = T))
+
+par(mar = c(3, 3.5, 1, 1), las = 1, bty = 'n')
 # # par(mar = c(bottom, left, top, right))
 plot(density(subLevelWide$phs1_stai_t_score, na.rm = T),
      col = rgb(43,170, 226, maxColorValue = 255), lwd = lwd, ylim = c(0,.03))
+axis(side = 1, lwd = 3)
+axis(side = 2, lwd = 3)
 lines(density(subLevelWide$phs2_stai_t_score, na.rm = T),
       col = rgb(185, 53, 189, maxColorValue = 255), lwd = lwd)
 
+paired_diff = subLevelWide$phs2_stai_t_score - subLevelWide$phs1_stai_t_score;
+m_paired_diff = mean(paired_diff, na.rm = T);
+sem_paired_diff = sd(paired_diff, na.rm = T)/sqrt(sum(is.finite(paired_diff)));
+
+plot(mean(paired_diff, na.rm = T), pch = 21, cex = 3,
+              col = 'black', bg = rgb(114,127,193, maxColorValue = 255), 
+              lwd = lwd/4, ylim = c(-4, 4), xaxt = 'n')
+axis(side = 2, lwd = 3)
+arrows(x0 = 1,
+       y0 = m_paired_diff - sem_paired_diff,
+       y1 = m_paired_diff + sem_paired_diff,
+       length = 0, lwd = lwd/4)
+lines(c(0,2), c(0,0), lwd = 3)
+
 dev.off()
 
 
-pdf(file="pss.pdf", width = 5, height = 2)
+pdf(file="sas2023_pss.pdf", width = 7, height = 2)
 
-par(mar = c(3, 2.5, 1, 1))
+layout(matrix(c(1,1,1,1,1,2),1,6,byrow = T))
+
+par(mar = c(3, 3.5, 1, 1), las = 1, bty = 'n')
 # # par(mar = c(bottom, left, top, right))
 plot(density(subLevelWide$phs1_pss_score, na.rm = T),
      col = rgb(43,170, 226, maxColorValue = 255), lwd = lwd, ylim = c(0,.05))
+axis(side = 1, lwd = 3)
+axis(side = 2, lwd = 3)
 lines(density(subLevelWide$phs2_pss_score, na.rm = T),
       col = rgb(185, 53, 189, maxColorValue = 255), lwd = lwd)
 
+paired_diff = subLevelWide$phs2_pss_score - subLevelWide$phs1_pss_score;
+m_paired_diff = mean(paired_diff, na.rm = T);
+sem_paired_diff = sd(paired_diff, na.rm = T)/sqrt(sum(is.finite(paired_diff)));
+
+plot(mean(paired_diff, na.rm = T), pch = 21, cex = 3,
+              col = 'black', bg = rgb(114,127,193, maxColorValue = 255), 
+              lwd = lwd/4, ylim = c(-2, 2), xaxt = 'n')
+axis(side = 2, lwd = 3)
+arrows(x0 = 1,
+       y0 = m_paired_diff - sem_paired_diff,
+       y1 = m_paired_diff + sem_paired_diff,
+       length = 0, lwd = lwd/4)
+lines(c(0,2), c(0,0), lwd = 3)
+
 dev.off()
 
 
-pdf(file="uclal.pdf", width = 5, height = 2)
+pdf(file="sas2023_uclal.pdf", width = 7, height = 2)
 
-par(mar = c(3, 2.5, 1, 1))
+layout(matrix(c(1,1,1,1,1,2),1,6,byrow = T))
+
+par(mar = c(3, 3.5, 1, 1), las = 1, bty = 'n')
 # # par(mar = c(bottom, left, top, right))
 plot(density(subLevelWide$phs1_uclal_score, na.rm = T),
      col = rgb(43,170, 226, maxColorValue = 255), lwd = lwd)
+axis(side = 1, lwd = 3)
+axis(side = 2, lwd = 3)
 lines(density(subLevelWide$phs2_uclal_score, na.rm = T),
       col = rgb(185, 53, 189, maxColorValue = 255), lwd = lwd)
 
+paired_diff = subLevelWide$phs2_uclal_score - subLevelWide$phs1_uclal_score;
+m_paired_diff = mean(paired_diff, na.rm = T);
+sem_paired_diff = sd(paired_diff, na.rm = T)/sqrt(sum(is.finite(paired_diff)));
+
+plot(mean(paired_diff, na.rm = T), pch = 21, cex = 3,
+              col = 'black', bg = rgb(114,127,193, maxColorValue = 255), 
+              lwd = lwd/4, ylim = c(-2, 2), xaxt = 'n')
+axis(side = 2, lwd = 3)
+arrows(x0 = 1,
+       y0 = m_paired_diff - sem_paired_diff,
+       y1 = m_paired_diff + sem_paired_diff,
+       length = 0, lwd = lwd/4)
+lines(c(0,2), c(0,0), lwd = 3)
+
 dev.off()
+
+
+
+
+pdf(file="sas2023_covidrisk.pdf", width = 7, height = 4)
+
+par(mar = c(3, 3.5, 1, 1), las = 1, bty = 'n', mfrow=c(1,1))
+# # par(mar = c(bottom, left, top, right))
+hist(subLevelWide$phs1_covq_PAB_q1_personalRisk, 
+     breaks = seq(from = 0.5, to = 9.5, by = 1), col = rgb(43,170,226,150, maxColorValue = 255), freq = F, xaxt = 'n')
+hist(subLevelWide$phs2_covq_PAB_q1_personalRisk, 
+     breaks = seq(from = 0.5, to = 9.5, by = 1), col = rgb(185, 53, 189,150, maxColorValue = 255), add = T, freq = F)
+axis(side = 1, lwd = 0, at = 1:9)
+axis(side = 2, lwd = 3)
+
+dev.off()
+
+
+
+pdf(file="sas2023_pbi.pdf", width = 3, height = 4)
+
+model_pbi_rt_dayOverall = lmer(PBI_RT ~ 1 + dayOverall + (1 | subID), data = subLevelLong)
+model_coefs = fixef(model_pbi_rt_dayOverall);
+int_value = model_coefs[1];
+slope_value = model_coefs[2];
+
+par(mar = c(3, 3.5, 1, 1), las = 1, bty = 'n', mfrow=c(1,1))
+# # par(mar = c(bottom, left, top, right))
+
+plot( subLevelLong$dayOverall, subLevelLong$PBI_RT, pch = 16, col = rgb(0,0,0,.5))
+abline(a = int_value, b = slope_value, lwd = 10, col = rgb(255,20,147,150, maxColorValue = 255))
+
+axis(side = 1, lwd = 3)
+axis(side = 2, lwd = 3)
+
+dev.off()
+
 # par(mar = c(3, 1, 1, 1))
 # # par(mar = c(bottom, left, top, right))
 # 
