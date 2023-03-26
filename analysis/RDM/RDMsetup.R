@@ -25,6 +25,7 @@ exclsnPhs2_csv = file.path(config$path$combined, config$EXCLUSIONcsvs$RDM_AX_Qua
 qualtricsBothPhs_csv = file.path(config$path$combined, config$QUALTRICScsvs$Combined_subID_scored_noDuplicates); # qualtrics responses path
 subLevelLong_path = file.path(config$path$Rdata, config$Rdata_files$QualtricsSubLevelLong); # subject-level long format path
 subLevelWide_path = file.path(config$path$Rdata, config$Rdata_files$QualtricsSubLevelWide); # subject-level wide format path
+PBI_path = file.path(config$path$combined, 'CAP_AX_PBI_combined.csv')
 
 cat('Loading decision-making data files...\n')
 rdmGainQualtrics = read.csv(rdmGain_csv); # loads gain only RDM + Qualtrics data both phases (takes several seconds)
@@ -35,6 +36,7 @@ excludePhs2 = read.csv(exclsnPhs2_csv); # loads exclusion for phase 2
 qualtricsBothPhs = read.csv(qualtricsBothPhs_csv); # load qualtrics responses
 load(subLevelLong_path); # load subject-level long dataframe
 load(subLevelWide_path); # load subject-level wide dataframe
+pbi_data = read.csv(PBI_path);
 cat('Data files loaded.\n')
 cat('Preparing additional variables...\n')
 
@@ -46,6 +48,26 @@ excludePhs1 = excludePhs1[,(2:ncol(excludePhs1))];
 excludePhs2 = excludePhs2[,(2:ncol(excludePhs2))];
 qualtricsBothPhs = qualtricsBothPhs[,(4:ncol(qualtricsBothPhs))]; # qualtrics has 3 columns of X variable
 
+
+# Add PBI data to subLevelWide variable.
+# initialize columns
+subLevelWide$PBI_phase1_ERROR = NA;
+subLevelWide$PBI_phase2_ERROR = NA;
+subLevelWide$PBI_phase1_RT = NA;
+subLevelWide$PBI_phase2_RT = NA;
+
+# Check for subject matches and input data where appropriate
+for(s in 1:length(subLevelWide$subID)){
+  index = which(pbi_data$subID == subLevelWide$subID[s]);
+  if (length(index) == 0){
+    next # if no match (i.e. missing AX data), proceed to next person
+  } else {
+    subLevelWide$PBI_phase1_ERROR[s] = pbi_data$PBI_phase1_ERROR[index];
+    subLevelWide$PBI_phase2_ERROR[s] = pbi_data$PBI_phase2_ERROR[index];
+    subLevelWide$PBI_phase1_RT[s] = pbi_data$PBI_phase1_RT[index];
+    subLevelWide$PBI_phase2_RT[s] = pbi_data$PBI_phase2_RT[index];
+  }
+}
 
 # add the PCA SES component one and scaled affective variables to RDM datasets
 for(s in 1:nrow(subLevelLong)){
@@ -159,6 +181,10 @@ Phs2nSub = length(Phs2subIDs);
 # Participant IDs included in both phases
 BothPhsSubIDs = Phs2subIDs[Phs2subIDs %in% Phs1subIDs];
 BothPhsnSub = length(BothPhsSubIDs)
+
+# Participant IDs included in EITHER phase 1 or phase 2
+EitherPhsSubIDs = subNumB4exclusion[subNumB4exclusion %in% Phs1subIDs | subNumB4exclusion %in% Phs2subIDs];
+EitherPhsnSub = length(EitherPhsSubIDs);
 
 # Prior to exclusion, there were 544 participants. After exclusion, we have risky decision-making data for 516 participants in phase 1 and 325 participants in phase 2, and 312 participants that are included in both phases.
 
